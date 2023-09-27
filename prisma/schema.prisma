@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum BusinessStatus {
+  ACTIVE
+  BLOCKED
+  DELETED
+}
+
+enum UserAddressType {
+  HOME
+  OFFICE
+}
+
+enum VoucherUsage {
+  ONE_TIME
+  UNTIL_EXPIRATION
+}
+
+enum VoucherStatus {
+  AVAILABLE
+  SOLD_OUT
+  EXPIRED
+  DELETED
+}
+
+enum ProductStatus {
+  AVAILABLE
+  SOLD_OUT
+  DELETED
+}
+
+model User {
+  id String @id @default(uuid())
+  password String
+  name String?
+  avatar_image_url String?
+  status UserStatus @default(ACTIVE)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  email UserEmail?
+  phone_number UserPhoneNumber?
+  addresses UserAddress[]
+  businesses Business[]
+  businessCustomerInfo BusinessCustomerInfo[]
+}
+
+model UserEmail {
+  id String @id
+  user_id String @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model UserPhoneNumber {
+  id String @id
+  user_id String @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model UserAddress {
+  id String @id @default(uuid())
+  user_id String 
+  name String
+  type UserAddressType
+  lng Float
+  lat Float
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model Business {
+  id String @id @default(uuid())
+  user_id String
+  category_id String
+  name String
+  description String
+  avatar_image_url String
+  email String
+  phone_number String
+  website String
+  address_id String @unique
+  timetable_id String @unique
+  lowest_price Int
+  highest_price Int
+  follow_count Int
+  rating Float
+  status BusinessStatus
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+  category BusinessCategory @relation(fields: [category_id], references: [id])
+  address BusinessAddress @relation(fields: [address_id], references: [id])
+  timetable BusinessTimetable @relation(fields: [timetable_id], references: [id])
+  customerInfo BusinessCustomerInfo[]
+}
+
+model BusinessCategory {
+  id String @id @default(uuid())
+  name String
+
+  business Business[]
+}
+
+model BusinessAddress {
+  id String @id @default(uuid())
+  name String
+  lng Float
+  lat Float
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  business Business?
+}
+
+model BusinessTimetable {
+  id String @id @default(uuid())
+  mon_opens_at DateTime @db.Time()
+  mon_closes_at DateTime @db.Time()
+  tue_opens_at DateTime @db.Time()
+  tue_closes_at DateTime @db.Time()
+  wed_opens_at DateTime @db.Time()
+  wed_closes_at DateTime @db.Time()
+  thu_opens_at DateTime @db.Time()
+  thu_closes_at DateTime @db.Time()
+  fri_opens_at DateTime @db.Time()
+  fri_closes_at DateTime @db.Time()
+  sat_opens_at DateTime @db.Time()
+  sat_closes_at DateTime @db.Time()
+  sun_opens_at DateTime @db.Time()
+  sun_closes_at DateTime @db.Time()
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  business Business?
+}
+
+model BusinessCustomerInfo {
+  business_id String
+  user_id String
+  take_voucher_count Int
+  use_voucher_count Int
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@id([business_id, user_id])
+  user User @relation(fields: [user_id], references: [id])
+  business Business @relation(fields: [business_id], references: [id])
+}
+
+model BusinessFollower {
+  business_id String
+  user_id String
+  created_at DateTime @default(now())
+
+  @@id([business_id, user_id])
+}
+
+model BusinessRating {
+  business_id String
+  user_id String
+  value Int
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@id([business_id, user_id])
+}

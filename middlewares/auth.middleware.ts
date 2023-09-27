@@ -1,10 +1,9 @@
 import 'dotenv/config';
-import { Request, Response, NextFunction } from 'express';
+import { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { Payload } from '../interfaces/payload';
-import { AuthorizedRequest } from '../interfaces/request';
 
-export const isAuth = (req: Request, res: Response, next: NextFunction): void => {
+export const isAuth: RequestHandler = (req, res, next) => {
 	const authHeader = req.get('Authorization');
 	if (!authHeader) {
 		res.sendStatus(401);
@@ -15,13 +14,11 @@ export const isAuth = (req: Request, res: Response, next: NextFunction): void =>
 	try {
 		payload = <Payload>jwt.verify(token, process.env.TOKEN_SECRET || 'secret');
 		if (!payload) {
-			res.sendStatus(401);
-			return;
+			return res.status(401).json({ message: 'Unauthorized' });
 		}
 	} catch (error) {
-		res.sendStatus(500);
-		return;
+		return res.status(500).json({ message: 'An error occurred', error });
 	}
-	(req as AuthorizedRequest).payload = payload;
+	req.body.payload = payload;
 	next();
 };
