@@ -24,6 +24,11 @@ enum UserAddressType {
   OFFICE
 }
 
+enum VoucherType {
+  SALE_OFF
+  GIFT
+}
+
 enum VoucherUsage {
   ONE_TIME
   UNTIL_EXPIRATION
@@ -44,6 +49,7 @@ enum ProductStatus {
 
 model User {
   id String @id @default(uuid())
+  is_admin Boolean @default(false)
   password String
   name String?
   avatar_image_url String?
@@ -54,8 +60,14 @@ model User {
   email UserEmail?
   phone_number UserPhoneNumber?
   addresses UserAddress[]
-  businesses Business[]
-  businessCustomerInfo BusinessCustomerInfo[]
+  business_managers BusinessManager[]
+  business_customers BusinessCustomer[]
+  business_followers BusinessFollower[]
+  business_ratings BusinessRating[]
+  voucher_customers VoucherCustomer[]
+  post_comments PostComment[]
+  post_favorites PostFavorite[]
+  post_saves PostSave[]
 }
 
 model UserEmail {
@@ -91,7 +103,6 @@ model UserAddress {
 
 model Business {
   id String @id @default(uuid())
-  user_id String
   category_id String
   name String
   description String
@@ -109,11 +120,16 @@ model Business {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  user User @relation(fields: [user_id], references: [id])
   category BusinessCategory @relation(fields: [category_id], references: [id])
   address BusinessAddress @relation(fields: [address_id], references: [id])
   timetable BusinessTimetable @relation(fields: [timetable_id], references: [id])
-  customerInfo BusinessCustomerInfo[]
+  managers BusinessManager[]
+  customers BusinessCustomer[]
+  products Product[]
+  vouchers Voucher[]
+  followers BusinessFollower[]
+  ratings BusinessRating[]
+  posts Post[]
 }
 
 model BusinessCategory {
@@ -156,7 +172,18 @@ model BusinessTimetable {
   business Business?
 }
 
-model BusinessCustomerInfo {
+model BusinessManager {
+  user_id String
+  business_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@id([business_id, user_id])
+  user User @relation(fields: [user_id], references: [id])
+  business Business @relation(fields: [business_id], references: [id])
+}
+
+model BusinessCustomer {
   business_id String
   user_id String
   take_voucher_count Int
@@ -175,14 +202,132 @@ model BusinessFollower {
   created_at DateTime @default(now())
 
   @@id([business_id, user_id])
+  user User @relation(fields: [user_id], references: [id])
+  business Business @relation(fields: [business_id], references: [id])
 }
 
 model BusinessRating {
   business_id String
   user_id String
+  content String
   value Int
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
   @@id([business_id, user_id])
+  user User @relation(fields: [user_id], references: [id])
+  business Business @relation(fields: [business_id], references: [id])
+}
+
+model Product {
+  id String @id @default(uuid())
+  business_id String
+  name String
+  image_url String
+  description String
+  price Int
+  status ProductStatus
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  business Business @relation(fields: [business_id], references: [id])
+  voucher Voucher[]
+}
+
+model Voucher {
+  id String @id @default(uuid())
+  business_id String
+  name String
+  type VoucherType
+  image_url String
+  description String
+  percent Int
+  value Int
+  max_value Int
+  fixed_price Int
+  condition_min_bill_value Int
+  condition_min_bill_item_count Int
+  condition_product_id String 
+  condition_beginning_hour Int
+  condition_ending_hour Int
+  usage VoucherUsage
+  status VoucherStatus
+  apply_date DateTime
+  expiration_date DateTime
+  count Int
+  created_at DateTime
+  updated_at DateTime
+
+  product Product @relation(fields: [condition_product_id], references: [id])
+  business Business @relation(fields: [business_id], references: [id])
+  voucher_customers VoucherCustomer[]
+  post_vouchers PostVoucher[]
+}
+
+model VoucherCustomer {
+  voucher_id String
+  user_id String
+  use_count Int @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@id([voucher_id, user_id])
+  voucher Voucher @relation(fields: [voucher_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model Post {
+  id String @id @default(uuid())
+  business_id String
+  content String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  business Business @relation(fields: [business_id], references: [id])
+  vouchers PostVoucher[]
+  comments PostComment[]
+  favorites PostFavorite[]
+  saves PostSave[]
+}
+
+model PostVoucher {
+  post_id String
+  voucher_id String
+  index Int
+
+  @@id([post_id, voucher_id])
+  post Post @relation(fields: [post_id], references: [id])
+  voucher Voucher @relation(fields: [voucher_id], references: [id])
+}
+
+model PostComment {
+  id String @id @default(uuid())
+  post_id String
+  user_id String
+  content String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  post Post @relation(fields: [post_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model PostFavorite {
+  post_id String
+  user_id String
+  created_at DateTime @default(now())
+
+  @@id([post_id, user_id])
+  post Post @relation(fields: [post_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model PostSave {
+  post_id String
+  user_id String
+  created_at DateTime @default(now())
+
+  @@id([post_id, user_id])
+  post Post @relation(fields: [post_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
 }
