@@ -7,7 +7,7 @@ import prisma from '../config/prisma';
 import { Payload } from '../interfaces/payload';
 
 const generateToken = (payload: Payload) => {
-	return jwt.sign({ id: payload.id }, process.env.TOKEN_SECRET || 'secret');
+	return jwt.sign({ id: payload.id, is_admin: payload.is_admin }, process.env.TOKEN_SECRET || 'secret');
 };
 
 const register: RequestHandler<
