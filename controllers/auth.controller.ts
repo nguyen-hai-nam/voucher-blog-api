@@ -1,38 +1,67 @@
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { Prisma } from '@prisma/client';
 import { RequestHandler } from 'express';
 
 import prisma from '../config/prisma';
 import { Payload } from '../interfaces/payload';
 
-const generateToken = (user: Prisma.UserCreateInput) => {
-	return jwt.sign({ id: user.id }, process.env.TOKEN_SECRET || 'secret');
+const generateToken = (payload: Payload) => {
+	return jwt.sign({ id: payload.id }, process.env.TOKEN_SECRET || 'secret');
 };
 
 const register: RequestHandler<
 	{},
 	{ message: string; error?: unknown },
-	{ email: string; password: string },
+	{ email?: string; phoneNumber?: string; password: string },
 	{}
 > = async (req, res) => {
-	const { email, password } = req.body;
+	const { email, phoneNumber, password } = req.body;
+	if (!((email || phoneNumber) && password)) {
+		return res.status(400).json({ message: 'Missing information' });
+	}
 	try {
-		const existingUser = await prisma.user.findUnique({
-			where: { email }
-		});
-		if (existingUser) {
-			return res.status(400).json({ message: 'Email is already in use' });
+		let existingEmail;
+		let existingPhoneNumber;
+		if (email) {
+			existingEmail = await prisma.userEmail.findUnique({
+				where: { id: email }
+			});
+			if (existingEmail) {
+				return res.status(400).json({ message: 'Email is already in use' });
+			}
+		}
+		if (phoneNumber) {
+			existingPhoneNumber = await prisma.userPhoneNumber.findUnique({
+				where: { id: phoneNumber }
+			});
+			if (existingPhoneNumber) {
+				return res.status(400).json({ message: 'Phone number is already in use' });
+			}
 		}
 		const saltRounds = 10;
 		const hashedPassword = await bcrypt.hash(password, saltRounds);
-		await prisma.user.create({
+		const newUser = await prisma.user.create({
 			data: {
-				email,
 				password: hashedPassword
 			}
 		});
+		if (email) {
+			await prisma.userEmail.create({
+				data: {
+					id: email,
+					user_id: newUser.id
+				}
+			});
+		}
+		if (phoneNumber) {
+			await prisma.userPhoneNumber.create({
+				data: {
+					id: phoneNumber,
+					user_id: newUser.id
+				}
+			});
+		}
 		return res.status(201).json({ message: 'Register successfully' });
 	} catch (error) {
 		return res.status(500).json({
@@ -45,23 +74,44 @@ const register: RequestHandler<
 const login: RequestHandler<
 	{},
 	{ message: string; token?: string; error?: unknown },
-	{ email: string; password: string },
+	{ email?: string; phoneNumber?: string; password: string },
 	{}
 > = async (req, res) => {
-	const { email, password } = req.body;
+	const { email, phoneNumber, password } = req.body;
+	if (!((email || phoneNumber) && password)) {
+		return res.status(400).json({ message: 'Missing information' });
+	}
 	try {
-		if (!(email && password)) {
-			return res.status(400).json({ message: 'Missing email or password' });
+		let existingEmail;
+		let existingPhoneNumber;
+		let user;
+		if (email) {
+			existingEmail = await prisma.userEmail.findUnique({
+				where: { id: email }
+			});
+		} else if (phoneNumber) {
+			existingPhoneNumber = await prisma.userPhoneNumber.findUnique({
+				where: { id: phoneNumber }
+			});
 		}
-		const user = await prisma.user.findUnique({
-			where: { email }
-		});
+		if (!(existingEmail || existingPhoneNumber)) {
+			return res.status(401).json({ message: 'Incorrect information' });
+		}
+		if (existingEmail) {
+			user = await prisma.user.findUnique({
+				where: { id: existingEmail.user_id }
+			});
+		} else if (existingPhoneNumber) {
+			user = await prisma.user.findUnique({
+				where: { id: existingPhoneNumber.user_id }
+			});
+		}
 		if (!user) {
-			return res.status(404).json({ message: 'Incorrect email or password' });
+			return res.status(401).json({ message: 'Incorrect information' });
 		}
 		const isValid = await bcrypt.compare(password, user.password);
 		if (!isValid) {
-			return res.status(401).json({ message: 'Incorrect email or password' });
+			return res.status(401).json({ message: 'Incorrect information' });
 		}
 		const token = generateToken(user);
 		return res.status(200).json({
@@ -83,8 +133,7 @@ const changePassword: RequestHandler<
 	{ payload: Payload; oldPassword: string; newPassword: string },
 	{}
 > = async (req, res) => {
-	const payload = req.body.payload;
-	const { oldPassword, newPassword } = req.body;
+	const { payload, oldPassword, newPassword } = req.body;
 	try {
 		const user = await prisma.user.findUnique({
 			where: { id: payload.id }
