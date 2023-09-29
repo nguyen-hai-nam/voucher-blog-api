@@ -103,26 +103,26 @@ model UserAddress {
 
 model Business {
   id String @id @default(uuid())
-  category_id String
-  name String
-  description String
-  avatar_image_url String
-  email String
-  phone_number String
-  website String
-  address_id String @unique
-  timetable_id String @unique
-  lowest_price Int
-  highest_price Int
-  follow_count Int
-  rating Float
-  status BusinessStatus
+  category_id String?
+  name String?
+  description String?
+  avatar_image_url String?
+  email String?
+  phone_number String?
+  website String?
+  address_id String? @unique
+  timetable_id String? @unique
+  lowest_price Int?
+  highest_price Int?
+  follow_count Int @default(0)
+  rating Float @default(0)
+  status BusinessStatus @default(ACTIVE)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  category BusinessCategory @relation(fields: [category_id], references: [id])
-  address BusinessAddress @relation(fields: [address_id], references: [id])
-  timetable BusinessTimetable @relation(fields: [timetable_id], references: [id])
+  category BusinessCategory? @relation(fields: [category_id], references: [id])
+  address BusinessAddress? @relation(fields: [address_id], references: [id])
+  timetable BusinessTimetable? @relation(fields: [timetable_id], references: [id])
   managers BusinessManager[]
   customers BusinessCustomer[]
   products Product[]
@@ -141,9 +141,9 @@ model BusinessCategory {
 
 model BusinessAddress {
   id String @id @default(uuid())
-  name String
-  lng Float
-  lat Float
+  name String?
+  lng Float?
+  lat Float?
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
@@ -152,20 +152,20 @@ model BusinessAddress {
 
 model BusinessTimetable {
   id String @id @default(uuid())
-  mon_opens_at DateTime @db.Time()
-  mon_closes_at DateTime @db.Time()
-  tue_opens_at DateTime @db.Time()
-  tue_closes_at DateTime @db.Time()
-  wed_opens_at DateTime @db.Time()
-  wed_closes_at DateTime @db.Time()
-  thu_opens_at DateTime @db.Time()
-  thu_closes_at DateTime @db.Time()
-  fri_opens_at DateTime @db.Time()
-  fri_closes_at DateTime @db.Time()
-  sat_opens_at DateTime @db.Time()
-  sat_closes_at DateTime @db.Time()
-  sun_opens_at DateTime @db.Time()
-  sun_closes_at DateTime @db.Time()
+  mon_opens_at DateTime? @db.Time()
+  mon_closes_at DateTime? @db.Time()
+  tue_opens_at DateTime? @db.Time()
+  tue_closes_at DateTime? @db.Time()
+  wed_opens_at DateTime? @db.Time()
+  wed_closes_at DateTime? @db.Time()
+  thu_opens_at DateTime? @db.Time()
+  thu_closes_at DateTime? @db.Time()
+  fri_opens_at DateTime? @db.Time()
+  fri_closes_at DateTime? @db.Time()
+  sat_opens_at DateTime? @db.Time()
+  sat_closes_at DateTime? @db.Time()
+  sun_opens_at DateTime? @db.Time()
+  sun_closes_at DateTime? @db.Time()
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
@@ -180,7 +180,7 @@ model BusinessManager {
 
   @@id([business_id, user_id])
   user User @relation(fields: [user_id], references: [id])
-  business Business @relation(fields: [business_id], references: [id])
+  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
 }
 
 model BusinessCustomer {
