@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "server.ts",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "mocha --require ts-node/register test/**/*.test.ts",
 		"start": "npx ts-node server.ts",
 		"dev": "nodemon server.ts",
 		"lint": "eslint . --ext .ts",
@@ -14,13 +14,17 @@
 	"license": "ISC",
 	"dependencies": {
 		"@prisma/client": "^5.3.1",
+		"@types/chai": "^4.3.6",
+		"@types/mocha": "^10.0.2",
+		"@types/supertest": "^2.0.13",
 		"bcrypt": "^5.1.1",
 		"body-parser": "^1.20.2",
 		"cors": "^2.8.5",
 		"dotenv": "^16.3.1",
 		"express": "^4.18.2",
 		"jsonwebtoken": "^9.0.1",
-		"morgan": "^1.10.0"
+		"morgan": "^1.10.0",
+		"validator": "^13.11.0"
 	},
 	"devDependencies": {
 		"@types/bcrypt": "^5.0.0",
@@ -30,14 +34,18 @@
 		"@types/jsonwebtoken": "^9.0.3",
 		"@types/morgan": "^1.9.5",
 		"@types/node": "^20.6.2",
+		"@types/validator": "^13.11.2",
 		"@typescript-eslint/eslint-plugin": "^6.7.0",
 		"@typescript-eslint/parser": "^6.7.0",
+		"chai": "^4.3.10",
 		"eslint": "^8.48.0",
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-prettier": "^5.0.0",
+		"mocha": "^10.2.0",
 		"nodemon": "^3.0.1",
 		"prettier": "^3.0.3",
 		"prisma": "^5.3.1",
+		"supertest": "^6.3.3",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.2.2"
 	}
