@@ -76,7 +76,7 @@ model UserEmail {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  user User @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model UserPhoneNumber {
@@ -85,7 +85,7 @@ model UserPhoneNumber {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  user User @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model UserAddress {
@@ -98,7 +98,7 @@ model UserAddress {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  user User @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Business {

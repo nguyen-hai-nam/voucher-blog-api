@@ -28,12 +28,11 @@ const countUsers: RequestHandler<
 
 const getAllUsers: RequestHandler<
 	{},
-	{ message: string; data?: object; error?: unknown },
+	{ message: string; page?: number; perPage?: number; data?: object; error?: unknown },
 	{ payload: Payload },
 	{ page?: number; perPage?: number }
 > = async (req, res) => {
-
-	const { page = 1, perPage = 100 } = req.query;
+	const { page = 1, perPage = 10 } = req.query;
 	const skip = (page - 1) * perPage;
 	const take = perPage;
 	try {
@@ -41,7 +40,7 @@ const getAllUsers: RequestHandler<
 			skip,
 			take
 		});
-		return res.status(200).json({ message: 'Success', data: { users } });
+		return res.status(200).json({ message: 'Success', page, perPage, data: users });
 	} catch (error) {
 		return res.status(500).json({ message: 'Error', error });
 	}
@@ -64,7 +63,7 @@ const getUserById: RequestHandler<
 		if (!user) {
 			return res.status(404).json({ message: 'User not found' });
 		}
-		return res.status(200).json({ message: 'Success', data: { user } });
+		return res.status(200).json({ message: 'Success', data: user });
 	} catch (error) {
 		return res.status(500).json({ message: 'Error', error });
 	}
@@ -97,9 +96,33 @@ const updateUserById: RequestHandler<
 	}
 };
 
+const deleteUserById: RequestHandler<
+	{ id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res) => {
+	const { id } = req.params;
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	try {
+		const user = await prisma.user.delete({
+			where: { id }
+		});
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' });
+		}
+		return res.status(200).json({ message: 'Success', data: user });
+	} catch (error) {
+		return res.status(500).json({ message: 'Error', error });
+	}
+};
+
 export default {
 	countUsers,
 	getAllUsers,
 	getUserById,
-	updateUserById
+	updateUserById,
+	deleteUserById
 };

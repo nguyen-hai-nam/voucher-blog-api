@@ -14,5 +14,6 @@ router.get('/count', isAdmin, UserController.countUsers);
 router.get('/', isAdmin, UserController.getAllUsers);
 router.get('/:id', isAuth, UserController.getUserById);
 router.patch('/:id', isAuth, UserController.updateUserById);
+router.delete('/:id', isAdmin, UserController.deleteUserById);
 
 export default router;
