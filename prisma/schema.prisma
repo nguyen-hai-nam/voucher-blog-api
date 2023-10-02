@@ -241,24 +241,24 @@ model Voucher {
   type VoucherType
   image_url String
   description String
-  percent Int
-  value Int
-  max_value Int
-  fixed_price Int
-  condition_min_bill_value Int
-  condition_min_bill_item_count Int
-  condition_product_id String 
-  condition_beginning_hour Int
-  condition_ending_hour Int
+  percent Int?
+  value Int?
+  max_value Int?
+  fixed_price Int?
+  condition_min_bill_value Int?
+  condition_min_bill_item_count Int?
+  condition_product_id String?
+  condition_beginning_hour Int?
+  condition_ending_hour Int?
   usage VoucherUsage
   status VoucherStatus
   apply_date DateTime
   expiration_date DateTime
   count Int
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 
-  product Product @relation(fields: [condition_product_id], references: [id])
+  product Product? @relation(fields: [condition_product_id], references: [id])
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
   voucher_customers VoucherCustomer[]
   post_vouchers PostVoucher[]
