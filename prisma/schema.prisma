@@ -226,11 +226,11 @@ model Product {
   image_url String
   description String
   price Int
-  status ProductStatus
+  status ProductStatus @default(AVAILABLE)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  business Business @relation(fields: [business_id], references: [id])
+  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
   voucher Voucher[]
 }
 
@@ -259,7 +259,7 @@ model Voucher {
   updated_at DateTime
 
   product Product @relation(fields: [condition_product_id], references: [id])
-  business Business @relation(fields: [business_id], references: [id])
+  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
   voucher_customers VoucherCustomer[]
   post_vouchers PostVoucher[]
 }
@@ -283,7 +283,7 @@ model Post {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  business Business @relation(fields: [business_id], references: [id])
+  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
   vouchers PostVoucher[]
   comments PostComment[]
   favorites PostFavorite[]
