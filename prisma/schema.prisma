@@ -296,19 +296,19 @@ model PostVoucher {
   index Int
 
   @@id([post_id, voucher_id])
-  post Post @relation(fields: [post_id], references: [id])
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
   voucher Voucher @relation(fields: [voucher_id], references: [id])
 }
 
 model PostComment {
   id String @id @default(uuid())
-  post_id String
+  post_id String?
   user_id String
   content String
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  post Post @relation(fields: [post_id], references: [id])
+  post Post? @relation(fields: [post_id], references: [id], onDelete: SetNull)
   user User @relation(fields: [user_id], references: [id])
 }
 
@@ -318,7 +318,7 @@ model PostFavorite {
   created_at DateTime @default(now())
 
   @@id([post_id, user_id])
-  post Post @relation(fields: [post_id], references: [id])
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
   user User @relation(fields: [user_id], references: [id])
 }
 
@@ -328,6 +328,6 @@ model PostSave {
   created_at DateTime @default(now())
 
   @@id([post_id, user_id])
-  post Post @relation(fields: [post_id], references: [id])
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
   user User @relation(fields: [user_id], references: [id])
 }
