@@ -191,11 +191,76 @@ const deleteBusinessById: RequestHandler<
 	}
 };
 
+const followBusinessById: RequestHandler<
+	{ id: string },
+	{ message: string; data?: Business; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	const { id } = req.params;
+	try {
+		const business = await prisma.business.update({
+			where: { id },
+			data: {
+				followers: {
+					create: {
+						user_id: req.body.payload.id
+					}
+				},
+				follow_count: {
+					increment: 1
+				}
+			}
+		});
+		return res.status(200).json({ message: 'Success', data: business });
+	} catch (error) {
+		return res.status(500).json({ message: 'Error', error });
+	}
+};
+
+const unfollowBusinessById: RequestHandler<
+	{ id: string },
+	{ message: string; data?: Business; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	const { id } = req.params;
+	try {
+		const business = await prisma.business.update({
+			where: { id },
+			data: {
+				followers: {
+					delete: {
+						business_id_user_id: {
+							business_id: id,
+							user_id: req.body.payload.id
+						}
+					}
+				},
+				follow_count: {
+					increment: -1
+				}
+			}
+		});
+		return res.status(200).json({ message: 'Success', data: business });
+	} catch (error) {
+		return res.status(500).json({ message: 'Error', error });
+	}
+};
+
 export default {
 	countBusinesses,
 	getAllBusinesses,
 	createBusiness,
 	getBusinessById,
 	updateBusinessById,
-	deleteBusinessById
+	deleteBusinessById,
+	followBusinessById,
+	unfollowBusinessById
 };
