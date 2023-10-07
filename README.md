@@ -18,11 +18,9 @@ Note: remember to add your `.env ` before running
 * With Docker
 
 ```bash
-  docker build -t voucher-blog-api:main .
-  docker run -d -p 3000:3000 voucher-blog-api:main
+  docker-compose up --build
 ```
 
 ## Authors
 
-- [@namtotbung](https://github.com/namtotbung)
-
+- [@nguyen-hai-nam](https://github.com/nguyen-hai-nam)
