@@ -8,6 +8,7 @@ interface NearbyBusiness {
 	id: string;
 	name: string;
 	avatar_image_url: string;
+	address_name: string;
 	distance: number;
 	isFollowed: boolean;
 }
@@ -47,7 +48,7 @@ const getNewsfeed: RequestHandler<
 	const { page = 1, perPage = 10, originLng = 0, originLat = 0, radius = 2 } = req.query;
 	try {
 		const nearbyBusinesses = await prisma.$queryRawUnsafe<NearbyBusiness[]>(
-			'SELECT b.id, b.name, b.avatar_image_url, ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) AS distance, EXISTS(SELECT 1 FROM BusinessFollower bf WHERE bf.business_id = b.id AND bf.user_id = ?) AS isFollowed FROM Business b JOIN BusinessAddress ba ON b.address_id = ba.id WHERE ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) <= ?',
+			'SELECT b.id, b.name, b.avatar_image_url, ba.name AS address_name, ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) AS distance, EXISTS(SELECT 1 FROM BusinessFollower bf WHERE bf.business_id = b.id AND bf.user_id = ?) AS isFollowed FROM Business b JOIN BusinessAddress ba ON b.address_id = ba.id WHERE ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) <= ?',
 			originLat,
 			originLng,
 			req.body.payload.id,
@@ -132,9 +133,6 @@ const getUnfollowedNearbyBusinesses: RequestHandler<
 			req.body.payload.id,
 			count
 		);
-
-		console.log(unfollowedNearbyBusinesses);
-
 		return res
 			.status(200)
 			.json({ message: 'Success', count: unfollowedNearbyBusinesses.length, data: unfollowedNearbyBusinesses });
