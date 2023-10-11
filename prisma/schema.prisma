@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
@@ -64,7 +65,7 @@ model User {
   business_customers BusinessCustomer[]
   business_followers BusinessFollower[]
   business_ratings BusinessRating[]
-  voucher_customers VoucherCustomer[]
+  collectedVouchers VoucherCustomer[]
   post_comments PostComment[]
   post_favorites PostFavorite[]
   post_saves PostSave[]

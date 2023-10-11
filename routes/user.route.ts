@@ -15,5 +15,7 @@ router.get('/', isAdmin, UserController.getAllUsers);
 router.get('/:id', isAuth, UserController.getUserById);
 router.patch('/:id', isAuth, UserController.updateUserById);
 router.delete('/:id', isAdmin, UserController.deleteUserById);
+router.get('/:userId/vouchers', isAdmin, UserController.getAllCollectedVouchers);
+router.post('/:userId/vouchers/collect/:voucherId', isAdmin, UserController.collectVoucher);
 
 export default router;
