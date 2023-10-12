@@ -18,7 +18,7 @@ Note: remember to add your `.env ` before running
 * With Docker
 
 ```bash
-  docker-compose up --build
+  docker-compose up
 ```
 
 ## Authors
