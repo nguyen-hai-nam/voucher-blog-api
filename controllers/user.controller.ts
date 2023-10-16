@@ -83,14 +83,17 @@ const updateUserById: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const user = await prisma.user.update({
+		const existingUser = await prisma.user.findUnique({
+			where: { id }
+		});
+		if (!existingUser) {
+			return res.status(404).json({ message: 'User not found' });
+		}
+		const updatedUser = await prisma.user.update({
 			where: { id },
 			data: updateData
 		});
-		if (!user) {
-			return res.status(404).json({ message: 'User not found' });
-		}
-		return res.status(200).json({ message: 'Success', data: { user } });
+		return res.status(200).json({ message: 'Success', data: updatedUser });
 	} catch (error) {
 		return res.status(500).json({ message: 'Error', error });
 	}
@@ -107,13 +110,16 @@ const deleteUserById: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const user = await prisma.user.delete({
+		const existingUser = await prisma.user.findUnique({
 			where: { id }
 		});
-		if (!user) {
+		if (!existingUser) {
 			return res.status(404).json({ message: 'User not found' });
 		}
-		return res.status(200).json({ message: 'Success', data: user });
+		const deletedUser = await prisma.user.delete({
+			where: { id }
+		});
+		return res.status(200).json({ message: 'Success', data: deletedUser });
 	} catch (error) {
 		return res.status(500).json({ message: 'Error', error });
 	}
