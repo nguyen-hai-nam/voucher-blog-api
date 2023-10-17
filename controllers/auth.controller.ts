@@ -1,16 +1,12 @@
-import 'dotenv/config';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import validator from 'validator';
 import { RequestHandler } from 'express';
+import { User } from '@prisma/client';
 
 import prisma from '../config/prisma';
 import { Payload } from '../interfaces/payload';
-import { User } from '@prisma/client';
-
-const generateToken = (payload: Payload) => {
-	return jwt.sign({ id: payload.id, is_admin: payload.is_admin }, process.env.TOKEN_SECRET || 'secret');
-};
+import { generateAccessToken } from '../helpers/auth/jwt';
+import { comparePasswords, hashPassword } from '../helpers/auth/password';
+import { saltRounds } from '../constants/auth.constant';
+import { isEmail, isVietnamPhoneNumber } from '../helpers/validators';
 
 const register: RequestHandler<
 	{},
@@ -21,9 +17,9 @@ const register: RequestHandler<
 	const { email, phoneNumber, password } = req.body;
 	if (!((email || phoneNumber) && password)) {
 		return res.status(400).json({ message: 'Missing information', error: 'Missing information' });
-	} else if (email && !validator.isEmail(email)) {
+	} else if (email && !isEmail(email)) {
 		return res.status(400).json({ message: 'Invalid email', error: 'Invalid email' });
-	} else if (phoneNumber && !validator.isMobilePhone(phoneNumber, 'vi-VN')) {
+	} else if (phoneNumber && !isVietnamPhoneNumber(phoneNumber)) {
 		return res.status(400).json({ message: 'Invalid phone number', error: 'Invalid phone number' });
 	}
 	try {
@@ -45,8 +41,7 @@ const register: RequestHandler<
 				return res.status(400).json({ message: 'Phone number is already in use' });
 			}
 		}
-		const saltRounds = 10;
-		const hashedPassword = await bcrypt.hash(password, saltRounds);
+		const hashedPassword = await hashPassword(password, saltRounds);
 		const newUser = await prisma.user.create({
 			data: {
 				password: hashedPassword
@@ -68,7 +63,9 @@ const register: RequestHandler<
 				}
 			});
 		}
-		return res.status(201).json({ message: 'Register successfully', token: generateToken(newUser), data: newUser });
+		return res
+			.status(201)
+			.json({ message: 'Register successfully', token: generateAccessToken(newUser), data: newUser });
 	} catch (error) {
 		return res.status(500).json({
 			message: 'An error occurred while registering',
@@ -115,11 +112,11 @@ const login: RequestHandler<
 		if (!user) {
 			return res.status(401).json({ message: 'Incorrect information', error: 'Incorrect information' });
 		}
-		const isValid = await bcrypt.compare(password, user.password);
+		const isValid = await comparePasswords(password, user.password);
 		if (!isValid) {
 			return res.status(401).json({ message: 'Incorrect information', error: 'Incorrect information' });
 		}
-		const token = generateToken(user);
+		const token = generateAccessToken(user);
 		return res.status(200).json({
 			message: 'Log in successfully',
 			token
@@ -147,12 +144,11 @@ const changePassword: RequestHandler<
 		if (!user) {
 			return res.status(404).json({ message: 'User not found', error: 'User not found' });
 		}
-		const isValid = await bcrypt.compare(oldPassword, user.password);
+		const isValid = await comparePasswords(oldPassword, user.password);
 		if (!isValid) {
 			return res.status(400).json({ message: 'Incorrect password', error: 'Incorrect password' });
 		}
-		const saltRounds = 10;
-		const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+		const hashedPassword = await hashPassword(newPassword, saltRounds);
 		await prisma.user.update({
 			where: {
 				id: payload.id
