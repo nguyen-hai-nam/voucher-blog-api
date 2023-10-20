@@ -2,27 +2,22 @@ import { RequestHandler } from 'express';
 
 import prisma from '../config/prisma';
 import { Payload } from '../interfaces/payload';
+import UserService from '../services/user.service';
 
 const countUsers: RequestHandler<
 	{},
 	{ message: string; data?: object; error?: unknown },
 	{ payload: Payload },
 	{ is_admin?: string }
-> = async (req, res) => {
+> = async (req, res, next) => {
 	if (!req.body.payload || !req.body.payload.is_admin) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const query = req.query;
-		const count = await prisma.user.count({
-			where: {
-				...query,
-				is_admin: query.is_admin === 'true' ? true : false
-			}
-		});
-		return res.status(200).json({ message: 'Success', data: { count } });
+		const result = await UserService.countUsers();
+		return res.status(200).json({ message: 'Success', data: { count: result } });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
@@ -31,41 +26,33 @@ const getAllUsers: RequestHandler<
 	{ message: string; page?: number; perPage?: number; data?: object; error?: unknown },
 	{ payload: Payload },
 	{ page?: number; perPage?: number }
-> = async (req, res) => {
+> = async (req, res, next) => {
 	const { page = 1, perPage = 10 } = req.query;
 	const skip = (page - 1) * perPage;
 	const take = perPage;
 	try {
-		const users = await prisma.user.findMany({
-			skip,
-			take
-		});
+		const users = await UserService.getAllUsers(skip, take);
 		return res.status(200).json({ message: 'Success', page, perPage, data: users });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
 const getUserById: RequestHandler<
 	{ id: string },
-	{ message: string; data?: object; error?: unknown },
+	{ message: string; data?: object | null; error?: unknown },
 	{ payload: Payload },
 	{}
-> = async (req, res) => {
+> = async (req, res, next) => {
 	const { id } = req.params;
 	if (id !== req.body.payload.id && !req.body.payload.is_admin) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const user = await prisma.user.findUnique({
-			where: { id }
-		});
-		if (!user) {
-			return res.status(404).json({ message: 'User not found' });
-		}
+		const user = await UserService.getUserById(id);
 		return res.status(200).json({ message: 'Success', data: user });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
@@ -74,7 +61,7 @@ const updateUserById: RequestHandler<
 	{ message: string; data?: object; error?: unknown },
 	{ payload: Payload; data: object },
 	{}
-> = async (req, res) => {
+> = async (req, res, next) => {
 	const { id } = req.params;
 	const updateData = req.body.data;
 	if (!updateData) {
@@ -83,19 +70,10 @@ const updateUserById: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const existingUser = await prisma.user.findUnique({
-			where: { id }
-		});
-		if (!existingUser) {
-			return res.status(404).json({ message: 'User not found' });
-		}
-		const updatedUser = await prisma.user.update({
-			where: { id },
-			data: updateData
-		});
-		return res.status(200).json({ message: 'Success', data: updatedUser });
+		const result = await UserService.updateUserById(id, updateData);
+		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
@@ -104,24 +82,16 @@ const deleteUserById: RequestHandler<
 	{ message: string; data?: object; error?: unknown },
 	{ payload: Payload },
 	{}
-> = async (req, res) => {
+> = async (req, res, next) => {
 	const { id } = req.params;
 	if (!req.body.payload) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const existingUser = await prisma.user.findUnique({
-			where: { id }
-		});
-		if (!existingUser) {
-			return res.status(404).json({ message: 'User not found' });
-		}
-		const deletedUser = await prisma.user.delete({
-			where: { id }
-		});
-		return res.status(200).json({ message: 'Success', data: deletedUser });
+		const result = await UserService.deleteUserById(id);
+		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
