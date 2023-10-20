@@ -7,6 +7,9 @@ import { isEmail, isVietnamPhoneNumber } from '../helpers/validators';
 import { generateAccessToken } from '../helpers/auth/jwt';
 
 const registerWithEmail = async (email: string, password: string) => {
+	if (!isEmail(email)) {
+		throw createHttpError(400, 'Invalid email');
+	}
 	const existingEmail = await prisma.userEmail.findUnique({
 		where: { id: email }
 	});
@@ -16,13 +19,24 @@ const registerWithEmail = async (email: string, password: string) => {
 	const hashedPassword = await hashPassword(password, saltRounds);
 	const newUser = await prisma.user.create({
 		data: {
-			password: hashedPassword
+			password: hashedPassword,
+			email: {
+				create: {
+					id: email
+				}
+			}
 		}
 	});
-	return newUser;
+	if (!newUser) {
+		throw createHttpError(500, 'Fail to register');
+	}
+	return generateAccessToken(newUser);
 };
 
 const registerWithPhoneNumber = async (phoneNumber: string, password: string) => {
+	if (!isVietnamPhoneNumber(phoneNumber)) {
+		throw createHttpError(400, 'Invalid phone number');
+	}
 	const existingPhoneNumber = await prisma.userPhoneNumber.findUnique({
 		where: { id: phoneNumber }
 	});
@@ -32,10 +46,15 @@ const registerWithPhoneNumber = async (phoneNumber: string, password: string) =>
 	const hashedPassword = await hashPassword(password, saltRounds);
 	const newUser = await prisma.user.create({
 		data: {
-			password: hashedPassword
+			password: hashedPassword,
+			phone_number: {
+				create: {
+					id: phoneNumber
+				}
+			}
 		}
 	});
-	return newUser;
+	return generateAccessToken(newUser);
 };
 
 const loginWithEmail = async (email: string, password: string) => {
