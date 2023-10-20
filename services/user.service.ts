@@ -2,14 +2,14 @@ import { Prisma } from '@prisma/client';
 
 import prisma from '../config/prisma';
 
-const countUsers = async (query: Prisma.UserWhereInput) => {
+const countUsers = async (query?: Prisma.UserWhereInput) => {
 	const count = await prisma.user.count({
 		where: { ...query }
 	});
 	return count;
 };
 
-const getAllUsers = async (query: Prisma.UserWhereInput) => {
+const getAllUsers = async (skip: number, take: number, query?: Prisma.UserWhereInput) => {
 	const users = await prisma.user.findMany({
 		where: { ...query }
 	});
@@ -17,7 +17,7 @@ const getAllUsers = async (query: Prisma.UserWhereInput) => {
 };
 
 const getUserById = async (id: string) => {
-	const user = await prisma.user.findUnique({
+	const user = await prisma.user.findUniqueOrThrow({
 		where: { id }
 	});
 	return user;
