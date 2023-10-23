@@ -1,43 +1,41 @@
 import { RequestHandler } from 'express';
+import { Business, Prisma } from '@prisma/client';
 
 import prisma from '../config/prisma';
 import { Payload } from '../interfaces/payload';
-import { Business, Prisma } from '@prisma/client';
+import BusinessService from '../services/business.service';
 
 const countBusinesses: RequestHandler<
 	{},
-	{ message: string; data?: number; error?: unknown },
+	{ message: string; data?: object; error?: unknown },
 	{ payload: Payload },
 	{ page?: number; perPage?: number }
-> = async (req, res) => {
+> = async (req, res, next) => {
 	if (!req.body.payload) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const count = await prisma.business.count();
-		return res.status(200).json({ message: 'Success', data: count });
+		const result = await BusinessService.countBusinesses();
+		return res.status(200).json({ message: 'Success', data: { count: result } });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
 const getAllBusinesses: RequestHandler<
 	{},
-	{ message: string; page?: number; perPage?: number; data?: Business[]; error?: unknown },
+	{ message: string; page?: string; perPage?: string; data?: Business[]; error?: unknown },
 	{ payload: Payload },
-	{ page?: number; perPage?: number }
+	{ page?: string; perPage?: string }
 > = async (req, res) => {
 	if (!req.body.payload) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
-	const { page = 1, perPage = 100 } = req.query;
-	const skip = (page - 1) * perPage;
-	const take = perPage;
+	const { page = '1', perPage = '100' } = req.query;
+	const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
+	const take = parseInt(perPage, 10);
 	try {
-		const businesses = await prisma.business.findMany({
-			skip,
-			take
-		});
+		const businesses = await BusinessService.getAllBusinesses(skip, take);
 		return res.status(200).json({ message: 'Success', page, perPage, data: businesses });
 	} catch (error) {
 		return res.status(500).json({ message: 'Error', error });
@@ -47,83 +45,48 @@ const getAllBusinesses: RequestHandler<
 const createBusiness: RequestHandler<
 	{},
 	{ message: string; data?: Business; error?: unknown },
-	{
-		payload: Payload;
-		data: Prisma.BusinessUncheckedCreateInput &
-			Prisma.BusinessCreateInput & { category_id?: string } & {
-				address: Prisma.BusinessAddressCreateInput;
-			} & {
-				timetable: Prisma.BusinessTimetableCreateInput;
-			} & {
-				managers: Prisma.BusinessManagerCreateInput[];
-			};
-	},
+	{ payload: Payload; data: Prisma.BusinessCreateInput },
 	{ page?: number; perPage?: number }
-> = async (req, res) => {
-	const {
-		category_id,
-		name,
-		description,
-		avatar_image_url,
-		email,
-		phone_number,
-		website,
-		address = {},
-		timetable = {},
-		lowest_price,
-		highest_price
-	} = req.body.data;
+> = async (req, res, next) => {
 	try {
-		const business = await prisma.business.create({
-			data: {
-				category: {
-					connect: {
-						id: category_id
-					}
-				},
-				name,
-				description,
-				avatar_image_url,
-				email,
-				phone_number,
-				website,
-				address: {
-					create: {
-						name: address.name,
-						lat: address.lat,
-						lng: address.lng
-					}
-				},
-				timetable: {
-					create: {
-						mon_opens_at: timetable.mon_opens_at,
-						mon_closes_at: timetable.mon_closes_at,
-						tue_opens_at: timetable.tue_opens_at,
-						tue_closes_at: timetable.tue_closes_at,
-						wed_opens_at: timetable.wed_opens_at,
-						wed_closes_at: timetable.wed_closes_at,
-						thu_opens_at: timetable.thu_opens_at,
-						thu_closes_at: timetable.thu_closes_at,
-						fri_opens_at: timetable.fri_opens_at,
-						fri_closes_at: timetable.fri_closes_at,
-						sat_opens_at: timetable.sat_opens_at,
-						sat_closes_at: timetable.sat_closes_at,
-						sun_opens_at: timetable.sat_opens_at,
-						sun_closes_at: timetable.sat_closes_at
-					}
-				},
-				lowest_price,
-				highest_price,
-				managers: {
-					create: {
-						user_id: req.body.payload.id
-					}
-				}
-			}
-		});
+		const business = await BusinessService.createBusiness(req.body.data);
 		return res.status(201).json({ message: 'Success', data: business });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
+	}
+};
+
+const createBusinessAddress: RequestHandler<
+	{ business_id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload; data: Prisma.BusinessAddressCreateInput },
+	{}
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	try {
+		const result = await BusinessService.createBusinessAddress(req.params.business_id, req.body.data);
+		return res.status(201).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const createBusinessTimetable: RequestHandler<
+	{ business_id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload; data: Prisma.BusinessTimetableCreateInput },
+	{}
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	try {
+		const result = await BusinessService.createBusinessTimetable(req.params.business_id, req.body.data);
+		return res.status(201).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
 	}
 };
 
@@ -131,63 +94,93 @@ const getBusinessById: RequestHandler<
 	{ id: string },
 	{ message: string; data?: Business; error?: unknown },
 	{ payload: Payload },
-	{}
-> = async (req, res) => {
+	{ address: string; timetable: string }
+> = async (req, res, next) => {
 	if (!req.body.payload) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	const { id } = req.params;
+	const query = {
+		address: req.query.address === 'true',
+		timetable: req.query.timetable === 'true'
+	};
 	try {
-		const business = await prisma.business.findUnique({
-			where: { id }
-		});
-		if (!business) {
-			return res.status(404).json({ message: 'Not found' });
-		}
+		const business = await BusinessService.getBusinessById(id, query);
 		return res.status(200).json({ message: 'Success', data: business });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
 const updateBusinessById: RequestHandler<
 	{ id: string },
-	{ message: string; data?: Business; error?: unknown },
+	{ message: string; data?: { id: string }; error?: unknown },
 	{ payload: Payload; data: Prisma.BusinessUpdateInput },
 	{}
-> = async (req, res) => {
+> = async (req, res, next) => {
 	if (!req.body.payload) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	const { id } = req.params;
 	try {
-		const business = await prisma.business.update({
-			where: { id },
-			data: req.body.data
-		});
+		const business = await BusinessService.updateBusinessById(id, req.body.data);
 		return res.status(200).json({ message: 'Success', data: business });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
+	}
+};
+
+const updateBusinessAddressById: RequestHandler<
+	{ business_id: string; address_id: string },
+	{ message: string; data?: { id: string }; error?: unknown },
+	{ payload: Payload; data: Prisma.BusinessAddressUpdateInput },
+	{}
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	const { business_id, address_id } = req.params;
+	try {
+		const business = await BusinessService.updateBusinessAddressById(business_id, address_id, req.body.data);
+		return res.status(200).json({ message: 'Success', data: business });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const updateBusinessTimetableById: RequestHandler<
+	{ id: string },
+	{ message: string; data?: { id: string }; error?: unknown },
+	{ payload: Payload; data: Prisma.BusinessTimetableUpdateInput },
+	{}
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	const { id } = req.params;
+	try {
+		const business = await BusinessService.updateBusinessTimetableById(id, req.body.data);
+		return res.status(200).json({ message: 'Success', data: business });
+	} catch (error) {
+		next(error);
 	}
 };
 
 const deleteBusinessById: RequestHandler<
 	{ id: string },
-	{ message: string; data?: Business; error?: unknown },
+	{ message: string; data?: { id: string }; error?: unknown },
 	{ payload: Payload },
 	{}
-> = async (req, res) => {
+> = async (req, res, next) => {
 	if (!req.body.payload) {
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	const { id } = req.params;
 	try {
-		const business = await prisma.business.delete({
-			where: { id }
-		});
+		const business = await BusinessService.deleteBusinessById(id);
 		return res.status(200).json({ message: 'Success', data: business });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
@@ -258,8 +251,12 @@ export default {
 	countBusinesses,
 	getAllBusinesses,
 	createBusiness,
+	createBusinessAddress,
+	createBusinessTimetable,
 	getBusinessById,
 	updateBusinessById,
+	updateBusinessAddressById,
+	updateBusinessTimetableById,
 	deleteBusinessById,
 	followBusinessById,
 	unfollowBusinessById
