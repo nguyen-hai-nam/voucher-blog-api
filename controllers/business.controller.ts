@@ -22,6 +22,57 @@ const countBusinesses: RequestHandler<
 	}
 };
 
+const countProducts: RequestHandler<
+	{ business_id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{ page?: number; perPage?: number }
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	try {
+		const result = await BusinessService.countProducts(req.params.business_id);
+		return res.status(200).json({ message: 'Success', data: { count: result } });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const countVouchers: RequestHandler<
+	{ business_id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{ page?: number; perPage?: number }
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	try {
+		const result = await BusinessService.countVouchers(req.params.business_id);
+		return res.status(200).json({ message: 'Success', data: { count: result } });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const countPosts: RequestHandler<
+	{ business_id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{ page?: number; perPage?: number }
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	try {
+		const result = await BusinessService.countPosts(req.params.business_id);
+		return res.status(200).json({ message: 'Success', data: { count: result } });
+	} catch (error) {
+		next(error);
+	}
+};
+
 const getAllBusinesses: RequestHandler<
 	{},
 	{ message: string; page?: string; perPage?: string; data?: Business[]; error?: unknown },
@@ -39,6 +90,66 @@ const getAllBusinesses: RequestHandler<
 		return res.status(200).json({ message: 'Success', page, perPage, data: businesses });
 	} catch (error) {
 		return res.status(500).json({ message: 'Error', error });
+	}
+};
+
+const getAllProducts: RequestHandler<
+	{ business_id: string },
+	{ message: string; page?: string; perPage?: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{ page?: string; perPage?: string }
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	const { page = '1', perPage = '100' } = req.query;
+	const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
+	const take = parseInt(perPage, 10);
+	try {
+		const products = await BusinessService.getAllProducts(req.params.business_id, skip, take);
+		return res.status(200).json({ message: 'Success', page, perPage, data: products });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const getAllVouchers: RequestHandler<
+	{ business_id: string },
+	{ message: string; page?: string; perPage?: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{ page?: string; perPage?: string }
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	const { page = '1', perPage = '100' } = req.query;
+	const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
+	const take = parseInt(perPage, 10);
+	try {
+		const products = await BusinessService.getAllVouchers(req.params.business_id, skip, take);
+		return res.status(200).json({ message: 'Success', page, perPage, data: products });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const getAllPosts: RequestHandler<
+	{ business_id: string },
+	{ message: string; page?: string; perPage?: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{ page?: string; perPage?: string }
+> = async (req, res, next) => {
+	if (!req.body.payload) {
+		return res.status(401).json({ message: 'Unauthorized' });
+	}
+	const { page = '1', perPage = '100' } = req.query;
+	const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
+	const take = parseInt(perPage, 10);
+	try {
+		const products = await BusinessService.getAllPosts(req.params.business_id, skip, take);
+		return res.status(200).json({ message: 'Success', page, perPage, data: products });
+	} catch (error) {
+		next(error);
 	}
 };
 
@@ -90,6 +201,48 @@ const createBusinessTimetable: RequestHandler<
 	}
 };
 
+const createProduct: RequestHandler<
+	{ business_id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload; data: Prisma.ProductCreateInput },
+	{}
+> = async (req, res, next) => {
+	try {
+		const result = await BusinessService.createProduct(req.params.business_id, req.body.data);
+		return res.status(201).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const createVoucher: RequestHandler<
+	{ business_id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload; data: Prisma.VoucherCreateInput },
+	{}
+> = async (req, res, next) => {
+	try {
+		const result = await BusinessService.createVoucher(req.params.business_id, req.body.data);
+		return res.status(201).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const createPost: RequestHandler<
+	{ business_id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload; data: Prisma.PostCreateInput },
+	{}
+> = async (req, res, next) => {
+	try {
+		const result = await BusinessService.createPost(req.params.business_id, req.body.data);
+		return res.status(201).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
 const getBusinessById: RequestHandler<
 	{ id: string },
 	{ message: string; data?: Business; error?: unknown },
@@ -107,6 +260,51 @@ const getBusinessById: RequestHandler<
 	try {
 		const business = await BusinessService.getBusinessById(id, query);
 		return res.status(200).json({ message: 'Success', data: business });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const getProductById: RequestHandler<
+	{ business_id: string; id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	const { business_id, id } = req.params;
+	try {
+		const result = await BusinessService.getProductById(business_id, id);
+		return res.status(200).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const getVoucherById: RequestHandler<
+	{ business_id: string; id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	const { business_id, id } = req.params;
+	try {
+		const result = await BusinessService.getVoucherById(business_id, id);
+		return res.status(200).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const getPostById: RequestHandler<
+	{ business_id: string; id: string },
+	{ message: string; data?: object; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	const { business_id, id } = req.params;
+	try {
+		const result = await BusinessService.getPostById(business_id, id);
+		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
 	}
@@ -166,6 +364,51 @@ const updateBusinessTimetableById: RequestHandler<
 	}
 };
 
+const updateProductById: RequestHandler<
+	{ business_id: string; id: string },
+	{ message: string; data?: { id: string }; error?: unknown },
+	{ payload: Payload; data: Prisma.ProductUpdateInput },
+	{}
+> = async (req, res, next) => {
+	const { business_id, id } = req.params;
+	try {
+		const result = await BusinessService.updateProductById(business_id, id, req.body.data);
+		return res.status(200).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const updateVoucherById: RequestHandler<
+	{ business_id: string; id: string },
+	{ message: string; data?: { id: string }; error?: unknown },
+	{ payload: Payload; data: Prisma.VoucherUpdateInput },
+	{}
+> = async (req, res, next) => {
+	const { business_id, id } = req.params;
+	try {
+		const result = await BusinessService.updateVoucherById(business_id, id, req.body.data);
+		return res.status(200).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const updatePostById: RequestHandler<
+	{ business_id: string; id: string },
+	{ message: string; data?: { id: string }; error?: unknown },
+	{ payload: Payload; data: Prisma.PostUpdateInput },
+	{}
+> = async (req, res, next) => {
+	const { business_id, id } = req.params;
+	try {
+		const result = await BusinessService.updatePostById(business_id, id, req.body.data);
+		return res.status(200).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
 const deleteBusinessById: RequestHandler<
 	{ id: string },
 	{ message: string; data?: { id: string }; error?: unknown },
@@ -179,6 +422,51 @@ const deleteBusinessById: RequestHandler<
 	try {
 		const business = await BusinessService.deleteBusinessById(id);
 		return res.status(200).json({ message: 'Success', data: business });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const deleteProductById: RequestHandler<
+	{ business_id: string; id: string },
+	{ message: string; data?: { id: string }; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	const { business_id, id } = req.params;
+	try {
+		const result = await BusinessService.deleteProductById(business_id, id);
+		return res.status(200).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const deleteVoucherById: RequestHandler<
+	{ business_id: string; id: string },
+	{ message: string; data?: { id: string }; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	const { business_id, id } = req.params;
+	try {
+		const result = await BusinessService.deleteVoucherById(business_id, id);
+		return res.status(200).json({ message: 'Success', data: result });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const deletePostById: RequestHandler<
+	{ business_id: string; id: string },
+	{ message: string; data?: { id: string }; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	const { business_id, id } = req.params;
+	try {
+		const result = await BusinessService.deletePostById(business_id, id);
+		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
 	}
@@ -249,15 +537,33 @@ const unfollowBusinessById: RequestHandler<
 
 export default {
 	countBusinesses,
+	countProducts,
+	countVouchers,
+	countPosts,
 	getAllBusinesses,
+	getAllProducts,
+	getAllVouchers,
+	getAllPosts,
 	createBusiness,
 	createBusinessAddress,
 	createBusinessTimetable,
+	createProduct,
+	createVoucher,
+	createPost,
 	getBusinessById,
+	getProductById,
+	getVoucherById,
+	getPostById,
 	updateBusinessById,
 	updateBusinessAddressById,
 	updateBusinessTimetableById,
+	updateProductById,
+	updateVoucherById,
+	updatePostById,
 	deleteBusinessById,
+	deleteProductById,
+	deleteVoucherById,
+	deletePostById,
 	followBusinessById,
 	unfollowBusinessById
 };
