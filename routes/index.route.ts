@@ -15,7 +15,7 @@ router.use('/businesses', BusinessRouter);
 router.use('/products', ProductRouter);
 router.use('/vouchers', VoucherRouter);
 router.use('/posts', PostRouter);
-router.use('/feed', FeedRouter);
+router.use('/newsfeed', FeedRouter);
 router.use((req, res) => {
 	res.status(404).json({ message: 'Page Not Found' });
 });
