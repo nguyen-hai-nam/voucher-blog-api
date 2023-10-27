@@ -1,6 +1,6 @@
 import express from 'express';
 
-import FeedController from '../controllers/feed.controller';
+import FeedController from '../controllers/newsfeed.controller';
 import { isAuth } from '../middlewares/auth.middleware';
 
 const router = express.Router();

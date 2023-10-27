@@ -5,7 +5,7 @@ import BusinessRouter from './business.route';
 import ProductRouter from './product.route';
 import VoucherRouter from './voucher.route';
 import PostRouter from './post.route';
-import FeedRouter from './feed.route';
+import FeedRouter from './newsfeed.route';
 
 const router = express.Router();
 
