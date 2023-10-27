@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 
 import prisma from '../config/prisma';
 import { Payload } from '../interfaces/payload';
-import UserService from '../services/user.service';
+import userService from '../services/user.service';
 
 const countUsers: RequestHandler<
 	{},
@@ -14,7 +14,7 @@ const countUsers: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const result = await UserService.countUsers();
+		const result = await userService.countUsers();
 		return res.status(200).json({ message: 'Success', data: { count: result } });
 	} catch (error) {
 		next(error);
@@ -31,7 +31,7 @@ const getAllUsers: RequestHandler<
 	const skip = (page - 1) * perPage;
 	const take = perPage;
 	try {
-		const users = await UserService.getAllUsers(skip, take);
+		const users = await userService.getAllUsers(skip, take);
 		return res.status(200).json({ message: 'Success', page, perPage, data: users });
 	} catch (error) {
 		next(error);
@@ -49,7 +49,7 @@ const getUserById: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const user = await UserService.getUserById(id);
+		const user = await userService.getUserById(id);
 		return res.status(200).json({ message: 'Success', data: user });
 	} catch (error) {
 		next(error);
@@ -70,7 +70,7 @@ const updateUserById: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const result = await UserService.updateUserById(id, updateData);
+		const result = await userService.updateUserById(id, updateData);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -88,7 +88,7 @@ const deleteUserById: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const result = await UserService.deleteUserById(id);
+		const result = await userService.deleteUserById(id);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);

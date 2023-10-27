@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { User } from '@prisma/client';
 
 import { Payload } from '../interfaces/payload';
-import AuthService from '../services/auth.service';
+import authService from '../services/auth.service';
 
 const register: RequestHandler<
 	{},
@@ -17,9 +17,9 @@ const register: RequestHandler<
 	try {
 		let token;
 		if (email) {
-			token = await AuthService.registerWithEmail(email, password);
+			token = await authService.registerWithEmail(email, password);
 		} else if (phoneNumber) {
-			token = await AuthService.registerWithPhoneNumber(phoneNumber, password);
+			token = await authService.registerWithPhoneNumber(phoneNumber, password);
 		}
 		return res.status(201).json({
 			message: 'Success',
@@ -43,9 +43,9 @@ const login: RequestHandler<
 	try {
 		let token;
 		if (email) {
-			token = await AuthService.loginWithEmail(email, password);
+			token = await authService.loginWithEmail(email, password);
 		} else if (phoneNumber) {
-			token = await AuthService.loginWithPhoneNumber(phoneNumber, password);
+			token = await authService.loginWithPhoneNumber(phoneNumber, password);
 		}
 		return res.status(200).json({
 			message: 'Success',
@@ -65,7 +65,7 @@ const changePassword: RequestHandler<
 > = async (req, res, next) => {
 	const { payload, oldPassword, newPassword } = req.body;
 	try {
-		await AuthService.changePassword(payload.id, oldPassword, newPassword);
+		await authService.changePassword(payload.id, oldPassword, newPassword);
 		return res.status(200).json({ message: 'Success' });
 	} catch (error) {
 		next(error);

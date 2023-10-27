@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 
 import { Payload } from '../interfaces/payload';
-import NewsfeedService from '../services/newsfeed.service';
+import newsfeedService from '../services/newsfeed.service';
 
 const getNewsfeed: RequestHandler<
 	{ user_id: string; address_id: string },
@@ -10,7 +10,7 @@ const getNewsfeed: RequestHandler<
 	{ radius?: string }
 > = async (req, res, next) => {
 	try {
-		const result = await NewsfeedService.getNewsfeed(
+		const result = await newsfeedService.getNewsfeed(
 			req.params.user_id,
 			req.params.address_id,
 			parseInt(req.query.radius as string)
@@ -28,7 +28,7 @@ const getBusinessSuggestion: RequestHandler<
 	{ radius?: string }
 > = async (req, res, next) => {
 	try {
-		const result = await NewsfeedService.getBusinessSuggestion(
+		const result = await newsfeedService.getBusinessSuggestion(
 			req.params.user_id,
 			req.params.address_id,
 			parseInt(req.query.radius as string)

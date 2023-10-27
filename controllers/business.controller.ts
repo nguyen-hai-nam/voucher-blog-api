@@ -3,7 +3,7 @@ import { Business, Prisma } from '@prisma/client';
 
 import prisma from '../config/prisma';
 import { Payload } from '../interfaces/payload';
-import BusinessService from '../services/business.service';
+import businessService from '../services/business.service';
 
 const countBusinesses: RequestHandler<
 	{},
@@ -15,7 +15,7 @@ const countBusinesses: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const result = await BusinessService.countBusinesses();
+		const result = await businessService.countBusinesses();
 		return res.status(200).json({ message: 'Success', data: { count: result } });
 	} catch (error) {
 		next(error);
@@ -32,7 +32,7 @@ const countProducts: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const result = await BusinessService.countProducts(req.params.business_id);
+		const result = await businessService.countProducts(req.params.business_id);
 		return res.status(200).json({ message: 'Success', data: { count: result } });
 	} catch (error) {
 		next(error);
@@ -49,7 +49,7 @@ const countVouchers: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const result = await BusinessService.countVouchers(req.params.business_id);
+		const result = await businessService.countVouchers(req.params.business_id);
 		return res.status(200).json({ message: 'Success', data: { count: result } });
 	} catch (error) {
 		next(error);
@@ -66,7 +66,7 @@ const countPosts: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const result = await BusinessService.countPosts(req.params.business_id);
+		const result = await businessService.countPosts(req.params.business_id);
 		return res.status(200).json({ message: 'Success', data: { count: result } });
 	} catch (error) {
 		next(error);
@@ -86,7 +86,7 @@ const getAllBusinesses: RequestHandler<
 	const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
 	const take = parseInt(perPage, 10);
 	try {
-		const businesses = await BusinessService.getAllBusinesses(skip, take);
+		const businesses = await businessService.getAllBusinesses(skip, take);
 		return res.status(200).json({ message: 'Success', page, perPage, data: businesses });
 	} catch (error) {
 		return res.status(500).json({ message: 'Error', error });
@@ -106,7 +106,7 @@ const getAllProducts: RequestHandler<
 	const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
 	const take = parseInt(perPage, 10);
 	try {
-		const products = await BusinessService.getAllProducts(req.params.business_id, skip, take);
+		const products = await businessService.getAllProducts(req.params.business_id, skip, take);
 		return res.status(200).json({ message: 'Success', page, perPage, data: products });
 	} catch (error) {
 		next(error);
@@ -126,7 +126,7 @@ const getAllVouchers: RequestHandler<
 	const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
 	const take = parseInt(perPage, 10);
 	try {
-		const products = await BusinessService.getAllVouchers(req.params.business_id, skip, take);
+		const products = await businessService.getAllVouchers(req.params.business_id, skip, take);
 		return res.status(200).json({ message: 'Success', page, perPage, data: products });
 	} catch (error) {
 		next(error);
@@ -146,7 +146,7 @@ const getAllPosts: RequestHandler<
 	const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
 	const take = parseInt(perPage, 10);
 	try {
-		const products = await BusinessService.getAllPosts(req.params.business_id, skip, take);
+		const products = await businessService.getAllPosts(req.params.business_id, skip, take);
 		return res.status(200).json({ message: 'Success', page, perPage, data: products });
 	} catch (error) {
 		next(error);
@@ -160,7 +160,7 @@ const createBusiness: RequestHandler<
 	{ page?: number; perPage?: number }
 > = async (req, res, next) => {
 	try {
-		const business = await BusinessService.createBusiness(req.body.data);
+		const business = await businessService.createBusiness(req.body.data);
 		return res.status(201).json({ message: 'Success', data: business });
 	} catch (error) {
 		next(error);
@@ -177,7 +177,7 @@ const createBusinessAddress: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const result = await BusinessService.createBusinessAddress(req.params.business_id, req.body.data);
+		const result = await businessService.createBusinessAddress(req.params.business_id, req.body.data);
 		return res.status(201).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -194,7 +194,7 @@ const createBusinessTimetable: RequestHandler<
 		return res.status(401).json({ message: 'Unauthorized' });
 	}
 	try {
-		const result = await BusinessService.createBusinessTimetable(req.params.business_id, req.body.data);
+		const result = await businessService.createBusinessTimetable(req.params.business_id, req.body.data);
 		return res.status(201).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -208,7 +208,7 @@ const createProduct: RequestHandler<
 	{}
 > = async (req, res, next) => {
 	try {
-		const result = await BusinessService.createProduct(req.params.business_id, req.body.data);
+		const result = await businessService.createProduct(req.params.business_id, req.body.data);
 		return res.status(201).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -222,7 +222,7 @@ const createVoucher: RequestHandler<
 	{}
 > = async (req, res, next) => {
 	try {
-		const result = await BusinessService.createVoucher(req.params.business_id, req.body.data);
+		const result = await businessService.createVoucher(req.params.business_id, req.body.data);
 		return res.status(201).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -236,7 +236,7 @@ const createPost: RequestHandler<
 	{}
 > = async (req, res, next) => {
 	try {
-		const result = await BusinessService.createPost(req.params.business_id, req.body.data);
+		const result = await businessService.createPost(req.params.business_id, req.body.data);
 		return res.status(201).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -258,7 +258,7 @@ const getBusinessById: RequestHandler<
 		timetable: req.query.timetable === 'true'
 	};
 	try {
-		const business = await BusinessService.getBusinessById(id, query);
+		const business = await businessService.getBusinessById(id, query);
 		return res.status(200).json({ message: 'Success', data: business });
 	} catch (error) {
 		next(error);
@@ -273,7 +273,7 @@ const getProductById: RequestHandler<
 > = async (req, res, next) => {
 	const { business_id, id } = req.params;
 	try {
-		const result = await BusinessService.getProductById(business_id, id);
+		const result = await businessService.getProductById(business_id, id);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -288,7 +288,7 @@ const getVoucherById: RequestHandler<
 > = async (req, res, next) => {
 	const { business_id, id } = req.params;
 	try {
-		const result = await BusinessService.getVoucherById(business_id, id);
+		const result = await businessService.getVoucherById(business_id, id);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -303,7 +303,7 @@ const getPostById: RequestHandler<
 > = async (req, res, next) => {
 	const { business_id, id } = req.params;
 	try {
-		const result = await BusinessService.getPostById(business_id, id);
+		const result = await businessService.getPostById(business_id, id);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -321,7 +321,7 @@ const updateBusinessById: RequestHandler<
 	}
 	const { id } = req.params;
 	try {
-		const business = await BusinessService.updateBusinessById(id, req.body.data);
+		const business = await businessService.updateBusinessById(id, req.body.data);
 		return res.status(200).json({ message: 'Success', data: business });
 	} catch (error) {
 		next(error);
@@ -339,7 +339,7 @@ const updateBusinessAddressById: RequestHandler<
 	}
 	const { business_id, address_id } = req.params;
 	try {
-		const business = await BusinessService.updateBusinessAddressById(business_id, address_id, req.body.data);
+		const business = await businessService.updateBusinessAddressById(business_id, address_id, req.body.data);
 		return res.status(200).json({ message: 'Success', data: business });
 	} catch (error) {
 		next(error);
@@ -357,7 +357,7 @@ const updateBusinessTimetableById: RequestHandler<
 	}
 	const { id } = req.params;
 	try {
-		const business = await BusinessService.updateBusinessTimetableById(id, req.body.data);
+		const business = await businessService.updateBusinessTimetableById(id, req.body.data);
 		return res.status(200).json({ message: 'Success', data: business });
 	} catch (error) {
 		next(error);
@@ -372,7 +372,7 @@ const updateProductById: RequestHandler<
 > = async (req, res, next) => {
 	const { business_id, id } = req.params;
 	try {
-		const result = await BusinessService.updateProductById(business_id, id, req.body.data);
+		const result = await businessService.updateProductById(business_id, id, req.body.data);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -387,7 +387,7 @@ const updateVoucherById: RequestHandler<
 > = async (req, res, next) => {
 	const { business_id, id } = req.params;
 	try {
-		const result = await BusinessService.updateVoucherById(business_id, id, req.body.data);
+		const result = await businessService.updateVoucherById(business_id, id, req.body.data);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -402,7 +402,7 @@ const updatePostById: RequestHandler<
 > = async (req, res, next) => {
 	const { business_id, id } = req.params;
 	try {
-		const result = await BusinessService.updatePostById(business_id, id, req.body.data);
+		const result = await businessService.updatePostById(business_id, id, req.body.data);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -420,7 +420,7 @@ const deleteBusinessById: RequestHandler<
 	}
 	const { id } = req.params;
 	try {
-		const business = await BusinessService.deleteBusinessById(id);
+		const business = await businessService.deleteBusinessById(id);
 		return res.status(200).json({ message: 'Success', data: business });
 	} catch (error) {
 		next(error);
@@ -435,7 +435,7 @@ const deleteProductById: RequestHandler<
 > = async (req, res, next) => {
 	const { business_id, id } = req.params;
 	try {
-		const result = await BusinessService.deleteProductById(business_id, id);
+		const result = await businessService.deleteProductById(business_id, id);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -450,7 +450,7 @@ const deleteVoucherById: RequestHandler<
 > = async (req, res, next) => {
 	const { business_id, id } = req.params;
 	try {
-		const result = await BusinessService.deleteVoucherById(business_id, id);
+		const result = await businessService.deleteVoucherById(business_id, id);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);
@@ -465,7 +465,7 @@ const deletePostById: RequestHandler<
 > = async (req, res, next) => {
 	const { business_id, id } = req.params;
 	try {
-		const result = await BusinessService.deletePostById(business_id, id);
+		const result = await businessService.deletePostById(business_id, id);
 		return res.status(200).json({ message: 'Success', data: result });
 	} catch (error) {
 		next(error);

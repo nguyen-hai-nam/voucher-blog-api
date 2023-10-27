@@ -1,21 +1,21 @@
 import express from 'express';
-import AuthRouter from './auth.route';
-import UserRouter from './user.route';
-import BusinessRouter from './business.route';
-import ProductRouter from './product.route';
-import VoucherRouter from './voucher.route';
-import PostRouter from './post.route';
-import FeedRouter from './newsfeed.route';
+import authRouter from './auth.route';
+import userRouter from './user.route';
+import businessRouter from './business.route';
+import productRouter from './product.route';
+import voucherRouter from './voucher.route';
+import postRouter from './post.route';
+import newsfeedRouter from './newsfeed.route';
 
 const router = express.Router();
 
-router.use('/auth', AuthRouter);
-router.use('/users', UserRouter);
-router.use('/businesses', BusinessRouter);
-router.use('/products', ProductRouter);
-router.use('/vouchers', VoucherRouter);
-router.use('/posts', PostRouter);
-router.use('/newsfeed', FeedRouter);
+router.use('/auth', authRouter);
+router.use('/users', userRouter);
+router.use('/businesses', businessRouter);
+router.use('/products', productRouter);
+router.use('/vouchers', voucherRouter);
+router.use('/posts', postRouter);
+router.use('/newsfeed', newsfeedRouter);
 router.use((req, res) => {
 	res.status(404).json({ message: 'Page Not Found' });
 });

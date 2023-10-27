@@ -1,15 +1,15 @@
 import express from 'express';
 
-import VoucherController from '../controllers/voucher.controller';
+import voucherController from '../controllers/voucher.controller';
 import { isAuth } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
-router.get('/count', isAuth, VoucherController.countVouchers);
-router.get('/', isAuth, VoucherController.getAllVouchers);
-router.post('/', isAuth, VoucherController.createVoucher);
-router.get('/:id', isAuth, VoucherController.getVoucherById);
-router.patch('/:id', isAuth, VoucherController.updateVoucherById);
-router.delete('/:id', isAuth, VoucherController.deleteVoucherById);
+router.get('/count', isAuth, voucherController.countVouchers);
+router.get('/', isAuth, voucherController.getAllVouchers);
+router.post('/', isAuth, voucherController.createVoucher);
+router.get('/:id', isAuth, voucherController.getVoucherById);
+router.patch('/:id', isAuth, voucherController.updateVoucherById);
+router.delete('/:id', isAuth, voucherController.deleteVoucherById);
 
 export default router;
