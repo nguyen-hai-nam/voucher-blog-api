@@ -1,12 +1,12 @@
 import prisma from '../config/prisma';
-import { MetaData, NewsfeedItem } from '../interfaces/newsfeed';
+import { BusinessSuggestion, MetaData, NewsfeedItem } from '../interfaces/newsfeed';
 
 const getNewsfeed = async (user_id: string, address_id: string, radius: number) => {
 	const userAddress = await prisma.userAddress.findUniqueOrThrow({
 		where: { id: address_id, user_id }
 	});
 
-	const metaData: MetaData[] = await prisma.$queryRawUnsafe(
+	const metaData = await prisma.$queryRawUnsafe<MetaData[]>(
 		`
 		SELECT
 			b.id,
@@ -68,6 +68,45 @@ const getNewsfeed = async (user_id: string, address_id: string, radius: number) 
 	return newsfeed;
 };
 
+const getBusinessSuggestion = async (user_id: string, address_id: string, radius: number) => {
+	const userAddress = await prisma.userAddress.findUniqueOrThrow({
+		where: { id: address_id, user_id }
+	});
+
+	const businessSuggestion = await prisma.$queryRawUnsafe<BusinessSuggestion[]>(
+		`
+        SELECT
+            b.id,
+            b.name,
+            b.avatar_image_url,
+            ba.name AS address_name,
+            ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) AS distance
+        FROM
+            Business b
+            JOIN BusinessAddress ba ON b.address_id = ba.id
+        WHERE
+            ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) <= ?
+            AND NOT EXISTS (
+                SELECT 1
+                FROM BusinessFollower bf
+                WHERE bf.business_id = b.id
+                AND bf.user_id = ?
+            )
+        LIMIT ?;
+        `,
+		userAddress.lat,
+		userAddress.lng,
+		userAddress.lat,
+		userAddress.lng,
+		radius,
+		user_id,
+		5
+	);
+
+	return businessSuggestion;
+};
+
 export default {
-	getNewsfeed
+	getNewsfeed,
+	getBusinessSuggestion
 };

@@ -12,3 +12,11 @@ export interface MetaData {
 export interface NewsfeedItem extends Omit<Post, 'business_id'> {
 	meta: MetaData;
 }
+
+export interface BusinessSuggestion {
+	id: string;
+	name: string;
+	avatar_image_url: string;
+	address_name: string;
+	distance: number;
+}
