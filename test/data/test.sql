@@ -500,7 +500,7 @@ CREATE TABLE `UserAddress` (
 
 LOCK TABLES `UserAddress` WRITE;
 /*!40000 ALTER TABLE `UserAddress` DISABLE KEYS */;
-INSERT INTO `UserAddress` VALUES ('1ca16e4a-eec4-4347-8c76-bb52f16e7cb2','admin-1','Dai Co Viet, Hai Ba Trung, Ha Noi','OFFICE',100.01,100.01,'2023-09-28 09:26:35.378','2023-09-28 09:26:35.378'),('72e6281c-ab11-4983-b119-e0d2e6ae606a','admin-1','Dong Anh, Ha Noi','HOME',100.01,100.01,'2023-09-28 09:30:40.445','2023-09-28 09:30:40.445');
+INSERT INTO `UserAddress` VALUES ('1ca16e4a-eec4-4347-8c76-bb52f16e7cb2','admin-1','Dai Co Viet, Hai Ba Trung, Ha Noi','OFFICE',1.01,1.01,'2023-09-28 09:26:35.378','2023-09-28 09:26:35.378'),('72e6281c-ab11-4983-b119-e0d2e6ae606a','admin-1','Dong Anh, Ha Noi','HOME',1.01,1.01,'2023-09-28 09:30:40.445','2023-09-28 09:30:40.445');
 /*!40000 ALTER TABLE `UserAddress` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -649,32 +649,56 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`%` FUNCTION `CalculateDistance`(
-    lat1 DECIMAL(9,6),
-    lon1 DECIMAL(9,6),
-    lat2 DECIMAL(9,6),
-    lon2 DECIMAL(9,6)
+CREATE DEFINER=`root`@`%` FUNCTION `CalculateDistance`(
+
+    lat1 DECIMAL(9,6),
+
+    lon1 DECIMAL(9,6),
+
+    lat2 DECIMAL(9,6),
+
+    lon2 DECIMAL(9,6)
+
 ) RETURNS decimal(10,2)
     DETERMINISTIC
-BEGIN
-    DECLARE radlat1 DECIMAL(10,6);
-    DECLARE radlat2 DECIMAL(10,6);
-    DECLARE radlon1 DECIMAL(10,6);
-    DECLARE radlon2 DECIMAL(10,6);
-    DECLARE a DECIMAL(10,6);
-    DECLARE c DECIMAL(10,6);
-    DECLARE d DECIMAL(10,2);
-
-    SET radlat1 = RADIANS(lat1);
-    SET radlat2 = RADIANS(lat2);
-    SET radlon1 = RADIANS(lon1);
-    SET radlon2 = RADIANS(lon2);
-
-    SET a = SIN((radlat2 - radlat1) / 2) * SIN((radlat2 - radlat1) / 2) + COS(radlat1) * COS(radlat2) * SIN((radlon2 - radlon1) / 2) * SIN((radlon2 - radlon1) / 2);
-    SET c = 2 * ATAN2(SQRT(a), SQRT(1 - a));
-    SET d = 6371 * c; -- Earth's radius in kilometers
-
-    RETURN d;
+BEGIN
+
+    DECLARE radlat1 DECIMAL(10,6);
+
+    DECLARE radlat2 DECIMAL(10,6);
+
+    DECLARE radlon1 DECIMAL(10,6);
+
+    DECLARE radlon2 DECIMAL(10,6);
+
+    DECLARE a DECIMAL(10,6);
+
+    DECLARE c DECIMAL(10,6);
+
+    DECLARE d DECIMAL(10,2);
+
+
+
+    SET radlat1 = RADIANS(lat1);
+
+    SET radlat2 = RADIANS(lat2);
+
+    SET radlon1 = RADIANS(lon1);
+
+    SET radlon2 = RADIANS(lon2);
+
+
+
+    SET a = SIN((radlat2 - radlat1) / 2) * SIN((radlat2 - radlat1) / 2) + COS(radlat1) * COS(radlat2) * SIN((radlon2 - radlon1) / 2) * SIN((radlon2 - radlon1) / 2);
+
+    SET c = 2 * ATAN2(SQRT(a), SQRT(1 - a));
+
+    SET d = 6371 * c; -- Earth's radius in kilometers
+
+
+
+    RETURN d;
+
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
