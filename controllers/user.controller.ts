@@ -38,6 +38,20 @@ const getAllUsers: RequestHandler<
 	}
 };
 
+const getAllUserAddresses: RequestHandler<
+	{ user_id: string },
+	{ message: string; page?: number; perPage?: number; data?: object; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	try {
+		const addresses = await userService.getAllUserAddresses(req.params.user_id);
+		return res.status(200).json({ message: 'Success', data: addresses });
+	} catch (error) {
+		next(error);
+	}
+};
+
 const getUserById: RequestHandler<
 	{ id: string },
 	{ message: string; data?: object | null; error?: unknown },
@@ -168,6 +182,7 @@ const collectVoucher: RequestHandler<
 export default {
 	countUsers,
 	getAllUsers,
+	getAllUserAddresses,
 	getUserById,
 	updateUserById,
 	deleteUserById,

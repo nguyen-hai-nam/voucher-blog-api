@@ -16,6 +16,16 @@ const getAllUsers = async (skip: number, take: number, query?: Prisma.UserWhereI
 	return users;
 };
 
+const getAllUserAddresses = async (user_id: string) => {
+	const user = await prisma.user.findUniqueOrThrow({
+		where: { id: user_id },
+		select: {
+			addresses: true
+		}
+	});
+	return user;
+};
+
 const getUserById = async (id: string) => {
 	const user = await prisma.user.findUniqueOrThrow({
 		where: { id }
@@ -43,6 +53,7 @@ const deleteUserById = async (id: string) => {
 export default {
 	countUsers,
 	getAllUsers,
+	getAllUserAddresses,
 	getUserById,
 	updateUserById,
 	deleteUserById

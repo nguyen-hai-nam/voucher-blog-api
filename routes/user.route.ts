@@ -12,6 +12,7 @@ router.patch('/addresses/:id', isAuth, userAddressController.updateUserAddressBy
 router.delete('/addresses/:id', isAuth, userAddressController.deleteUserAddressById);
 router.get('/count', isAdmin, userController.countUsers);
 router.get('/', isAdmin, userController.getAllUsers);
+router.get('/:user_id/addresses', isAuth, userController.getAllUserAddresses);
 router.get('/:id', isAuth, userController.getUserById);
 router.patch('/:id', isAuth, userController.updateUserById);
 router.delete('/:id', isAdmin, userController.deleteUserById);
