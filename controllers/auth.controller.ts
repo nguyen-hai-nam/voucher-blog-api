@@ -3,6 +3,24 @@ import { User } from '@prisma/client';
 
 import { Payload } from '../interfaces/payload';
 import authService from '../services/auth.service';
+import userService from '../services/user.service';
+
+const getCurrentUser: RequestHandler<
+	{},
+	{ message: string; data?: User | null; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	try {
+		const user = await userService.getUserById(req.body.payload.id);
+		return res.status(200).json({
+			message: 'Success',
+			data: user
+		});
+	} catch (error) {
+		next(error);
+	}
+};
 
 const register: RequestHandler<
 	{},
@@ -73,6 +91,7 @@ const changePassword: RequestHandler<
 };
 
 export default {
+	getCurrentUser,
 	register,
 	login,
 	changePassword
