@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { RequestHandler } from 'express';
-import jwt from 'jsonwebtoken';
-import { Payload } from '../interfaces/payload';
+
+import { decodeToken } from '../helpers/auth/jwt';
 
 export const isAuth: RequestHandler = (req, res, next) => {
 	const authHeader = req.get('Authorization');
@@ -9,9 +9,9 @@ export const isAuth: RequestHandler = (req, res, next) => {
 		return res.status(401).json({ message: 'Unauthorized', error: 'Missing Authorization header' });
 	}
 	const token = authHeader.split(' ')[1];
-	let payload: Payload;
+	let payload;
 	try {
-		payload = <Payload>jwt.verify(token, process.env.TOKEN_SECRET || 'secret');
+		payload = decodeToken(token);
 		if (!payload) {
 			return res.status(401).json({ message: 'Unauthorized', error: 'Unauthorized' });
 		}
@@ -28,9 +28,9 @@ export const isAdmin: RequestHandler = (req, res, next) => {
 		return res.status(401).json({ message: 'Unauthorized', error: 'Missing Authorization header' });
 	}
 	const token = authHeader.split(' ')[1];
-	let payload: Payload;
+	let payload;
 	try {
-		payload = <Payload>jwt.verify(token, process.env.TOKEN_SECRET || 'secret');
+		payload = decodeToken(token);
 		if (!payload || !payload.is_admin) {
 			return res.status(401).json({ message: 'Unauthorized', error: 'Unauthorized' });
 		}
