@@ -179,6 +179,81 @@ const collectVoucher: RequestHandler<
 	}
 };
 
+const lovePost: RequestHandler<
+	{ userId: string; postId: string },
+	{ message: string; error?: unknown },
+	{},
+	{}
+> = async (req, res) => {
+	const { userId, postId } = req.params;
+	try {
+		await userService.lovePost(userId, postId);
+		return res.status(200).json({ message: 'Success' });
+	} catch (error) {
+		return res.status(500).json({ message: 'Error', error });
+	}
+};
+
+const unlovePost: RequestHandler<
+	{ userId: string; postId: string },
+	{ message: string; error?: unknown },
+	{},
+	{}
+> = async (req, res) => {
+	const { userId, postId } = req.params;
+	try {
+		await userService.unlovePost(userId, postId);
+		return res.status(200).json({ message: 'Success' });
+	} catch (error) {
+		return res.status(500).json({ message: 'Error', error });
+	}
+};
+
+const savePost: RequestHandler<
+	{ userId: string; postId: string },
+	{ message: string; error?: unknown },
+	{},
+	{}
+> = async (req, res) => {
+	const { userId, postId } = req.params;
+	try {
+		await userService.savePost(userId, postId);
+		return res.status(200).json({ message: 'Success' });
+	} catch (error) {
+		return res.status(500).json({ message: 'Error', error });
+	}
+};
+
+const unsavePost: RequestHandler<
+	{ userId: string; postId: string },
+	{ message: string; error?: unknown },
+	{},
+	{}
+> = async (req, res) => {
+	const { userId, postId } = req.params;
+	try {
+		await userService.unsavePost(userId, postId);
+		return res.status(200).json({ message: 'Success' });
+	} catch (error) {
+		return res.status(500).json({ message: 'Error', error });
+	}
+};
+
+const getAllSavedPosts: RequestHandler<
+	{ userId: string },
+	{ message: string; data?: object | null; error?: unknown },
+	{},
+	{}
+> = async (req, res) => {
+	const { userId } = req.params;
+	try {
+		const savedPosts = await userService.getAllSavedPosts(userId);
+		return res.status(200).json({ message: 'Success', data: savedPosts });
+	} catch (error) {
+		return res.status(500).json({ message: 'Error', error });
+	}
+};
+
 export default {
 	countUsers,
 	getAllUsers,
@@ -187,5 +262,10 @@ export default {
 	updateUserById,
 	deleteUserById,
 	getAllCollectedVouchers,
-	collectVoucher
+	collectVoucher,
+	lovePost,
+	unlovePost,
+	savePost,
+	unsavePost,
+	getAllSavedPosts
 };

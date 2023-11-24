@@ -50,11 +50,79 @@ const deleteUserById = async (id: string) => {
 	return deletedUserId;
 };
 
+const lovePost = async (userId: string, postId: string) => {
+	await prisma.post.update({
+		where: { id: postId },
+		data: {
+			love_count: { increment: 1 },
+			loves: {
+				create: {
+					user: { connect: { id: userId } }
+				}
+			}
+		}
+	});
+};
+
+const unlovePost = async (userId: string, postId: string) => {
+	await prisma.post.update({
+		where: { id: postId },
+		data: {
+			love_count: { decrement: 1 },
+			loves: {
+				delete: {
+					post_id_user_id: { user_id: userId, post_id: postId }
+				}
+			}
+		}
+	});
+};
+
+const savePost = async (userId: string, postId: string) => {
+	await prisma.post.update({
+		where: { id: postId },
+		data: {
+			save_count: { increment: 1 },
+			saves: {
+				create: {
+					user: { connect: { id: userId } }
+				}
+			}
+		}
+	});
+};
+
+const unsavePost = async (userId: string, postId: string) => {
+	await prisma.post.update({
+		where: { id: postId },
+		data: {
+			save_count: { decrement: 1 },
+			saves: {
+				delete: {
+					post_id_user_id: { user_id: userId, post_id: postId }
+				}
+			}
+		}
+	});
+};
+
+const getAllSavedPosts = async (userId: string) => {
+	const savedPosts = await prisma.post.findMany({
+		where: { saves: { some: { user_id: userId } } }
+	});
+	return savedPosts;
+};
+
 export default {
 	countUsers,
 	getAllUsers,
 	getAllUserAddresses,
 	getUserById,
 	updateUserById,
-	deleteUserById
+	deleteUserById,
+	lovePost,
+	unlovePost,
+	savePost,
+	unsavePost,
+	getAllSavedPosts
 };

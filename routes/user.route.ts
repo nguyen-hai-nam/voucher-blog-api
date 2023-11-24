@@ -18,5 +18,10 @@ router.patch('/:id', isAuth, userController.updateUserById);
 router.delete('/:id', isAdmin, userController.deleteUserById);
 router.get('/:userId/vouchers', isAdmin, userController.getAllCollectedVouchers);
 router.post('/:userId/vouchers/collect/:voucherId', isAdmin, userController.collectVoucher);
+router.post('/:userId/lovePost/:postId', isAdmin, userController.lovePost);
+router.post('/:userId/unlovePost/:postId', isAdmin, userController.unlovePost);
+router.post('/:userId/savePost/:postId', isAdmin, userController.savePost);
+router.post('/:userId/unsavePost/:postId', isAdmin, userController.unsavePost);
+router.get('/:userId/savedPosts', isAdmin, userController.getAllSavedPosts);
 
 export default router;
