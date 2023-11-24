@@ -67,8 +67,8 @@ model User {
   business_ratings BusinessRating[]
   collectedVouchers VoucherCustomer[]
   post_comments PostComment[]
-  post_favorites PostFavorite[]
-  post_saves PostSave[]
+  loved_posts UserLovePost[]
+  saved_posts UserSavePost[]
 }
 
 model UserEmail {
@@ -281,14 +281,16 @@ model Post {
   id String @id @default(uuid())
   business_id String
   content String
+  love_count Int @default(0)
+  save_count Int @default(0)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
   vouchers PostVoucher[]
   comments PostComment[]
-  favorites PostFavorite[]
-  saves PostSave[]
+  loves UserLovePost[]
+  saves UserSavePost[]
 }
 
 model PostVoucher {
@@ -313,22 +315,22 @@ model PostComment {
   user User @relation(fields: [user_id], references: [id])
 }
 
-model PostFavorite {
-  post_id String
+model UserLovePost {
   user_id String
+  post_id String
   created_at DateTime @default(now())
 
   @@id([post_id, user_id])
-  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
   user User @relation(fields: [user_id], references: [id])
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
 }
 
-model PostSave {
-  post_id String
+model UserSavePost {
   user_id String
+  post_id String
   created_at DateTime @default(now())
 
   @@id([post_id, user_id])
-  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
   user User @relation(fields: [user_id], references: [id])
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
 }
