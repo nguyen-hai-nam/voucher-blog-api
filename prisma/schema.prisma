@@ -26,13 +26,20 @@ enum UserAddressType {
 }
 
 enum VoucherType {
-  SALE_OFF
+  DISCOUNT
   GIFT
 }
 
 enum VoucherUsage {
   ONE_TIME
   UNTIL_EXPIRATION
+}
+
+enum VoucherTarget {
+  ALL
+  SILVER
+  GOLD
+  DIAMOND
 }
 
 enum VoucherStatus {
@@ -65,7 +72,8 @@ model User {
   business_customers BusinessCustomer[]
   business_followers BusinessFollower[]
   business_ratings BusinessRating[]
-  collectedVouchers VoucherCustomer[]
+  collectedVouchers UserCollectVoucher[]
+  usedVouchers UserUseVoucher[]
   post_comments PostComment[]
   loved_posts UserLovePost[]
   saved_posts UserSavePost[]
@@ -232,7 +240,7 @@ model Product {
   updated_at DateTime @default(now())
 
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
-  voucher Voucher[]
+  applyingVouchers VoucherApplyProduct[]
 }
 
 model Voucher {
@@ -243,36 +251,54 @@ model Voucher {
   image_url String
   description String
   percent Int?
-  value Int?
   max_value Int?
+  value Int?
   fixed_price Int?
+  usage VoucherUsage @default(ONE_TIME)
+  status VoucherStatus @default(AVAILABLE)
+  collected_count Int @default(0)
+  max_use Int @default(0)
   condition_min_bill_value Int?
-  condition_min_bill_item_count Int?
-  condition_product_id String?
   condition_beginning_hour Int?
   condition_ending_hour Int?
-  usage VoucherUsage
-  status VoucherStatus
-  apply_date DateTime
-  expiration_date DateTime
-  count Int
+  condition_target VoucherTarget @default(ALL)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  product Product? @relation(fields: [condition_product_id], references: [id])
+  appliedProducts VoucherApplyProduct[]
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
-  voucher_customers VoucherCustomer[]
+  collectedBy UserCollectVoucher[]
+  usedBy UserUseVoucher[]
   post_vouchers PostVoucher[]
 }
 
-model VoucherCustomer {
+model VoucherApplyProduct {
+  voucher_id String
+  product_id String
+
+  @@id([voucher_id, product_id])
+  voucher Voucher @relation(fields: [voucher_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+}
+
+model UserCollectVoucher {
   voucher_id String
   user_id String
-  use_count Int @default(0)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
   @@id([voucher_id, user_id])
+  voucher Voucher @relation(fields: [voucher_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
+}
+
+model UserUseVoucher {
+  id String @id @default(uuid())
+  voucher_id String
+  user_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
   voucher Voucher @relation(fields: [voucher_id], references: [id])
   user User @relation(fields: [user_id], references: [id])
 }
