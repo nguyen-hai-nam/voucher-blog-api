@@ -1,8 +1,7 @@
 import { RequestHandler } from 'express';
 
-import prisma from '../config/prisma';
-import { Payload } from '../interfaces/payload';
 import userService from '../services/user.service';
+import { Payload } from '../interfaces/payload';
 
 const countUsers: RequestHandler<
 	{},
@@ -33,20 +32,6 @@ const getAllUsers: RequestHandler<
 	try {
 		const users = await userService.getAllUsers(skip, take);
 		return res.status(200).json({ message: 'Success', page, perPage, data: users });
-	} catch (error) {
-		next(error);
-	}
-};
-
-const getAllUserAddresses: RequestHandler<
-	{ user_id: string },
-	{ message: string; page?: number; perPage?: number; data?: object; error?: unknown },
-	{ payload: Payload },
-	{}
-> = async (req, res, next) => {
-	try {
-		const addresses = await userService.getAllUserAddresses(req.params.user_id);
-		return res.status(200).json({ message: 'Success', data: addresses });
 	} catch (error) {
 		next(error);
 	}
@@ -109,163 +94,198 @@ const deleteUserById: RequestHandler<
 	}
 };
 
-const getAllCollectedVouchers: RequestHandler<
-	{ userId: string },
+const getAddresses: RequestHandler<
+	{ id: string },
+	{ message: string; page?: number; perPage?: number; data?: object; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	try {
+		const addresses = await userService.getAddresses(req.params.id);
+		return res.status(200).json({ message: 'Success', data: addresses });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const getManagingBusinesses: RequestHandler<
+	{ id: string },
+	{ message: string; page?: number; perPage?: number; data?: object; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	try {
+		const managingBusinesses = await userService.getManagingBusinesses(req.params.id);
+		return res.status(200).json({ message: 'Success', data: managingBusinesses });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const getFollowingBusinesses: RequestHandler<
+	{ id: string },
+	{ message: string; page?: number; perPage?: number; data?: object; error?: unknown },
+	{ payload: Payload },
+	{}
+> = async (req, res, next) => {
+	try {
+		const followingBusinesses = await userService.getFollowingBusinesses(req.params.id);
+		return res.status(200).json({ message: 'Success', data: followingBusinesses });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const getVouchers: RequestHandler<
+	{ id: string },
 	{ message: string; data?: object | null; error?: unknown },
 	{},
-	{}
-> = async (req, res) => {
-	const { userId } = req.params;
+	{ type: string }
+> = async (req, res, next) => {
 	try {
-		const userWithCollectedVouchers = await prisma.user.findUnique({
-			where: { id: userId },
-			select: {
-				id: true,
-				collectedVouchers: {
-					select: {
-						voucher_id: true,
-						use_count: true,
-						created_at: true,
-						updated_at: true
-					}
-				}
+		switch (req.query.type) {
+			case 'collected': {
+				const collectedVouchers = await userService.getCollectedVouchers(req.params.id);
+				return res.status(200).json({ message: 'Success', data: collectedVouchers });
 			}
-		});
-		if (!userWithCollectedVouchers) {
-			return res.status(404).json({ message: 'User not found' });
+			case 'used': {
+				const usedVouchers = await userService.getUsedVouchers(req.params.id);
+				return res.status(200).json({ message: 'Success', data: usedVouchers });
+			}
+			default:
+				return res.status(400).json({ message: 'Invalid type' });
 		}
-		return res.status(200).json({ message: 'Success', data: userWithCollectedVouchers });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
 const collectVoucher: RequestHandler<
-	{ userId: string; voucherId: string },
+	{ id: string; voucherId: string },
 	{ message: string; data?: string; error?: unknown },
 	{},
 	{}
-> = async (req, res) => {
-	const { userId, voucherId } = req.params;
+> = async (req, res, next) => {
+	const { id, voucherId } = req.params;
 	try {
-		const voucher = await prisma.voucher.findUnique({
-			where: { id: voucherId }
-		});
-		if (voucher && voucher.count <= 0) {
-			return res.status(400).json({ message: 'Voucher is out of stock' });
-		}
-		await prisma.voucher.update({
-			where: { id: voucherId },
-			data: { count: { decrement: 1 } }
-		});
-		await prisma.voucherCustomer.create({
-			data: {
-				user: {
-					connect: {
-						id: userId
-					}
-				},
-				voucher: {
-					connect: {
-						id: voucherId
-					}
-				},
-				use_count: 0
-			}
-		});
-		return res.status(200).json({ message: 'Success', data: 'Collect voucher successfully' });
-	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
-	}
-};
-
-const lovePost: RequestHandler<
-	{ userId: string; postId: string },
-	{ message: string; error?: unknown },
-	{},
-	{}
-> = async (req, res) => {
-	const { userId, postId } = req.params;
-	try {
-		await userService.lovePost(userId, postId);
+		await userService.collectVoucher(id, voucherId);
 		return res.status(200).json({ message: 'Success' });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
-const unlovePost: RequestHandler<
-	{ userId: string; postId: string },
-	{ message: string; error?: unknown },
+const discardVoucher: RequestHandler<
+	{ id: string; voucherId: string },
+	{ message: string; data?: string; error?: unknown },
 	{},
 	{}
-> = async (req, res) => {
-	const { userId, postId } = req.params;
+> = async (req, res, next) => {
+	const { id, voucherId } = req.params;
 	try {
-		await userService.unlovePost(userId, postId);
+		await userService.discardVoucher(id, voucherId);
 		return res.status(200).json({ message: 'Success' });
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
 	}
 };
 
-const savePost: RequestHandler<
-	{ userId: string; postId: string },
-	{ message: string; error?: unknown },
-	{},
-	{}
-> = async (req, res) => {
-	const { userId, postId } = req.params;
-	try {
-		await userService.savePost(userId, postId);
-		return res.status(200).json({ message: 'Success' });
-	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
-	}
-};
-
-const unsavePost: RequestHandler<
-	{ userId: string; postId: string },
-	{ message: string; error?: unknown },
-	{},
-	{}
-> = async (req, res) => {
-	const { userId, postId } = req.params;
-	try {
-		await userService.unsavePost(userId, postId);
-		return res.status(200).json({ message: 'Success' });
-	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
-	}
-};
-
-const getAllSavedPosts: RequestHandler<
-	{ userId: string },
+const getPosts: RequestHandler<
+	{ id: string },
 	{ message: string; data?: object | null; error?: unknown },
 	{},
-	{}
-> = async (req, res) => {
-	const { userId } = req.params;
+	{ type: string }
+> = async (req, res, next) => {
+	const { id } = req.params;
 	try {
-		const savedPosts = await userService.getAllSavedPosts(userId);
-		return res.status(200).json({ message: 'Success', data: savedPosts });
+		switch (req.query.type) {
+			case 'loved': {
+				const lovedPosts = await userService.getLovedPosts(id);
+				return res.status(200).json({ message: 'Success', data: lovedPosts });
+			}
+			case 'saved': {
+				const savedPosts = await userService.getSavedPosts(id);
+				return res.status(200).json({ message: 'Success', data: savedPosts });
+			}
+			default:
+				return res.status(400).json({ message: 'Invalid type' });
+		}
 	} catch (error) {
-		return res.status(500).json({ message: 'Error', error });
+		next(error);
+	}
+};
+
+const lovePost: RequestHandler<{ id: string; postId: string }, { message: string; error?: unknown }, {}, {}> = async (
+	req,
+	res,
+	next
+) => {
+	const { id, postId } = req.params;
+	try {
+		await userService.lovePost(id, postId);
+		return res.status(200).json({ message: 'Success' });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const unlovePost: RequestHandler<{ id: string; postId: string }, { message: string; error?: unknown }, {}, {}> = async (
+	req,
+	res,
+	next
+) => {
+	const { id, postId } = req.params;
+	try {
+		await userService.unlovePost(id, postId);
+		return res.status(200).json({ message: 'Success' });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const savePost: RequestHandler<{ id: string; postId: string }, { message: string; error?: unknown }, {}, {}> = async (
+	req,
+	res,
+	next
+) => {
+	const { id, postId } = req.params;
+	try {
+		await userService.savePost(id, postId);
+		return res.status(200).json({ message: 'Success' });
+	} catch (error) {
+		next(error);
+	}
+};
+
+const unsavePost: RequestHandler<{ id: string; postId: string }, { message: string; error?: unknown }, {}, {}> = async (
+	req,
+	res,
+	next
+) => {
+	const { id, postId } = req.params;
+	try {
+		await userService.unsavePost(id, postId);
+		return res.status(200).json({ message: 'Success' });
+	} catch (error) {
+		next(error);
 	}
 };
 
 export default {
 	countUsers,
 	getAllUsers,
-	getAllUserAddresses,
 	getUserById,
+	getAddresses,
+	getManagingBusinesses,
+	getFollowingBusinesses,
 	updateUserById,
 	deleteUserById,
-	getAllCollectedVouchers,
+	getVouchers,
 	collectVoucher,
+	discardVoucher,
+	getPosts,
 	lovePost,
 	unlovePost,
 	savePost,
-	unsavePost,
-	getAllSavedPosts
+	unsavePost
 };

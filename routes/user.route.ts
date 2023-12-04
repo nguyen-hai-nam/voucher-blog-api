@@ -12,16 +12,19 @@ router.patch('/addresses/:id', isAuth, userAddressController.updateUserAddressBy
 router.delete('/addresses/:id', isAuth, userAddressController.deleteUserAddressById);
 router.get('/count', isAdmin, userController.countUsers);
 router.get('/', isAdmin, userController.getAllUsers);
-router.get('/:user_id/addresses', isAuth, userController.getAllUserAddresses);
 router.get('/:id', isAuth, userController.getUserById);
 router.patch('/:id', isAuth, userController.updateUserById);
 router.delete('/:id', isAdmin, userController.deleteUserById);
-router.get('/:userId/vouchers', isAdmin, userController.getAllCollectedVouchers);
-router.post('/:userId/vouchers/collect/:voucherId', isAdmin, userController.collectVoucher);
-router.post('/:userId/lovePost/:postId', isAdmin, userController.lovePost);
-router.post('/:userId/unlovePost/:postId', isAdmin, userController.unlovePost);
-router.post('/:userId/savePost/:postId', isAdmin, userController.savePost);
-router.post('/:userId/unsavePost/:postId', isAdmin, userController.unsavePost);
-router.get('/:userId/savedPosts', isAdmin, userController.getAllSavedPosts);
+router.get('/:id/addresses', isAuth, userController.getAddresses);
+router.get('/:id/managing-businesses', isAuth, userController.getManagingBusinesses);
+router.get('/:id/following-businesses', isAuth, userController.getFollowingBusinesses);
+router.get('/:id/vouchers', isAdmin, userController.getVouchers);
+router.post('/:id/vouchers/collect/:voucherId', isAdmin, userController.collectVoucher);
+router.post('/:id/vouchers/discard/:voucherId', isAdmin, userController.discardVoucher);
+router.get('/:id/posts', isAdmin, userController.getPosts);
+router.post('/:id/posts/love/:postId', isAdmin, userController.lovePost);
+router.post('/:id/posts/unlove/:postId', isAdmin, userController.unlovePost);
+router.post('/:id/posts/save/:postId', isAdmin, userController.savePost);
+router.post('/:id/posts/unsave/:postId', isAdmin, userController.unsavePost);
 
 export default router;
