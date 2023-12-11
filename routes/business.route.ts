@@ -1,13 +1,28 @@
 import express from 'express';
 
 import businessController from '../controllers/business.controller';
+import { upload } from '../middlewares/upload.middleware';
 import { isAuth } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
 router.get('/count', isAuth, businessController.countBusinesses);
+router.get('/categories', isAuth, businessController.getCategories);
+
 router.get('/', isAuth, businessController.getAllBusinesses);
-router.post('/', isAuth, businessController.createBusiness);
+router.post(
+	'/',
+	isAuth,
+	upload.fields([
+		{ name: 'businessAvatarImage', maxCount: 1 },
+		{ name: 'businessFrontImages', maxCount: 4 },
+		{ name: 'businessInsideImages', maxCount: 4 },
+		{ name: 'businessMenuImages', maxCount: 4 },
+		{ name: 'representerNationalIdImages', maxCount: 2 },
+		{ name: 'representerLicenseImages', maxCount: 4 }
+	]),
+	businessController.createBusiness
+);
 router.get('/:id', isAuth, businessController.getBusinessById);
 router.patch('/:id', isAuth, businessController.updateBusinessById);
 router.delete('/:id', isAuth, businessController.deleteBusinessById);

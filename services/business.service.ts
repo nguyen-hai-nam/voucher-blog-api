@@ -39,6 +39,11 @@ const getAllBusinesses = async (skip: number, take: number, query?: Prisma.Busin
 	return businesses;
 };
 
+const getCategories = async () => {
+	const categories = await prisma.businessCategory.findMany();
+	return categories;
+};
+
 const getAllProducts = async (business_id: string, skip: number, take: number, query?: Prisma.ProductWhereInput) => {
 	const products = await prisma.product.findMany({
 		where: { ...query, business: { id: business_id } },
@@ -66,9 +71,16 @@ const getAllPosts = async (business_id: string, skip: number, take: number, quer
 	return businesses;
 };
 
-const createBusiness = async (data: Prisma.BusinessCreateInput) => {
+const createBusiness = async (userId: string, data: Prisma.BusinessCreateInput) => {
 	const business = await prisma.business.create({
-		data
+		data: {
+			...data,
+			managers: {
+				create: {
+					user: { connect: { id: userId } }
+				}
+			}
+		}
 	});
 	return business;
 };
@@ -289,6 +301,7 @@ export default {
 	countProducts,
 	countVouchers,
 	countPosts,
+	getCategories,
 	getAllBusinesses,
 	getAllProducts,
 	getAllVouchers,

@@ -73,6 +73,15 @@ const countPosts: RequestHandler<
 	}
 };
 
+const getCategories: RequestHandler = async (req, res, next) => {
+	try {
+		const categories = await businessService.getCategories();
+		return res.status(200).json({ message: 'Success', data: categories });
+	} catch (error) {
+		next(error);
+	}
+}
+
 const getAllBusinesses: RequestHandler<
 	{},
 	{ message: string; page?: string; perPage?: string; data?: Business[]; error?: unknown },
@@ -156,11 +165,20 @@ const getAllPosts: RequestHandler<
 const createBusiness: RequestHandler<
 	{},
 	{ message: string; data?: Business; error?: unknown },
-	{ payload: Payload; data: Prisma.BusinessCreateInput },
+	{ payload: Payload; data: string },
 	{ page?: number; perPage?: number }
 > = async (req, res, next) => {
 	try {
-		const business = await businessService.createBusiness(req.body.data);
+		const data = JSON.parse(req.body.data);
+		const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+		for (const file of files.businessAvatarImage) {
+			data.avatar_image_url = file.path;
+		}
+		// for (const file of files.businessFrontImages) {
+		// 	req.body.data.front_images.push(file.path);
+		// }
+		// TODO: Upload middleware (Multer) overrides req.body => req.body.payload not exists
+		const business = await businessService.createBusiness(req.body.payload.id, {});
 		return res.status(201).json({ message: 'Success', data: business });
 	} catch (error) {
 		next(error);
@@ -540,6 +558,7 @@ export default {
 	countProducts,
 	countVouchers,
 	countPosts,
+	getCategories,
 	getAllBusinesses,
 	getAllProducts,
 	getAllVouchers,
