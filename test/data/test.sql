@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
--- Host: localhost    Database: voucher-blog
+-- Host: localhost    Database: test
 -- ------------------------------------------------------
 -- Server version	8.1.0
 
@@ -56,7 +56,7 @@ CREATE TABLE `Business` (
 
 LOCK TABLES `Business` WRITE;
 /*!40000 ALTER TABLE `Business` DISABLE KEYS */;
-INSERT INTO `Business` VALUES ('test-business-1','d73204a8-bb0e-4137-bc82-48e2d8e42f6d','Test Business 1','For testing purposes','https://loremflickr.com/cache/resized/483_19335249580_8962437bb6_c_480_480_nofilter.jpg','test_business_1@business.voucher.blog','0000000001','NULL','test-business-address-1','test-business-timetable-1',1000,100000,0,0,'ACTIVE','2023-10-05 06:35:01.947','2023-10-05 06:35:01.947'),('test-business-2','d73204a8-bb0e-4137-bc82-48e2d8e42f6d','Test Business 1','For testing purposes','https://loremflickr.com/cache/resized/483_19335249580_8962437bb6_c_480_480_nofilter.jpg','test_business_2@business.voucher.blog','0000000002','NULL','test-business-address-2','test-business-timetable-2',1000,100000,0,0,'ACTIVE','2023-10-05 06:35:01.947','2023-10-05 06:35:01.947'),('test-business-3','d73204a8-bb0e-4137-bc82-48e2d8e42f6d','Test Business 3','For testing purposes','https://loremflickr.com/cache/resized/483_19335249580_8962437bb6_c_480_480_nofilter.jpg','test_business_3@business.voucher.blog','0000000003','NULL','test-business-address-3','test-business-timetable-3',1000,100000,0,0,'ACTIVE','2023-10-05 06:35:01.947','2023-10-05 06:35:01.947');
+INSERT INTO `Business` VALUES ('6620ba66-cb1b-41cf-9f51-eae794e68438',NULL,'Business 0','This is a business','https://upload.wikimedia.org/wikipedia/en/5/55/Radioheadthebends.png','business0@voucher.blog','','',NULL,NULL,100000,500000,0,0,'ACTIVE','2023-12-11 03:52:36.095','2023-12-11 03:52:36.095');
 /*!40000 ALTER TABLE `Business` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -84,7 +84,7 @@ CREATE TABLE `BusinessAddress` (
 
 LOCK TABLES `BusinessAddress` WRITE;
 /*!40000 ALTER TABLE `BusinessAddress` DISABLE KEYS */;
-INSERT INTO `BusinessAddress` VALUES ('test-business-address-1','Hanoi, Vietnam',1.01,1.01,'2023-10-05 06:34:34.927','2023-10-05 06:34:34.927'),('test-business-address-2','Hanoi, Vietnam',0.995,1,'2023-10-12 04:38:48.676','2023-10-12 04:38:48.676'),('test-business-address-3','Hanoi, Vietnam',0.99,1.002,'2023-10-12 04:38:48.696','2023-10-12 04:38:48.696');
+INSERT INTO `BusinessAddress` VALUES ('4ae43fa3-a57c-4968-acc9-069c3b85d2b3','Hai Ba Trung, Ha Noi',NULL,NULL,'2023-12-04 07:02:17.331','2023-12-04 07:02:17.331');
 /*!40000 ALTER TABLE `BusinessAddress` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -108,7 +108,6 @@ CREATE TABLE `BusinessCategory` (
 
 LOCK TABLES `BusinessCategory` WRITE;
 /*!40000 ALTER TABLE `BusinessCategory` DISABLE KEYS */;
-INSERT INTO `BusinessCategory` VALUES ('9acbf91c-7b92-4a82-be50-7641ed3dcae4','Tea'),('d73204a8-bb0e-4137-bc82-48e2d8e42f6d','Other'),('efeee101-b2c1-41e3-9285-511edae63384','Coffee');
 /*!40000 ALTER TABLE `BusinessCategory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +193,7 @@ CREATE TABLE `BusinessManager` (
 
 LOCK TABLES `BusinessManager` WRITE;
 /*!40000 ALTER TABLE `BusinessManager` DISABLE KEYS */;
-INSERT INTO `BusinessManager` VALUES ('test-user-1','test-business-1','2023-10-12 04:44:58.148','2023-10-12 04:44:58.148'),('test-user-2','test-business-2','2023-10-12 04:44:58.148','2023-10-12 04:44:58.148'),('test-user-2','test-business-3','2023-10-12 04:44:58.148','2023-10-12 04:44:58.148'),('test-user-3','test-business-3','2023-10-12 04:44:58.148','2023-10-12 04:44:58.148');
+INSERT INTO `BusinessManager` VALUES ('test','6620ba66-cb1b-41cf-9f51-eae794e68438','2023-12-11 03:53:48.269','2023-12-11 03:53:48.269');
 /*!40000 ALTER TABLE `BusinessManager` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,10 +207,10 @@ DROP TABLE IF EXISTS `BusinessRating`;
 CREATE TABLE `BusinessRating` (
   `business_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `value` int NOT NULL,
   `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `content` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`business_id`,`user_id`),
   KEY `BusinessRating_user_id_fkey` (`user_id`),
   CONSTRAINT `BusinessRating_business_id_fkey` FOREIGN KEY (`business_id`) REFERENCES `Business` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -263,7 +262,6 @@ CREATE TABLE `BusinessTimetable` (
 
 LOCK TABLES `BusinessTimetable` WRITE;
 /*!40000 ALTER TABLE `BusinessTimetable` DISABLE KEYS */;
-INSERT INTO `BusinessTimetable` VALUES ('test-business-timetable-1','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','2023-10-02 06:17:22.823','2023-10-02 06:17:22.823'),('test-business-timetable-2','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','2023-10-02 06:17:22.823','2023-10-02 06:17:22.823'),('test-business-timetable-3','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','09:00:00','20:00:00','2023-10-02 06:17:22.823','2023-10-02 06:17:22.823');
 /*!40000 ALTER TABLE `BusinessTimetable` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -278,6 +276,8 @@ CREATE TABLE `Post` (
   `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `business_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `content` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `love_count` int NOT NULL DEFAULT '0',
+  `save_count` int NOT NULL DEFAULT '0',
   `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -292,7 +292,7 @@ CREATE TABLE `Post` (
 
 LOCK TABLES `Post` WRITE;
 /*!40000 ALTER TABLE `Post` DISABLE KEYS */;
-INSERT INTO `Post` VALUES ('test-post-1','test-business-1','For test','2023-10-05 06:35:35.010','2023-10-05 06:35:35.010'),('test-post-2','test-business-2','For test','2023-10-05 06:35:35.010','2023-10-05 06:35:35.010'),('test-post-3','test-business-3','For test','2023-10-05 06:35:35.010','2023-10-05 06:35:35.010');
+INSERT INTO `Post` VALUES ('467b3022-9854-4e36-a972-22dffc8f03fc','6620ba66-cb1b-41cf-9f51-eae794e68438','ADLV BLACK FRIDAY!',0,0,'2023-12-11 04:03:53.437','2023-12-11 04:03:53.437');
 /*!40000 ALTER TABLE `Post` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -311,8 +311,8 @@ CREATE TABLE `PostComment` (
   `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
-  KEY `PostComment_user_id_fkey` (`user_id`),
   KEY `PostComment_post_id_fkey` (`post_id`),
+  KEY `PostComment_user_id_fkey` (`user_id`),
   CONSTRAINT `PostComment_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `Post` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `PostComment_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -325,60 +325,6 @@ CREATE TABLE `PostComment` (
 LOCK TABLES `PostComment` WRITE;
 /*!40000 ALTER TABLE `PostComment` DISABLE KEYS */;
 /*!40000 ALTER TABLE `PostComment` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `PostFavorite`
---
-
-DROP TABLE IF EXISTS `PostFavorite`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `PostFavorite` (
-  `post_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  PRIMARY KEY (`post_id`,`user_id`),
-  KEY `PostFavorite_user_id_fkey` (`user_id`),
-  CONSTRAINT `PostFavorite_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `Post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `PostFavorite_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `PostFavorite`
---
-
-LOCK TABLES `PostFavorite` WRITE;
-/*!40000 ALTER TABLE `PostFavorite` DISABLE KEYS */;
-/*!40000 ALTER TABLE `PostFavorite` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `PostSave`
---
-
-DROP TABLE IF EXISTS `PostSave`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `PostSave` (
-  `post_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  PRIMARY KEY (`post_id`,`user_id`),
-  KEY `PostSave_user_id_fkey` (`user_id`),
-  CONSTRAINT `PostSave_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `Post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `PostSave_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `PostSave`
---
-
-LOCK TABLES `PostSave` WRITE;
-/*!40000 ALTER TABLE `PostSave` DISABLE KEYS */;
-/*!40000 ALTER TABLE `PostSave` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -405,7 +351,7 @@ CREATE TABLE `PostVoucher` (
 
 LOCK TABLES `PostVoucher` WRITE;
 /*!40000 ALTER TABLE `PostVoucher` DISABLE KEYS */;
-INSERT INTO `PostVoucher` VALUES ('test-post-1','test-voucher-1',0),('test-post-1','test-voucher-2',1),('test-post-1','test-voucher-3',2),('test-post-2','test-voucher-4',0),('test-post-2','test-voucher-5',1),('test-post-2','test-voucher-6',2),('test-post-3','test-voucher-7',0),('test-post-3','test-voucher-8',1),('test-post-3','test-voucher-9',2);
+INSERT INTO `PostVoucher` VALUES ('467b3022-9854-4e36-a972-22dffc8f03fc','17f98267-980d-4736-acbe-a44d32ca8d09',0),('467b3022-9854-4e36-a972-22dffc8f03fc','8301da4f-e3e3-462b-a071-1f3ac12802c7',0),('467b3022-9854-4e36-a972-22dffc8f03fc','9600643e-3794-49f4-a939-de1a1a419555',0),('467b3022-9854-4e36-a972-22dffc8f03fc','ba76785b-14ee-400a-9dd9-aeafcaafc4ce',0);
 /*!40000 ALTER TABLE `PostVoucher` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -438,7 +384,6 @@ CREATE TABLE `Product` (
 
 LOCK TABLES `Product` WRITE;
 /*!40000 ALTER TABLE `Product` DISABLE KEYS */;
-INSERT INTO `Product` VALUES ('test-product-1','test-business-1','Test Product 1','https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg','For test',50000,'AVAILABLE','2023-10-02 06:19:24.881','2023-10-02 06:19:24.881'),('test-product-2','test-business-1','Test Product 2','https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg','For test',50000,'AVAILABLE','2023-10-02 06:19:24.881','2023-10-02 06:19:24.881'),('test-product-3','test-business-1','Test Product 3','https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg','For test',50000,'AVAILABLE','2023-10-02 06:19:24.881','2023-10-02 06:19:24.881'),('test-product-4','test-business-2','Test Product 4','https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg','For test',50000,'AVAILABLE','2023-10-02 06:19:24.881','2023-10-02 06:19:24.881'),('test-product-5','test-business-2','Test Product 5','https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg','For test',50000,'AVAILABLE','2023-10-02 06:19:24.881','2023-10-02 06:19:24.881'),('test-product-6','test-business-2','Test Product 6','https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg','For test',50000,'AVAILABLE','2023-10-02 06:19:24.881','2023-10-02 06:19:24.881'),('test-product-7','test-business-3','Test Product 7','https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg','For test',50000,'AVAILABLE','2023-10-02 06:19:24.881','2023-10-02 06:19:24.881'),('test-product-8','test-business-3','Test Product 8','https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg','For test',50000,'AVAILABLE','2023-10-02 06:19:24.881','2023-10-02 06:19:24.881'),('test-product-9','test-business-3','Test Product 9','https://img.freepik.com/free-vector/hand-painted-watercolor-pastel-sky-background_23-2148902771.jpg','For test',50000,'AVAILABLE','2023-10-02 06:19:24.881','2023-10-02 06:19:24.881');
 /*!40000 ALTER TABLE `Product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -451,13 +396,13 @@ DROP TABLE IF EXISTS `User`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `User` (
   `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_admin` tinyint(1) NOT NULL DEFAULT '0',
   `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `avatar_image_url` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` enum('ACTIVE','BLOCKED','DELETED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ACTIVE',
   `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `is_admin` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -468,7 +413,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES ('admin-1','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Nguyen Hai Nam',NULL,'ACTIVE','2023-09-27 17:57:06.192','2023-09-27 17:57:06.192',1),('test-user-1','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 1',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0),('test-user-10','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 10',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0),('test-user-2','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 2',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0),('test-user-3','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 3',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0),('test-user-4','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 4',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0),('test-user-5','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 5',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0),('test-user-6','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 6',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0),('test-user-7','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 7',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0),('test-user-8','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 8',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0),('test-user-9','$2b$10$aCnscXyZVttZHULKy7r8ruGrGFofAsB8geFP4gYNdXchfmOz4g8VC','Test User 9',NULL,'ACTIVE','2023-10-12 04:43:09.836','2023-10-12 04:43:09.836',0);
+INSERT INTO `User` VALUES ('0a7a342d-fb9e-4d81-b3a8-ff07edb1b3dd',0,'$2b$10$MWYN1WAH0eylA1tRr.Sycu0tDt2KhC.THfCdttkaJ8cGdtu/O.Jy2',NULL,NULL,'ACTIVE','2023-12-11 03:49:13.045','2023-12-11 03:49:13.045'),('1a8ed7db-fbba-4ae6-aac9-c446f5155d3e',0,'$2b$10$pW4lLcjRklzmtox/3NWFC.0g8XobFti3vEEeIAYNoR0tivJrJ2qVa',NULL,NULL,'ACTIVE','2023-12-11 03:49:19.505','2023-12-11 03:49:19.505'),('3432339e-a59f-492c-a5f6-742a372ed569',0,'$2b$10$vlORxzO6M2zUYoDCi2I53OheHfZFe8BuWcGnV72yZjaKgTonIauk.',NULL,NULL,'ACTIVE','2023-12-11 03:49:06.975','2023-12-11 03:49:06.975'),('4e9e307a-7045-4fd4-a56a-63f829a926ee',0,'$2b$10$jkL26FdRSLxEaTKykKAPSuQhgBNg4J/xa.mbxB6o1/FiBiiI/96ba',NULL,NULL,'ACTIVE','2023-12-11 03:49:28.995','2023-12-11 03:49:28.995'),('62059237-47cb-4b2e-9b3c-fb82e665ef1a',0,'$2b$10$oGUpBazkRnWX5YaNEVJRsefGOZupOiu0IN2VkjySSWrf.VZ9umj32',NULL,NULL,'ACTIVE','2023-12-11 03:49:15.902','2023-12-11 03:49:15.902'),('8a4d4e5b-d990-4263-8200-3e028d150628',0,'$2b$10$Q5xxkc3LzJ8b/420oL3WAO9EYsM7DU4yYQi05EhPt8.WMPZ791Lyq',NULL,NULL,'ACTIVE','2023-12-11 03:49:23.051','2023-12-11 03:49:23.051'),('9aec04c7-186f-4582-b471-a151910d4109',0,'$2b$10$lmDS23rjU8WSUmMkC3hIWulvtDIx8DVEsWWGg3Exm27aLrRIMeszi',NULL,NULL,'ACTIVE','2023-12-11 03:49:09.845','2023-12-11 03:49:09.845'),('9b004834-7ed3-4d91-809c-2159223f592a',0,'$2b$10$7QDcZdQIvIbxCMVOXQEuZ.EIn7xUjY5.BXKw1gBSsBE2cORMEaC2G',NULL,NULL,'ACTIVE','2023-12-11 03:49:03.851','2023-12-11 03:49:03.851'),('ebd3dfbe-89a9-49f0-8928-5a56b82de537',0,'$2b$10$tEO4QpGEzzwlKnTaywEq3uzFpinVSRuzs/8Nr7tZqIyqN.vH8tI7C',NULL,NULL,'ACTIVE','2023-12-11 03:49:26.201','2023-12-11 03:49:26.201'),('test',0,'$2b$10$1VaKvtGpFW63EpiidYUoJOegbgdyg4vN85wleMqF/8gm0NSpQoqeO',NULL,NULL,'ACTIVE','2023-12-11 03:48:39.279','2023-12-11 03:48:39.279');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -500,8 +445,35 @@ CREATE TABLE `UserAddress` (
 
 LOCK TABLES `UserAddress` WRITE;
 /*!40000 ALTER TABLE `UserAddress` DISABLE KEYS */;
-INSERT INTO `UserAddress` VALUES ('1ca16e4a-eec4-4347-8c76-bb52f16e7cb2','admin-1','Dai Co Viet, Hai Ba Trung, Ha Noi','OFFICE',1.01,1.01,'2023-09-28 09:26:35.378','2023-09-28 09:26:35.378'),('72e6281c-ab11-4983-b119-e0d2e6ae606a','admin-1','Dong Anh, Ha Noi','HOME',1.01,1.01,'2023-09-28 09:30:40.445','2023-09-28 09:30:40.445');
 /*!40000 ALTER TABLE `UserAddress` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `UserCollectVoucher`
+--
+
+DROP TABLE IF EXISTS `UserCollectVoucher`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `UserCollectVoucher` (
+  `voucher_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`voucher_id`,`user_id`),
+  KEY `UserCollectVoucher_user_id_fkey` (`user_id`),
+  CONSTRAINT `UserCollectVoucher_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `UserCollectVoucher_voucher_id_fkey` FOREIGN KEY (`voucher_id`) REFERENCES `Voucher` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `UserCollectVoucher`
+--
+
+LOCK TABLES `UserCollectVoucher` WRITE;
+/*!40000 ALTER TABLE `UserCollectVoucher` DISABLE KEYS */;
+/*!40000 ALTER TABLE `UserCollectVoucher` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -528,8 +500,35 @@ CREATE TABLE `UserEmail` (
 
 LOCK TABLES `UserEmail` WRITE;
 /*!40000 ALTER TABLE `UserEmail` DISABLE KEYS */;
-INSERT INTO `UserEmail` VALUES ('admin@voucher.blog','admin-1','2023-09-27 17:57:06.361','2023-09-27 17:57:06.361'),('test_1@voucher.blog','test-user-1','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106'),('test_10@voucher.blog','test-user-10','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106'),('test_2@voucher.blog','test-user-2','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106'),('test_3@voucher.blog','test-user-3','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106'),('test_4@voucher.blog','test-user-4','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106'),('test_5@voucher.blog','test-user-5','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106'),('test_6@voucher.blog','test-user-6','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106'),('test_7@voucher.blog','test-user-7','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106'),('test_8@voucher.blog','test-user-8','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106'),('test_9@voucher.blog','test-user-9','2023-10-12 04:59:08.106','2023-10-12 04:59:08.106');
+INSERT INTO `UserEmail` VALUES ('test0@voucher.blog','test','2023-12-11 03:48:39.279','2023-12-11 03:48:39.279'),('test1@voucher.blog','9b004834-7ed3-4d91-809c-2159223f592a','2023-12-11 03:49:03.851','2023-12-11 03:49:03.851'),('test2@voucher.blog','3432339e-a59f-492c-a5f6-742a372ed569','2023-12-11 03:49:06.975','2023-12-11 03:49:06.975'),('test3@voucher.blog','9aec04c7-186f-4582-b471-a151910d4109','2023-12-11 03:49:09.845','2023-12-11 03:49:09.845'),('test4@voucher.blog','0a7a342d-fb9e-4d81-b3a8-ff07edb1b3dd','2023-12-11 03:49:13.045','2023-12-11 03:49:13.045'),('test5@voucher.blog','62059237-47cb-4b2e-9b3c-fb82e665ef1a','2023-12-11 03:49:15.902','2023-12-11 03:49:15.902'),('test6@voucher.blog','1a8ed7db-fbba-4ae6-aac9-c446f5155d3e','2023-12-11 03:49:19.505','2023-12-11 03:49:19.505'),('test7@voucher.blog','8a4d4e5b-d990-4263-8200-3e028d150628','2023-12-11 03:49:23.051','2023-12-11 03:49:23.051'),('test8@voucher.blog','ebd3dfbe-89a9-49f0-8928-5a56b82de537','2023-12-11 03:49:26.201','2023-12-11 03:49:26.201'),('test9@voucher.blog','4e9e307a-7045-4fd4-a56a-63f829a926ee','2023-12-11 03:49:28.995','2023-12-11 03:49:28.995');
 /*!40000 ALTER TABLE `UserEmail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `UserLovePost`
+--
+
+DROP TABLE IF EXISTS `UserLovePost`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `UserLovePost` (
+  `user_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `post_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`post_id`,`user_id`),
+  KEY `UserLovePost_user_id_fkey` (`user_id`),
+  CONSTRAINT `UserLovePost_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `Post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `UserLovePost_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `UserLovePost`
+--
+
+LOCK TABLES `UserLovePost` WRITE;
+/*!40000 ALTER TABLE `UserLovePost` DISABLE KEYS */;
+/*!40000 ALTER TABLE `UserLovePost` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -560,6 +559,63 @@ LOCK TABLES `UserPhoneNumber` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `UserSavePost`
+--
+
+DROP TABLE IF EXISTS `UserSavePost`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `UserSavePost` (
+  `user_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `post_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`post_id`,`user_id`),
+  KEY `UserSavePost_user_id_fkey` (`user_id`),
+  CONSTRAINT `UserSavePost_post_id_fkey` FOREIGN KEY (`post_id`) REFERENCES `Post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `UserSavePost_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `UserSavePost`
+--
+
+LOCK TABLES `UserSavePost` WRITE;
+/*!40000 ALTER TABLE `UserSavePost` DISABLE KEYS */;
+/*!40000 ALTER TABLE `UserSavePost` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `UserUseVoucher`
+--
+
+DROP TABLE IF EXISTS `UserUseVoucher`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `UserUseVoucher` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `voucher_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (`id`),
+  KEY `UserUseVoucher_voucher_id_fkey` (`voucher_id`),
+  KEY `UserUseVoucher_user_id_fkey` (`user_id`),
+  CONSTRAINT `UserUseVoucher_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `UserUseVoucher_voucher_id_fkey` FOREIGN KEY (`voucher_id`) REFERENCES `Voucher` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `UserUseVoucher`
+--
+
+LOCK TABLES `UserUseVoucher` WRITE;
+/*!40000 ALTER TABLE `UserUseVoucher` DISABLE KEYS */;
+/*!40000 ALTER TABLE `UserUseVoucher` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Voucher`
 --
 
@@ -570,30 +626,26 @@ CREATE TABLE `Voucher` (
   `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `business_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` enum('SALE_OFF','GIFT') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` enum('DISCOUNT','GIFT') COLLATE utf8mb4_unicode_ci NOT NULL,
   `image_url` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `percent` int DEFAULT NULL,
-  `value` int DEFAULT NULL,
   `max_value` int DEFAULT NULL,
+  `value` int DEFAULT NULL,
+  `fixed_price` int DEFAULT NULL,
+  `usage` enum('ONE_TIME','UNTIL_EXPIRATION') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ONE_TIME',
+  `status` enum('AVAILABLE','SOLD_OUT','EXPIRED','DELETED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AVAILABLE',
+  `collected_count` int NOT NULL DEFAULT '0',
+  `max_use` int NOT NULL DEFAULT '0',
   `condition_min_bill_value` int DEFAULT NULL,
-  `condition_min_bill_item_count` int DEFAULT NULL,
-  `condition_product_id` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `condition_beginning_hour` int DEFAULT NULL,
   `condition_ending_hour` int DEFAULT NULL,
-  `usage` enum('ONE_TIME','UNTIL_EXPIRATION') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('AVAILABLE','SOLD_OUT','EXPIRED','DELETED') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `apply_date` datetime(3) NOT NULL,
-  `expiration_date` datetime(3) NOT NULL,
-  `count` int NOT NULL,
+  `condition_target` enum('ALL','SILVER','GOLD','DIAMOND') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'ALL',
   `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `fixed_price` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `Voucher_business_id_fkey` (`business_id`),
-  KEY `Voucher_condition_product_id_fkey` (`condition_product_id`),
-  CONSTRAINT `Voucher_business_id_fkey` FOREIGN KEY (`business_id`) REFERENCES `Business` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `Voucher_condition_product_id_fkey` FOREIGN KEY (`condition_product_id`) REFERENCES `Product` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `Voucher_business_id_fkey` FOREIGN KEY (`business_id`) REFERENCES `Business` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -603,108 +655,39 @@ CREATE TABLE `Voucher` (
 
 LOCK TABLES `Voucher` WRITE;
 /*!40000 ALTER TABLE `Voucher` DISABLE KEYS */;
-INSERT INTO `Voucher` VALUES ('test-voucher-1','test-business-1','Test Voucher 1','SALE_OFF','https://picsum.photos/200/300','For test',10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'ONE_TIME','AVAILABLE','2020-02-01 12:00:00.000','2020-02-28 12:00:00.000',9,'2023-10-02 07:41:14.689','2023-10-02 07:41:14.689',NULL),('test-voucher-2','test-business-1','Test Voucher 2','SALE_OFF','https://picsum.photos/200/300','For test',10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'ONE_TIME','AVAILABLE','2020-02-01 12:00:00.000','2020-02-28 12:00:00.000',9,'2023-10-02 07:41:14.689','2023-10-02 07:41:14.689',NULL),('test-voucher-3','test-business-1','Test Voucher 3','SALE_OFF','https://picsum.photos/200/300','For test',10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'ONE_TIME','AVAILABLE','2020-02-01 12:00:00.000','2020-02-28 12:00:00.000',9,'2023-10-02 07:41:14.689','2023-10-02 07:41:14.689',NULL),('test-voucher-4','test-business-2','Test Voucher 4','SALE_OFF','https://picsum.photos/200/300','For test',10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'ONE_TIME','AVAILABLE','2020-02-01 12:00:00.000','2020-02-28 12:00:00.000',9,'2023-10-02 07:41:14.689','2023-10-02 07:41:14.689',NULL),('test-voucher-5','test-business-2','Test Voucher 5','SALE_OFF','https://picsum.photos/200/300','For test',10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'ONE_TIME','AVAILABLE','2020-02-01 12:00:00.000','2020-02-28 12:00:00.000',9,'2023-10-02 07:41:14.689','2023-10-02 07:41:14.689',NULL),('test-voucher-6','test-business-2','Test Voucher 6','SALE_OFF','https://picsum.photos/200/300','For test',10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'ONE_TIME','AVAILABLE','2020-02-01 12:00:00.000','2020-02-28 12:00:00.000',9,'2023-10-02 07:41:14.689','2023-10-02 07:41:14.689',NULL),('test-voucher-7','test-business-3','Test Voucher 7','SALE_OFF','https://picsum.photos/200/300','For test',10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'ONE_TIME','AVAILABLE','2020-02-01 12:00:00.000','2020-02-28 12:00:00.000',9,'2023-10-02 07:41:14.689','2023-10-02 07:41:14.689',NULL),('test-voucher-8','test-business-3','Test Voucher 8','SALE_OFF','https://picsum.photos/200/300','For test',10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'ONE_TIME','AVAILABLE','2020-02-01 12:00:00.000','2020-02-28 12:00:00.000',9,'2023-10-02 07:41:14.689','2023-10-02 07:41:14.689',NULL),('test-voucher-9','test-business-3','Test Voucher 9','SALE_OFF','https://picsum.photos/200/300','For test',10,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'ONE_TIME','AVAILABLE','2020-02-01 12:00:00.000','2020-02-28 12:00:00.000',9,'2023-10-02 07:41:14.689','2023-10-02 07:41:14.689',NULL);
+INSERT INTO `Voucher` VALUES ('17f98267-980d-4736-acbe-a44d32ca8d09','6620ba66-cb1b-41cf-9f51-eae794e68438','ADLV 1','DISCOUNT','https://images.pexels.com/photos/5646986/pexels-photo-5646986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1','BIG DISCOUNT TODAY!!!',50,100000,NULL,NULL,'ONE_TIME','AVAILABLE',0,100,NULL,NULL,NULL,'ALL','2023-12-11 03:55:59.971','2023-12-11 03:55:59.971'),('8301da4f-e3e3-462b-a071-1f3ac12802c7','6620ba66-cb1b-41cf-9f51-eae794e68438','LOYALTY','DISCOUNT','https://images.pexels.com/photos/5646986/pexels-photo-5646986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1','BIG DISCOUNT TODAY!!!',NULL,NULL,NULL,1000,'ONE_TIME','AVAILABLE',0,0,NULL,NULL,NULL,'DIAMOND','2023-12-11 03:58:39.833','2023-12-11 03:58:39.833'),('9600643e-3794-49f4-a939-de1a1a419555','6620ba66-cb1b-41cf-9f51-eae794e68438',' ADLV 2','DISCOUNT','https://images.pexels.com/photos/5646986/pexels-photo-5646986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1','BIG DISCOUNT TODAY!!!',NULL,NULL,NULL,100000,'ONE_TIME','AVAILABLE',0,10,NULL,NULL,NULL,'ALL','2023-12-11 03:55:58.759','2023-12-11 03:55:58.759'),('ba76785b-14ee-400a-9dd9-aeafcaafc4ce','6620ba66-cb1b-41cf-9f51-eae794e68438','ADLV 3','DISCOUNT','https://images.pexels.com/photos/5646986/pexels-photo-5646986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1','BIG DISCOUNT TODAY!!!',NULL,NULL,50000,NULL,'ONE_TIME','AVAILABLE',0,500,1000000,NULL,NULL,'ALL','2023-12-11 03:55:55.365','2023-12-11 03:55:55.365');
 /*!40000 ALTER TABLE `Voucher` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `VoucherCustomer`
+-- Table structure for table `VoucherApplyProduct`
 --
 
-DROP TABLE IF EXISTS `VoucherCustomer`;
+DROP TABLE IF EXISTS `VoucherApplyProduct`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `VoucherCustomer` (
+CREATE TABLE `VoucherApplyProduct` (
   `voucher_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `use_count` int NOT NULL DEFAULT '0',
-  `created_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `updated_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  PRIMARY KEY (`voucher_id`,`user_id`),
-  KEY `VoucherCustomer_user_id_fkey` (`user_id`),
-  CONSTRAINT `VoucherCustomer_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `VoucherCustomer_voucher_id_fkey` FOREIGN KEY (`voucher_id`) REFERENCES `Voucher` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+  `product_id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`voucher_id`,`product_id`),
+  KEY `VoucherApplyProduct_product_id_fkey` (`product_id`),
+  CONSTRAINT `VoucherApplyProduct_product_id_fkey` FOREIGN KEY (`product_id`) REFERENCES `Product` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `VoucherApplyProduct_voucher_id_fkey` FOREIGN KEY (`voucher_id`) REFERENCES `Voucher` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `VoucherCustomer`
+-- Dumping data for table `VoucherApplyProduct`
 --
 
-LOCK TABLES `VoucherCustomer` WRITE;
-/*!40000 ALTER TABLE `VoucherCustomer` DISABLE KEYS */;
-/*!40000 ALTER TABLE `VoucherCustomer` ENABLE KEYS */;
+LOCK TABLES `VoucherApplyProduct` WRITE;
+/*!40000 ALTER TABLE `VoucherApplyProduct` DISABLE KEYS */;
+/*!40000 ALTER TABLE `VoucherApplyProduct` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'voucher-blog'
+-- Dumping routines for database 'test'
 --
-/*!50003 DROP FUNCTION IF EXISTS `CalculateDistance` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`root`@`%` FUNCTION `CalculateDistance`(
-
-    lat1 DECIMAL(9,6),
-
-    lon1 DECIMAL(9,6),
-
-    lat2 DECIMAL(9,6),
-
-    lon2 DECIMAL(9,6)
-
-) RETURNS decimal(10,2)
-    DETERMINISTIC
-BEGIN
-
-    DECLARE radlat1 DECIMAL(10,6);
-
-    DECLARE radlat2 DECIMAL(10,6);
-
-    DECLARE radlon1 DECIMAL(10,6);
-
-    DECLARE radlon2 DECIMAL(10,6);
-
-    DECLARE a DECIMAL(10,6);
-
-    DECLARE c DECIMAL(10,6);
-
-    DECLARE d DECIMAL(10,2);
-
-
-
-    SET radlat1 = RADIANS(lat1);
-
-    SET radlat2 = RADIANS(lat2);
-
-    SET radlon1 = RADIANS(lon1);
-
-    SET radlon2 = RADIANS(lon2);
-
-
-
-    SET a = SIN((radlat2 - radlat1) / 2) * SIN((radlat2 - radlat1) / 2) + COS(radlat1) * COS(radlat2) * SIN((radlon2 - radlon1) / 2) * SIN((radlon2 - radlon1) / 2);
-
-    SET c = 2 * ATAN2(SQRT(a), SQRT(1 - a));
-
-    SET d = 6371 * c; -- Earth's radius in kilometers
-
-
-
-    RETURN d;
-
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -715,4 +698,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-12 21:07:59
+-- Dump completed on 2023-12-11 12:05:41
