@@ -9,3 +9,5 @@ request.rest
 node_modules/
 
 dist/
+
+uploads/
