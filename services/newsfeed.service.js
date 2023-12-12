@@ -52,9 +52,24 @@ const getNewsfeed = async (user_id, address_id, radius) => {
                     index: true,
                     voucher: true
                 }
+            },
+            saves: {
+                select: {
+                    user_id: true
+                }
+            },
+            loves: {
+                select: {
+                    user_id: true
+                }
             }
         }
     });
+
+    for (const post of posts) {
+        post.isSaved = post.saves.some((save) => save.user_id === user_id);
+        post.isLoved = post.loves.some((love) => love.user_id === user_id);
+    }
 
     const newsfeed = posts.map((post) => {
         const { business_id, ...rest } = post;
