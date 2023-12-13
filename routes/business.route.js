@@ -14,12 +14,11 @@ router.post(
     '/',
     isAuth,
     upload.fields([
-        { name: 'businessAvatarImage', maxCount: 1 },
-        { name: 'businessFrontImages', maxCount: 4 },
-        { name: 'businessInsideImages', maxCount: 4 },
-        { name: 'businessMenuImages', maxCount: 4 },
-        { name: 'representerNationalIdImages', maxCount: 2 },
-        { name: 'representerLicenseImages', maxCount: 4 }
+        { name: 'avatarImage', maxCount: 1 },
+        { name: 'frontImages', maxCount: 4 },
+        { name: 'insideImages', maxCount: 4 },
+        { name: 'menuImages', maxCount: 4 },
+        { name: 'licenseImages', maxCount: 4 }
     ]),
     businessController.createBusiness
 );

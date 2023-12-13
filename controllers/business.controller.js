@@ -122,14 +122,15 @@ const createBusiness = async (req, res, next) => {
     try {
         const data = JSON.parse(req.body.data);
         const files = req.files;
-        for (const file of files.businessAvatarImage) {
-            data.avatar_image_url = file.path;
+        const serverUrl = `${req.protocol}://${req.get('host')}`;
+        for (const key in files) {
+            if (key === 'avatarImage') {
+                data.avatar_image_url = `${serverUrl}/${files[key][0].path}`;
+            } else {
+                data[key] = files[key].map((file) => `${serverUrl}/${file.path}`);
+            }
         }
-        // for (const file of files.businessFrontImages) {
-        // 	req.body.data.front_images.push(file.path);
-        // }
-        // TODO: Upload middleware (Multer) overrides req.body => req.body.payload not exists
-        const business = await businessService.createBusiness(req.body.payload.id, {});
+        const business = await businessService.createBusiness(req.user.id, data);
         return res.status(201).json({ message: 'Success', data: business });
     } catch (error) {
         next(error);

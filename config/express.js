@@ -13,6 +13,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true, limit: '100kb' }));
 app.use(bodyParser.json({ limit: '5mb' }));
 
+app.use('/uploads', express.static('uploads'));
 app.use('/', routes);
 app.use('/', errorHandler);
 

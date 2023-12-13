@@ -18,6 +18,7 @@ export const isAuth = (req, res, next) => {
         return res.status(500).json({ message: 'Error', error });
     }
     req.body.payload = payload;
+    req.user = payload;
     next();
 };
 

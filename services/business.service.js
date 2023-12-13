@@ -38,7 +38,7 @@ const getAllBusinesses = async (skip, take, query) => {
 };
 
 const getCategories = async () => {
-    const categories = await prisma.businessCategory.findMany();
+    const categories = await prisma.category.findMany();
     return categories;
 };
 
@@ -70,9 +70,10 @@ const getAllPosts = async (business_id, skip, take, query) => {
 };
 
 const createBusiness = async (userId, data) => {
+    const { licenseImages, frontImages, insideImages, menuImages, address_name, lat, lng, ...rest } = data;
     const business = await prisma.business.create({
         data: {
-            ...data,
+            ...rest,
             managers: {
                 create: {
                     user: { connect: { id: userId } }
@@ -80,23 +81,56 @@ const createBusiness = async (userId, data) => {
             }
         }
     });
+
+    const images = [];
+    images.concat(
+        licenseImages?.map((imageUrl) => ({
+            type: 'LICENSE',
+            url: imageUrl,
+            business_id: business.id
+        }))
+    );
+    images.concat(
+        frontImages?.map((imageUrl) => ({
+            type: 'FRONT',
+            url: imageUrl,
+            business_id: business.id
+        }))
+    );
+    images.concat(
+        insideImages?.map((imageUrl) => ({
+            type: 'INSIDE',
+            url: imageUrl,
+            business_id: business.id
+        }))
+    );
+    images.concat(
+        menuImages?.map((imageUrl) => ({
+            type: 'INSIDE',
+            url: imageUrl,
+            business_id: business.id
+        }))
+    );
+    await prisma.businessImage.createMany({
+        data: images
+    });
+
+    await prisma.businessAddress.create({
+        data: {
+            name: address_name,
+            lat,
+            lng,
+            business: {
+                connect: { id: business.id }
+            }
+        }
+    });
+
     return business;
 };
 
 const createBusinessAddress = async (business_id, data) => {
     const result = await prisma.businessAddress.create({
-        data: {
-            ...data,
-            business: {
-                connect: { id: business_id }
-            }
-        }
-    });
-    return result;
-};
-
-const createBusinessTimetable = async (business_id, data) => {
-    const result = await prisma.businessTimetable.create({
         data: {
             ...data,
             business: {
@@ -302,7 +336,6 @@ export default {
     getAllPosts,
     createBusiness,
     createBusinessAddress,
-    createBusinessTimetable,
     createProduct,
     createVoucher,
     createPost,
