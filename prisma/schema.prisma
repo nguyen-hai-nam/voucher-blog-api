@@ -23,6 +23,7 @@ enum BusinessStatus {
 enum UserAddressType {
   HOME
   OFFICE
+  OTHER
 }
 
 enum VoucherType {
