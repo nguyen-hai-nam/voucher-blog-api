@@ -1,9 +1,10 @@
 import { Prisma } from '@prisma/client';
 import createHttpError from 'http-errors';
 
-const errorHandler = (error, req, res) => {
+// eslint-disable-next-line no-unused-vars
+const errorHandler = (error, req, res, next) => {
     if (error instanceof createHttpError.HttpError) {
-        return res.status(error.statusCode).json({ message: error.message });
+        return res.status(error.statusCode).json({ message: 'Error', error });
     } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
             return res.status(404).json({ message: 'Prisma not found', error });

@@ -57,9 +57,10 @@ const login = async (req, res, next) => {
 
 // TODO: Revoke old tokens after changing password succcesfully
 const changePassword = async (req, res, next) => {
-    const { payload, oldPassword, newPassword } = req.body;
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user.id;
     try {
-        await authService.changePassword(payload.id, oldPassword, newPassword);
+        await authService.changePassword(userId, oldPassword, newPassword);
         return res.status(200).json({ message: 'Success' });
     } catch (error) {
         next(error);
