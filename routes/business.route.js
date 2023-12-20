@@ -26,12 +26,6 @@ router.get('/:id', isAuth, businessController.getBusinessById);
 router.patch('/:id', isAuth, businessController.updateBusinessById);
 router.delete('/:id', isAuth, businessController.deleteBusinessById);
 
-router.post('/:business_id/address', isAuth, businessController.createBusinessAddress);
-router.patch('/:business_id/address/:address_id', isAuth, businessController.updateBusinessAddressById);
-
-router.post('/:business_id/timetable', isAuth, businessController.createBusinessTimetable);
-router.patch('/:business_id/timetable/:timetable_id', isAuth, businessController.updateBusinessTimetableById);
-
 router.get('/:business_id/products/count', isAuth, businessController.countProducts);
 router.get('/:business_id/products', isAuth, businessController.getAllProducts);
 router.post('/:business_id/products', isAuth, businessController.createProduct);

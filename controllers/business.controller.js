@@ -119,9 +119,11 @@ const getAllPosts = async (req, res, next) => {
 };
 
 const createBusiness = async (req, res, next) => {
+    const userId = req.user.id;
     try {
         const data = JSON.parse(req.body.data);
         const files = req.files;
+        console.log(files);
         const serverUrl = `${req.protocol}://${req.get('host')}`;
         for (const key in files) {
             if (key === 'avatarImage') {
@@ -130,32 +132,8 @@ const createBusiness = async (req, res, next) => {
                 data[key] = files[key].map((file) => `${serverUrl}/${file.path}`);
             }
         }
-        const business = await businessService.createBusiness(req.user.id, data);
+        const business = await businessService.createBusiness(userId, data);
         return res.status(201).json({ message: 'Success', data: business });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const createBusinessAddress = async (req, res, next) => {
-    if (!req.body.payload) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-    try {
-        const result = await businessService.createBusinessAddress(req.params.business_id, req.body.data);
-        return res.status(201).json({ message: 'Success', data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const createBusinessTimetable = async (req, res, next) => {
-    if (!req.body.payload) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-    try {
-        const result = await businessService.createBusinessTimetable(req.params.business_id, req.body.data);
-        return res.status(201).json({ message: 'Success', data: result });
     } catch (error) {
         next(error);
     }
@@ -193,12 +171,8 @@ const getBusinessById = async (req, res, next) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { id } = req.params;
-    const query = {
-        address: req.query.address === 'true',
-        timetable: req.query.timetable === 'true'
-    };
     try {
-        const business = await businessService.getBusinessById(id, query);
+        const business = await businessService.getBusinessById(id);
         return res.status(200).json({ message: 'Success', data: business });
     } catch (error) {
         next(error);
@@ -411,8 +385,6 @@ export default {
     getAllVouchers,
     getAllPosts,
     createBusiness,
-    createBusinessAddress,
-    createBusinessTimetable,
     createProduct,
     createVoucher,
     createPost,

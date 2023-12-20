@@ -70,7 +70,8 @@ const getAllPosts = async (business_id, skip, take, query) => {
 };
 
 const createBusiness = async (userId, data) => {
-    const { licenseImages, frontImages, insideImages, menuImages, address_name, lat, lng, ...rest } = data;
+    console.log(data);
+    const { licenseImages, frontImages, insideImages, menuImages, ...rest } = data;
     const business = await prisma.business.create({
         data: {
             ...rest,
@@ -83,62 +84,40 @@ const createBusiness = async (userId, data) => {
     });
 
     const images = [];
-    images.concat(
+    images.push(
         licenseImages?.map((imageUrl) => ({
             type: 'LICENSE',
             url: imageUrl,
             business_id: business.id
         }))
     );
-    images.concat(
+    images.push(
         frontImages?.map((imageUrl) => ({
             type: 'FRONT',
             url: imageUrl,
             business_id: business.id
         }))
     );
-    images.concat(
+    images.push(
         insideImages?.map((imageUrl) => ({
             type: 'INSIDE',
             url: imageUrl,
             business_id: business.id
         }))
     );
-    images.concat(
+    images.push(
         menuImages?.map((imageUrl) => ({
-            type: 'INSIDE',
+            type: 'MENU',
             url: imageUrl,
             business_id: business.id
         }))
     );
+    const processedImages = images.flat().filter((image) => image);
     await prisma.businessImage.createMany({
-        data: images
-    });
-
-    await prisma.businessAddress.create({
-        data: {
-            name: address_name,
-            lat,
-            lng,
-            business: {
-                connect: { id: business.id }
-            }
-        }
+        data: processedImages
     });
 
     return business;
-};
-
-const createBusinessAddress = async (business_id, data) => {
-    const result = await prisma.businessAddress.create({
-        data: {
-            ...data,
-            business: {
-                connect: { id: business_id }
-            }
-        }
-    });
-    return result;
 };
 
 const createProduct = async (business_id, data) => {
@@ -177,13 +156,9 @@ const createPost = async (business_id, data) => {
     return result;
 };
 
-const getBusinessById = async (id, query) => {
+const getBusinessById = async (id) => {
     const business = await prisma.business.findUniqueOrThrow({
-        where: { id },
-        include: {
-            address: query.address,
-            timetable: query.timetable
-        }
+        where: { id }
     });
     return business;
 };
@@ -335,7 +310,6 @@ export default {
     getAllVouchers,
     getAllPosts,
     createBusiness,
-    createBusinessAddress,
     createProduct,
     createVoucher,
     createPost,
