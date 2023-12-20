@@ -26,11 +26,6 @@ enum UserAddressType {
   OTHER
 }
 
-enum VoucherType {
-  DISCOUNT
-  GIFT
-}
-
 enum VoucherUsage {
   ONE_TIME
   UNTIL_EXPIRATION
@@ -60,6 +55,8 @@ model User {
   id String @id @default(uuid())
   is_admin Boolean @default(false)
   password String
+  email String @unique
+  phone_number String? @unique
   name String?
   avatar_image_url String?
   national_id_front_image_url String?
@@ -68,36 +65,16 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  email UserEmail?
-  phone_number UserPhoneNumber?
   addresses UserAddress[]
   business_managers BusinessManager[]
   business_customers BusinessCustomer[]
   business_followers BusinessFollower[]
-  business_ratings BusinessRating[]
+  business_ratings UserRateBusiness[]
   collectedVouchers UserCollectVoucher[]
   usedVouchers UserUseVoucher[]
-  post_comments PostComment[]
-  loved_posts UserLovePost[]
-  saved_posts UserSavePost[]
-}
-
-model UserEmail {
-  id String @id
-  user_id String @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-}
-
-model UserPhoneNumber {
-  id String @id
-  user_id String @unique
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  comments UserCommentCampaign[]
+  lovedCampaign UserLoveCampaign[]
+  savedCampaign UserSaveCampaign[]
 }
 
 model UserAddress {
@@ -129,7 +106,9 @@ model Business {
   email String?
   phone_number String?
   website String?
-  address_id String? @unique
+  address_name String?
+  lng Float
+  lat Float
   open_hour String? // hh:mm
   close_hour String? // hh:mm
   lowest_price Int?
@@ -141,14 +120,13 @@ model Business {
   updated_at DateTime @default(now())
 
   category Category? @relation(fields: [category_id], references: [id])
-  address BusinessAddress? @relation(fields: [address_id], references: [id])
+  productCategories ProductCategory[]
   managers BusinessManager[]
   customers BusinessCustomer[]
   products Product[]
-  vouchers Voucher[]
   followers BusinessFollower[]
-  ratings BusinessRating[]
-  posts Post[]
+  ratings UserRateBusiness[]
+  campaigns Campaign[]
   images BusinessImage[]
 }
 
@@ -167,17 +145,6 @@ model BusinessImage {
   created_at DateTime @default(now())
 
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
-}
-
-model BusinessAddress {
-  id String @id @default(uuid())
-  name String?
-  lng Float?
-  lat Float?
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  business Business?
 }
 
 model BusinessManager {
@@ -214,7 +181,7 @@ model BusinessFollower {
   business Business @relation(fields: [business_id], references: [id])
 }
 
-model BusinessRating {
+model UserRateBusiness {
   business_id String
   user_id String
   content String
@@ -230,8 +197,8 @@ model BusinessRating {
 model Product {
   id String @id @default(uuid())
   business_id String
+  category_id String
   name String
-  image_url String
   description String
   price Int
   status ProductStatus @default(AVAILABLE)
@@ -239,16 +206,43 @@ model Product {
   updated_at DateTime @default(now())
 
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
+  category ProductCategory @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  images ProductImage[]
   applyingVouchers VoucherApplyProduct[]
+}
+
+model ProductCategory {
+  id String @id @default(uuid())
+  business_id String
+  name String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
+  products Product[]
+}
+
+model ProductImage {
+  id String @id @default(uuid())
+  product_id String
+  url String
+  created_at DateTime @default(now())
+
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
+
+enum VoucherType {
+  DISCOUNT
+  GIFT
 }
 
 model Voucher {
   id String @id @default(uuid())
-  business_id String
-  name String
+  campaign_id String
   type VoucherType
-  image_url String
+  media_url String
   description String
+  discount_type String?
   percent Int?
   max_value Int?
   value Int?
@@ -265,10 +259,9 @@ model Voucher {
   updated_at DateTime @default(now())
 
   appliedProducts VoucherApplyProduct[]
-  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
+  campaign Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
   collectedBy UserCollectVoucher[]
   usedBy UserUseVoucher[]
-  post_vouchers PostVoucher[]
 }
 
 model VoucherApplyProduct {
@@ -302,60 +295,59 @@ model UserUseVoucher {
   user User @relation(fields: [user_id], references: [id])
 }
 
-model Post {
+enum CampaignStatus {
+  ACTIVE
+  EXPIRED
+}
+
+model Campaign {
   id String @id @default(uuid())
   business_id String
-  content String
+  name String
+  description String
+  start_date DateTime
+  end_date DateTime
   love_count Int @default(0)
   save_count Int @default(0)
+  status CampaignStatus @default(ACTIVE)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
-  vouchers PostVoucher[]
-  comments PostComment[]
-  loves UserLovePost[]
-  saves UserSavePost[]
+  vouchers Voucher[]
+  comments UserCommentCampaign[]
+  loves UserLoveCampaign[]
+  saves UserSaveCampaign[]
 }
 
-model PostVoucher {
-  post_id String
-  voucher_id String
-  index Int
-
-  @@id([post_id, voucher_id])
-  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  voucher Voucher @relation(fields: [voucher_id], references: [id])
-}
-
-model PostComment {
+model UserCommentCampaign {
   id String @id @default(uuid())
-  post_id String?
+  post_id String
   user_id String
   content String
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  post Post? @relation(fields: [post_id], references: [id], onDelete: SetNull)
+  campaign Campaign @relation(fields: [post_id], references: [id], onDelete: Cascade)
   user User @relation(fields: [user_id], references: [id])
 }
 
-model UserLovePost {
+model UserLoveCampaign {
   user_id String
   post_id String
   created_at DateTime @default(now())
 
   @@id([post_id, user_id])
   user User @relation(fields: [user_id], references: [id])
-  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  campaign Campaign @relation(fields: [post_id], references: [id], onDelete: Cascade)
 }
 
-model UserSavePost {
+model UserSaveCampaign {
   user_id String
   post_id String
   created_at DateTime @default(now())
 
   @@id([post_id, user_id])
   user User @relation(fields: [user_id], references: [id])
-  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  campaign Campaign @relation(fields: [post_id], references: [id], onDelete: Cascade)
 }
