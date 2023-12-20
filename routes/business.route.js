@@ -28,7 +28,12 @@ router.delete('/:id', isAuth, businessController.deleteBusinessById);
 
 router.get('/:business_id/products/count', isAuth, businessController.countProducts);
 router.get('/:business_id/products', isAuth, businessController.getAllProducts);
-router.post('/:business_id/products', isAuth, businessController.createProduct);
+router.post(
+    '/:business_id/products',
+    isAuth,
+    upload.fields([{ name: 'productImages', maxCount: 4 }]),
+    businessController.createProduct
+);
 router.get('/:business_id/products/:id', isAuth, businessController.getProductById);
 router.patch('/:business_id/products/:id', isAuth, businessController.updateProductById);
 router.delete('/:business_id/products/:id', isAuth, businessController.deleteProductById);

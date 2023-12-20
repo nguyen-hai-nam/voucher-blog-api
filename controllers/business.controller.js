@@ -14,9 +14,6 @@ const countBusinesses = async (req, res, next) => {
 };
 
 const countProducts = async (req, res, next) => {
-    if (!req.body.payload) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
     try {
         const result = await businessService.countProducts(req.params.business_id);
         return res.status(200).json({ message: 'Success', data: { count: result } });
@@ -123,7 +120,6 @@ const createBusiness = async (req, res, next) => {
     try {
         const data = JSON.parse(req.body.data);
         const files = req.files;
-        console.log(files);
         const serverUrl = `${req.protocol}://${req.get('host')}`;
         for (const key in files) {
             if (key === 'avatarImage') {
@@ -141,7 +137,14 @@ const createBusiness = async (req, res, next) => {
 
 const createProduct = async (req, res, next) => {
     try {
-        const result = await businessService.createProduct(req.params.business_id, req.body.data);
+        const data = JSON.parse(req.body.data);
+        const { category_id, ...rest } = data;
+        const files = req.files;
+        const serverUrl = `${req.protocol}://${req.get('host')}`;
+        for (const key in files) {
+            rest[key] = files[key].map((file) => `${serverUrl}/${file.path}`);
+        }
+        const result = await businessService.createProduct(req.params.business_id, category_id, rest);
         return res.status(201).json({ message: 'Success', data: result });
     } catch (error) {
         next(error);
@@ -216,32 +219,6 @@ const updateBusinessById = async (req, res, next) => {
     const { id } = req.params;
     try {
         const business = await businessService.updateBusinessById(id, req.body.data);
-        return res.status(200).json({ message: 'Success', data: business });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const updateBusinessAddressById = async (req, res, next) => {
-    if (!req.body.payload) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-    const { business_id, address_id } = req.params;
-    try {
-        const business = await businessService.updateBusinessAddressById(business_id, address_id, req.body.data);
-        return res.status(200).json({ message: 'Success', data: business });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const updateBusinessTimetableById = async (req, res, next) => {
-    if (!req.body.payload) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-    const { id } = req.params;
-    try {
-        const business = await businessService.updateBusinessTimetableById(id, req.body.data);
         return res.status(200).json({ message: 'Success', data: business });
     } catch (error) {
         next(error);
@@ -393,8 +370,6 @@ export default {
     getVoucherById,
     getPostById,
     updateBusinessById,
-    updateBusinessAddressById,
-    updateBusinessTimetableById,
     updateProductById,
     updateVoucherById,
     updatePostById,

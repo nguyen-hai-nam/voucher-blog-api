@@ -70,7 +70,6 @@ const getAllPosts = async (business_id, skip, take, query) => {
 };
 
 const createBusiness = async (userId, data) => {
-    console.log(data);
     const { licenseImages, frontImages, insideImages, menuImages, ...rest } = data;
     const business = await prisma.business.create({
         data: {
@@ -120,14 +119,29 @@ const createBusiness = async (userId, data) => {
     return business;
 };
 
-const createProduct = async (business_id, data) => {
+const createProduct = async (businessId, categoryId, data) => {
+    const { productImages, ...rest } = data;
     const result = await prisma.product.create({
         data: {
-            ...data,
+            ...rest,
             business: {
-                connect: { id: business_id }
+                connect: { id: businessId }
+            },
+            category: {
+                connect: { id: categoryId }
             }
         }
+    });
+    const images = [];
+    images.push(
+        productImages?.map((imageUrl) => ({
+            product_id: result.id,
+            url: imageUrl
+        }))
+    );
+    const processedImages = images.flat().filter((image) => image);
+    await prisma.productImage.createMany({
+        data: processedImages
     });
     return result;
 };
@@ -165,7 +179,10 @@ const getBusinessById = async (id) => {
 
 const getProductById = async (business_id, id) => {
     const business = await prisma.product.findUniqueOrThrow({
-        where: { id, business: { id: business_id } }
+        where: { id, business: { id: business_id } },
+        include: {
+            images: true
+        }
     });
     return business;
 };
@@ -208,6 +225,7 @@ const updateBusinessAddressById = async (business_id, address_id, updateData) =>
 };
 
 const updateBusinessTimetableById = async (id, updateData) => {
+    console.log(updateData);
     const result = await prisma.businessTimetable.update({
         where: { id },
         data: updateData,
