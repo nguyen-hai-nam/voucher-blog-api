@@ -21,8 +21,8 @@ const countVouchers = async (business_id, query) => {
     return count;
 };
 
-const countPosts = async (business_id, query) => {
-    const count = await prisma.post.count({
+const countCampaigns = async (business_id, query) => {
+    const count = await prisma.campaign.count({
         where: { ...query, business: { id: business_id } }
     });
     return count;
@@ -60,8 +60,8 @@ const getAllVouchers = async (business_id, skip, take, query) => {
     return vouchers;
 };
 
-const getAllPosts = async (business_id, skip, take, query) => {
-    const businesses = await prisma.post.findMany({
+const getAllCampaigns = async (business_id, skip, take, query) => {
+    const businesses = await prisma.campaign.findMany({
         where: { ...query, business: { id: business_id } },
         skip,
         take
@@ -158,8 +158,8 @@ const createVoucher = async (business_id, data) => {
     return result;
 };
 
-const createPost = async (business_id, data) => {
-    const result = await prisma.post.create({
+const createCampaign = async (business_id, data) => {
+    const result = await prisma.campaign.create({
         data: {
             ...data,
             business: {
@@ -194,8 +194,8 @@ const getVoucherById = async (business_id, id) => {
     return business;
 };
 
-const getPostById = async (business_id, id) => {
-    const business = await prisma.post.findUniqueOrThrow({
+const getCampaignById = async (business_id, id) => {
+    const business = await prisma.campaign.findUniqueOrThrow({
         where: { id, business: { id: business_id } }
     });
     return business;
@@ -262,8 +262,8 @@ const updateVoucherById = async (business_id, id, updateData) => {
     return result;
 };
 
-const updatePostById = async (business_id, id, updateData) => {
-    const result = await prisma.post.update({
+const updateCampaignById = async (business_id, id, updateData) => {
+    const result = await prisma.campaign.update({
         where: {
             id,
             business: {
@@ -306,8 +306,8 @@ const deleteVoucherById = async (business_id, id) => {
     return result;
 };
 
-const deletePostById = async (business_id, id) => {
-    const result = await prisma.post.delete({
+const deleteCampaignById = async (business_id, id) => {
+    const result = await prisma.campaign.delete({
         where: {
             id,
             business: { id: business_id }
@@ -321,28 +321,28 @@ export default {
     countBusinesses,
     countProducts,
     countVouchers,
-    countPosts,
+    countCampaigns,
     getCategories,
     getAllBusinesses,
     getAllProducts,
     getAllVouchers,
-    getAllPosts,
+    getAllCampaigns,
     createBusiness,
     createProduct,
     createVoucher,
-    createPost,
+    createCampaign,
     getBusinessById,
     getProductById,
     getVoucherById,
-    getPostById,
+    getCampaignById,
     updateBusinessById,
     updateProductById,
     updateVoucherById,
-    updatePostById,
+    updateCampaignById,
     updateBusinessAddressById,
     updateBusinessTimetableById,
     deleteBusinessById,
     deleteProductById,
     deleteVoucherById,
-    deletePostById
+    deleteCampaignById
 };

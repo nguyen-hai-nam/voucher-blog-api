@@ -305,7 +305,7 @@ model Campaign {
   business_id String
   name String
   description String
-  start_date DateTime
+  start_date DateTime @default(now())
   end_date DateTime
   love_count Int @default(0)
   save_count Int @default(0)

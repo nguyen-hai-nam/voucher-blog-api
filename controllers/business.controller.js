@@ -34,12 +34,12 @@ const countVouchers = async (req, res, next) => {
     }
 };
 
-const countPosts = async (req, res, next) => {
+const countCampaigns = async (req, res, next) => {
     if (!req.body.payload) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
-        const result = await businessService.countPosts(req.params.business_id);
+        const result = await businessService.countCampaigns(req.params.business_id);
         return res.status(200).json({ message: 'Success', data: { count: result } });
     } catch (error) {
         next(error);
@@ -100,7 +100,7 @@ const getAllVouchers = async (req, res, next) => {
     }
 };
 
-const getAllPosts = async (req, res, next) => {
+const getAllCampaigns = async (req, res, next) => {
     if (!req.body.payload) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -108,7 +108,7 @@ const getAllPosts = async (req, res, next) => {
     const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
     const take = parseInt(perPage, 10);
     try {
-        const products = await businessService.getAllPosts(req.params.business_id, skip, take);
+        const products = await businessService.getAllCampaigns(req.params.business_id, skip, take);
         return res.status(200).json({ message: 'Success', page, perPage, data: products });
     } catch (error) {
         next(error);
@@ -160,9 +160,9 @@ const createVoucher = async (req, res, next) => {
     }
 };
 
-const createPost = async (req, res, next) => {
+const createCampaign = async (req, res, next) => {
     try {
-        const result = await businessService.createPost(req.params.business_id, req.body.data);
+        const result = await businessService.createCampaign(req.params.business_id, req.body.data);
         return res.status(201).json({ message: 'Success', data: result });
     } catch (error) {
         next(error);
@@ -202,10 +202,10 @@ const getVoucherById = async (req, res, next) => {
     }
 };
 
-const getPostById = async (req, res, next) => {
+const getCampaignById = async (req, res, next) => {
     const { business_id, id } = req.params;
     try {
-        const result = await businessService.getPostById(business_id, id);
+        const result = await businessService.getCampaignById(business_id, id);
         return res.status(200).json({ message: 'Success', data: result });
     } catch (error) {
         next(error);
@@ -245,10 +245,10 @@ const updateVoucherById = async (req, res, next) => {
     }
 };
 
-const updatePostById = async (req, res, next) => {
+const updateCampaignById = async (req, res, next) => {
     const { business_id, id } = req.params;
     try {
-        const result = await businessService.updatePostById(business_id, id, req.body.data);
+        const result = await businessService.updateCampaignById(business_id, id, req.body.data);
         return res.status(200).json({ message: 'Success', data: result });
     } catch (error) {
         next(error);
@@ -288,10 +288,10 @@ const deleteVoucherById = async (req, res, next) => {
     }
 };
 
-const deletePostById = async (req, res, next) => {
+const deleteCampaignById = async (req, res, next) => {
     const { business_id, id } = req.params;
     try {
-        const result = await businessService.deletePostById(business_id, id);
+        const result = await businessService.deleteCampaignById(business_id, id);
         return res.status(200).json({ message: 'Success', data: result });
     } catch (error) {
         next(error);
@@ -355,28 +355,28 @@ export default {
     countBusinesses,
     countProducts,
     countVouchers,
-    countPosts,
+    countCampaigns,
     getCategories,
     getAllBusinesses,
     getAllProducts,
     getAllVouchers,
-    getAllPosts,
+    getAllCampaigns,
     createBusiness,
     createProduct,
     createVoucher,
-    createPost,
+    createCampaign,
     getBusinessById,
     getProductById,
     getVoucherById,
-    getPostById,
+    getCampaignById,
     updateBusinessById,
     updateProductById,
     updateVoucherById,
-    updatePostById,
+    updateCampaignById,
     deleteBusinessById,
     deleteProductById,
     deleteVoucherById,
-    deletePostById,
+    deleteCampaignById,
     followBusinessById,
     unfollowBusinessById
 };

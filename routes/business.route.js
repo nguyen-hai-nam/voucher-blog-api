@@ -45,12 +45,12 @@ router.get('/:business_id/vouchers/:id', isAuth, businessController.getVoucherBy
 router.patch('/:business_id/vouchers/:id', isAuth, businessController.updateVoucherById);
 router.delete('/:business_id/vouchers/:id', isAuth, businessController.deleteVoucherById);
 
-router.get('/:business_id/posts/count', isAuth, businessController.countPosts);
-router.get('/:business_id/posts', isAuth, businessController.getAllPosts);
-router.post('/:business_id/posts', isAuth, businessController.createPost);
-router.get('/:business_id/posts/:id', isAuth, businessController.getPostById);
-router.patch('/:business_id/posts/:id', isAuth, businessController.updatePostById);
-router.delete('/:business_id/posts/:id', isAuth, businessController.deletePostById);
+router.get('/:business_id/campaigns/count', isAuth, businessController.countCampaigns);
+router.get('/:business_id/campaigns', isAuth, businessController.getAllCampaigns);
+router.post('/:business_id/campaigns', isAuth, businessController.createCampaign);
+router.get('/:business_id/campaigns/:id', isAuth, businessController.getCampaignById);
+router.patch('/:business_id/campaigns/:id', isAuth, businessController.updateCampaignById);
+router.delete('/:business_id/campaigns/:id', isAuth, businessController.deleteCampaignById);
 
 // TODO: move to user route
 router.post('/:id/follow', isAuth, businessController.followBusinessById);
