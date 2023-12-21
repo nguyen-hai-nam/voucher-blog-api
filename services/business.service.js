@@ -14,13 +14,6 @@ const countProducts = async (business_id, query) => {
     return count;
 };
 
-const countVouchers = async (business_id, query) => {
-    const count = await prisma.voucher.count({
-        where: { ...query, business: { id: business_id } }
-    });
-    return count;
-};
-
 const countCampaigns = async (business_id, query) => {
     const count = await prisma.campaign.count({
         where: { ...query, business: { id: business_id } }
@@ -49,15 +42,6 @@ const getAllProducts = async (business_id, skip, take, query) => {
         take
     });
     return products;
-};
-
-const getAllVouchers = async (business_id, skip, take, query) => {
-    const vouchers = await prisma.voucher.findMany({
-        where: { ...query, business: { id: business_id } },
-        skip,
-        take
-    });
-    return vouchers;
 };
 
 const getAllCampaigns = async (business_id, skip, take, query) => {
@@ -146,27 +130,38 @@ const createProduct = async (businessId, categoryId, data) => {
     return result;
 };
 
-const createVoucher = async (business_id, data) => {
-    const result = await prisma.voucher.create({
-        data: {
-            ...data,
-            business: {
-                connect: { id: business_id }
-            }
-        }
-    });
-    return result;
-};
-
 const createCampaign = async (business_id, data) => {
+    const { vouchers, ...rest } = data;
+    const products = [];
+    for (const voucher of vouchers) {
+        products[voucher.index] = voucher.products;
+    }
     const result = await prisma.campaign.create({
         data: {
-            ...data,
+            ...rest,
             business: {
                 connect: { id: business_id }
+            },
+            vouchers: {
+                createMany: {
+                    data: vouchers.map((voucher) => {
+                        // eslint-disable-next-line no-unused-vars
+                        const { products, ...rest } = voucher;
+                        return { ...rest };
+                    })
+                }
             }
+        },
+        include: {
+            vouchers: true
         }
     });
+    for (const voucher of result.vouchers) {
+        if (!products[voucher.index]) continue;
+        await prisma.voucherApplyProduct.createMany({
+            data: products[voucher.index].map((productId) => ({ voucher_id: voucher.id, product_id: productId }))
+        });
+    }
     return result;
 };
 
@@ -187,16 +182,10 @@ const getProductById = async (business_id, id) => {
     return business;
 };
 
-const getVoucherById = async (business_id, id) => {
-    const business = await prisma.voucher.findUniqueOrThrow({
-        where: { id, business: { id: business_id } }
-    });
-    return business;
-};
-
 const getCampaignById = async (business_id, id) => {
     const business = await prisma.campaign.findUniqueOrThrow({
-        where: { id, business: { id: business_id } }
+        where: { id, business: { id: business_id } },
+        include: { vouchers: true }
     });
     return business;
 };
@@ -210,46 +199,8 @@ const updateBusinessById = async (id, updateData) => {
     return updatedBusinessId;
 };
 
-const updateBusinessAddressById = async (business_id, address_id, updateData) => {
-    const result = await prisma.businessAddress.update({
-        where: {
-            id: address_id,
-            business: {
-                is: { id: business_id }
-            }
-        },
-        data: updateData,
-        select: { id: true }
-    });
-    return result;
-};
-
-const updateBusinessTimetableById = async (id, updateData) => {
-    console.log(updateData);
-    const result = await prisma.businessTimetable.update({
-        where: { id },
-        data: updateData,
-        select: { id: true }
-    });
-    return result;
-};
-
 const updateProductById = async (business_id, id, updateData) => {
     const result = await prisma.product.update({
-        where: {
-            id,
-            business: {
-                id: business_id
-            }
-        },
-        data: updateData,
-        select: { id: true }
-    });
-    return result;
-};
-
-const updateVoucherById = async (business_id, id, updateData) => {
-    const result = await prisma.voucher.update({
         where: {
             id,
             business: {
@@ -295,17 +246,6 @@ const deleteProductById = async (business_id, id) => {
     return result;
 };
 
-const deleteVoucherById = async (business_id, id) => {
-    const result = await prisma.voucher.delete({
-        where: {
-            id,
-            business: { id: business_id }
-        },
-        select: { id: true }
-    });
-    return result;
-};
-
 const deleteCampaignById = async (business_id, id) => {
     const result = await prisma.campaign.delete({
         where: {
@@ -320,29 +260,21 @@ const deleteCampaignById = async (business_id, id) => {
 export default {
     countBusinesses,
     countProducts,
-    countVouchers,
     countCampaigns,
     getCategories,
     getAllBusinesses,
     getAllProducts,
-    getAllVouchers,
     getAllCampaigns,
     createBusiness,
     createProduct,
-    createVoucher,
     createCampaign,
     getBusinessById,
     getProductById,
-    getVoucherById,
     getCampaignById,
     updateBusinessById,
     updateProductById,
-    updateVoucherById,
     updateCampaignById,
-    updateBusinessAddressById,
-    updateBusinessTimetableById,
     deleteBusinessById,
     deleteProductById,
-    deleteVoucherById,
     deleteCampaignById
 };

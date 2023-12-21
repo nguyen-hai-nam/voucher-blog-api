@@ -236,9 +236,16 @@ enum VoucherType {
   GIFT
 }
 
+enum DiscountType {
+  PERCENT
+  VALUE
+  FIXED_PRICE
+}
+
 model Voucher {
   id String @id @default(uuid())
   campaign_id String
+  index Int
   type VoucherType
   media_url String
   description String
@@ -250,10 +257,10 @@ model Voucher {
   usage VoucherUsage @default(ONE_TIME)
   status VoucherStatus @default(AVAILABLE)
   collected_count Int @default(0)
-  max_use Int @default(0)
+  max_use Int
   condition_min_bill_value Int?
-  condition_beginning_hour Int?
-  condition_ending_hour Int?
+  condition_beginning_hour String?
+  condition_ending_hour String?
   condition_target VoucherTarget @default(ALL)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
@@ -269,8 +276,8 @@ model VoucherApplyProduct {
   product_id String
 
   @@id([voucher_id, product_id])
-  voucher Voucher @relation(fields: [voucher_id], references: [id])
-  product Product @relation(fields: [product_id], references: [id])
+  voucher Voucher @relation(fields: [voucher_id], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
 model UserCollectVoucher {

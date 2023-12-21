@@ -38,16 +38,9 @@ router.get('/:business_id/products/:id', isAuth, businessController.getProductBy
 router.patch('/:business_id/products/:id', isAuth, businessController.updateProductById);
 router.delete('/:business_id/products/:id', isAuth, businessController.deleteProductById);
 
-router.get('/:business_id/vouchers/count', isAuth, businessController.countVouchers);
-router.get('/:business_id/vouchers', isAuth, businessController.getAllVouchers);
-router.post('/:business_id/vouchers', isAuth, businessController.createVoucher);
-router.get('/:business_id/vouchers/:id', isAuth, businessController.getVoucherById);
-router.patch('/:business_id/vouchers/:id', isAuth, businessController.updateVoucherById);
-router.delete('/:business_id/vouchers/:id', isAuth, businessController.deleteVoucherById);
-
 router.get('/:business_id/campaigns/count', isAuth, businessController.countCampaigns);
 router.get('/:business_id/campaigns', isAuth, businessController.getAllCampaigns);
-router.post('/:business_id/campaigns', isAuth, businessController.createCampaign);
+router.post('/:business_id/campaigns', isAuth, upload.any(), businessController.createCampaign);
 router.get('/:business_id/campaigns/:id', isAuth, businessController.getCampaignById);
 router.patch('/:business_id/campaigns/:id', isAuth, businessController.updateCampaignById);
 router.delete('/:business_id/campaigns/:id', isAuth, businessController.deleteCampaignById);

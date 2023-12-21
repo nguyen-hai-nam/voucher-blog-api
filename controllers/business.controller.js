@@ -22,18 +22,6 @@ const countProducts = async (req, res, next) => {
     }
 };
 
-const countVouchers = async (req, res, next) => {
-    if (!req.body.payload) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-    try {
-        const result = await businessService.countVouchers(req.params.business_id);
-        return res.status(200).json({ message: 'Success', data: { count: result } });
-    } catch (error) {
-        next(error);
-    }
-};
-
 const countCampaigns = async (req, res, next) => {
     if (!req.body.payload) {
         return res.status(401).json({ message: 'Unauthorized' });
@@ -79,21 +67,6 @@ const getAllProducts = async (req, res, next) => {
     const take = parseInt(perPage, 10);
     try {
         const products = await businessService.getAllProducts(req.params.business_id, skip, take);
-        return res.status(200).json({ message: 'Success', page, perPage, data: products });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const getAllVouchers = async (req, res, next) => {
-    if (!req.body.payload) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-    const { page = '1', perPage = '100' } = req.query;
-    const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
-    const take = parseInt(perPage, 10);
-    try {
-        const products = await businessService.getAllVouchers(req.params.business_id, skip, take);
         return res.status(200).json({ message: 'Success', page, perPage, data: products });
     } catch (error) {
         next(error);
@@ -151,18 +124,37 @@ const createProduct = async (req, res, next) => {
     }
 };
 
-const createVoucher = async (req, res, next) => {
-    try {
-        const result = await businessService.createVoucher(req.params.business_id, req.body.data);
-        return res.status(201).json({ message: 'Success', data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
 const createCampaign = async (req, res, next) => {
     try {
-        const result = await businessService.createCampaign(req.params.business_id, req.body.data);
+        const data = JSON.parse(req.body.data);
+        data.vouchers.sort((a, b) => a.index - b.index);
+        const isAscendingFromZero = data.vouchers.every((voucher, i) => voucher.index === i);
+        if (!isAscendingFromZero) {
+            return res
+                .status(400)
+                .json({ message: 'Index properties of vouchers are not an ascending series starting from 0' });
+        }
+        const products = await prisma.product.findMany({
+            where: { business_id: req.params.business_id },
+            select: {
+                id: true
+            }
+        });
+        const availableProductIds = products.map((product) => product.id);
+        for (const voucher of data.vouchers) {
+            if (!voucher.products) continue;
+            for (const productId of voucher.products) {
+                if (!availableProductIds.includes(productId))
+                    return res.status(400).json({ message: 'Invalid product id' });
+            }
+        }
+        const files = req.files;
+        const serverUrl = `${req.protocol}://${req.get('host')}`;
+        for (const file of files) {
+            const index = parseInt(file.fieldname.split('_')[1]);
+            data.vouchers[index].media_url = `${serverUrl}/${file.path}`;
+        }
+        const result = await businessService.createCampaign(req.params.business_id, data);
         return res.status(201).json({ message: 'Success', data: result });
     } catch (error) {
         next(error);
@@ -186,16 +178,6 @@ const getProductById = async (req, res, next) => {
     const { business_id, id } = req.params;
     try {
         const result = await businessService.getProductById(business_id, id);
-        return res.status(200).json({ message: 'Success', data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const getVoucherById = async (req, res, next) => {
-    const { business_id, id } = req.params;
-    try {
-        const result = await businessService.getVoucherById(business_id, id);
         return res.status(200).json({ message: 'Success', data: result });
     } catch (error) {
         next(error);
@@ -235,16 +217,6 @@ const updateProductById = async (req, res, next) => {
     }
 };
 
-const updateVoucherById = async (req, res, next) => {
-    const { business_id, id } = req.params;
-    try {
-        const result = await businessService.updateVoucherById(business_id, id, req.body.data);
-        return res.status(200).json({ message: 'Success', data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
 const updateCampaignById = async (req, res, next) => {
     const { business_id, id } = req.params;
     try {
@@ -272,16 +244,6 @@ const deleteProductById = async (req, res, next) => {
     const { business_id, id } = req.params;
     try {
         const result = await businessService.deleteProductById(business_id, id);
-        return res.status(200).json({ message: 'Success', data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const deleteVoucherById = async (req, res, next) => {
-    const { business_id, id } = req.params;
-    try {
-        const result = await businessService.deleteVoucherById(business_id, id);
         return res.status(200).json({ message: 'Success', data: result });
     } catch (error) {
         next(error);
@@ -354,28 +316,22 @@ const unfollowBusinessById = async (req, res) => {
 export default {
     countBusinesses,
     countProducts,
-    countVouchers,
     countCampaigns,
     getCategories,
     getAllBusinesses,
     getAllProducts,
-    getAllVouchers,
     getAllCampaigns,
     createBusiness,
     createProduct,
-    createVoucher,
     createCampaign,
     getBusinessById,
     getProductById,
-    getVoucherById,
     getCampaignById,
     updateBusinessById,
     updateProductById,
-    updateVoucherById,
     updateCampaignById,
     deleteBusinessById,
     deleteProductById,
-    deleteVoucherById,
     deleteCampaignById,
     followBusinessById,
     unfollowBusinessById
