@@ -11,8 +11,8 @@ const getNewsfeed = async (user_id, address_id, radius) => {
 			b.id,
 			b.name,
 			b.avatar_image_url,
-			ba.name AS address_name,
-			ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) AS distance,
+			b.address_name,
+			ST_Distance_Sphere(point(?, ?), point(b.lat, b.lng)) AS distance,
 			EXISTS(
 				SELECT 1
 				FROM BusinessFollower bf
@@ -20,9 +20,8 @@ const getNewsfeed = async (user_id, address_id, radius) => {
 			) AS is_followed
 		FROM
 			Business b
-			JOIN BusinessAddress ba ON b.address_id = ba.id
 		WHERE
-			ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) <= ?
+			ST_Distance_Sphere(point(?, ?), point(b.lat, b.lng)) <= ?
 		`,
         userAddress.lat,
         userAddress.lng,
@@ -39,7 +38,9 @@ const getNewsfeed = async (user_id, address_id, radius) => {
         return res;
     }, {});
 
-    const posts = await prisma.post.findMany({
+    console.log(metaDataMap);
+
+    const campaigns = await prisma.campaign.findMany({
         orderBy: { created_at: 'desc' },
         where: {
             business_id: {
@@ -48,10 +49,7 @@ const getNewsfeed = async (user_id, address_id, radius) => {
         },
         include: {
             vouchers: {
-                select: {
-                    index: true,
-                    voucher: true
-                }
+                orderBy: { index: 'asc' }
             },
             saves: {
                 select: {
@@ -62,16 +60,17 @@ const getNewsfeed = async (user_id, address_id, radius) => {
                 select: {
                     user_id: true
                 }
-            }
+            },
+            comments: true
         }
     });
 
-    for (const post of posts) {
-        post.isSaved = post.saves.some((save) => save.user_id === user_id);
-        post.isLoved = post.loves.some((love) => love.user_id === user_id);
+    for (const campaign of campaigns) {
+        campaign.isSaved = campaign.saves.some((save) => save.user_id === user_id);
+        campaign.isLoved = campaign.loves.some((love) => love.user_id === user_id);
     }
 
-    const newsfeed = posts.map((post) => {
+    const newsfeed = campaigns.map((post) => {
         const { business_id, ...rest } = post;
         return {
             ...rest,
@@ -93,13 +92,12 @@ const getBusinessSuggestion = async (user_id, address_id, radius) => {
             b.id,
             b.name,
             b.avatar_image_url,
-            ba.name AS address_name,
-            ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) AS distance
+            b.address_name,
+            ST_Distance_Sphere(point(?, ?), point(b.lat, b.lng)) AS distance
         FROM
             Business b
-            JOIN BusinessAddress ba ON b.address_id = ba.id
         WHERE
-            ST_Distance_Sphere(point(?, ?), point(ba.lat, ba.lng)) <= ?
+            ST_Distance_Sphere(point(?, ?), point(b.lat, b.lng)) <= ?
             AND NOT EXISTS (
                 SELECT 1
                 FROM BusinessFollower bf
