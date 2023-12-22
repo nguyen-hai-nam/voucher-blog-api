@@ -20,9 +20,6 @@ ENV DATABASE_URL=mysql://root:voucher-blog-secret@db:3306/test
 ENV ADMIN_EMAIL=admin@voucher.blog
 ENV ADMIN_PASSWORD=admin
 
-# Generate Prisma schema
-RUN npx prisma generate
-
 # Expose the port that the app will run on
 EXPOSE 3000
 
