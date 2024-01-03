@@ -313,6 +313,68 @@ const unfollowBusinessById = async (req, res) => {
     }
 };
 
+const countProductCategories = async (req, res, next) => {
+    const { businessId } = req.params;
+    try {
+        const result = await businessService.countProductCategories(businessId);
+        return res.status(200).json({ success: true, data: { count: result } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getProductCategories = async (req, res, next) => {
+    const { businessId } = req.params;
+    try {
+        const result = await businessService.getProductCategories(businessId);
+        return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const createProductCategory = async (req, res, next) => {
+    const { businessId } = req.params;
+    const data = req.body;
+    try {
+        const result = await businessService.createProductCategory(businessId, data);
+        return res.status(201).json({ success: true, data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const getProductCategory = async (req, res, next) => {
+    const { businessId, id } = req.params;
+    try {
+        const result = await businessService.getProductCategory(businessId, id);
+        return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateProductCategory = async (req, res, next) => {
+    const { businessId, id } = req.params;
+    const data = req.body;
+    try {
+        const result = await businessService.updateProductCategory(businessId, id, data);
+        return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const deleteProductCategory = async (req, res, next) => {
+    const { businessId, id } = req.params;
+    try {
+        const result = await businessService.deleteProductCategory(businessId, id);
+        return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     countBusinesses,
     countProducts,
@@ -334,5 +396,12 @@ export default {
     deleteProductById,
     deleteCampaignById,
     followBusinessById,
-    unfollowBusinessById
+    unfollowBusinessById,
+
+    countProductCategories,
+    getProductCategories,
+    createProductCategory,
+    getProductCategory,
+    updateProductCategory,
+    deleteProductCategory
 };

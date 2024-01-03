@@ -1,4 +1,5 @@
 import prisma from '../config/prisma.js';
+import { productCategoryCreateSchema, productCategoryUpdateSchema } from '../schemas/productCategory.schema.js';
 
 const countBusinesses = async (query) => {
     const count = await prisma.business.count({
@@ -257,6 +258,62 @@ const deleteCampaignById = async (business_id, id) => {
     return result;
 };
 
+const countProductCategories = async (businessId, where) => {
+    const count = await prisma.productCategory.count({
+        where: { where, business: { id: businessId } }
+    });
+    return count;
+};
+
+const getProductCategories = async (businessId, skip, take, where, select, include) => {
+    const productCategories = await prisma.productCategory.findMany({
+        where: { where, business: { id: businessId } },
+        skip,
+        take,
+        select,
+        include
+    });
+    return productCategories;
+};
+
+const createProductCategory = async (businessId, data) => {
+    const validatedData = await productCategoryCreateSchema.validateAsync(data);
+    const result = await prisma.productCategory.create({
+        data: {
+            ...validatedData,
+            business: {
+                connect: { id: businessId }
+            }
+        }
+    });
+    return result;
+};
+
+const getProductCategory = async (businessId, id, select, include) => {
+    const result = await prisma.productCategory.findUniqueOrThrow({
+        where: { id, business: { id: businessId } },
+        select,
+        include
+    });
+    return result;
+};
+
+const updateProductCategory = async (businessId, id, data) => {
+    const validatedData = await productCategoryUpdateSchema.validateAsync(data);
+    const result = await prisma.productCategory.update({
+        where: { id, business: { id: businessId } },
+        validatedData
+    });
+    return result;
+};
+
+const deleteProductCategory = async (businessId, id) => {
+    const result = await prisma.productCategory.delete({
+        where: { id, business: { id: businessId } }
+    });
+    return result;
+};
+
 export default {
     countBusinesses,
     countProducts,
@@ -276,5 +333,12 @@ export default {
     updateCampaignById,
     deleteBusinessById,
     deleteProductById,
-    deleteCampaignById
+    deleteCampaignById,
+
+    countProductCategories,
+    getProductCategories,
+    createProductCategory,
+    getProductCategory,
+    updateProductCategory,
+    deleteProductCategory
 };
