@@ -36,11 +36,13 @@ const getCategories = async () => {
     return categories;
 };
 
-const getAllProducts = async (business_id, skip, take, query) => {
+const getAllProducts = async (businessId, query) => {
     const products = await prisma.product.findMany({
-        where: { ...query, business: { id: business_id } },
-        skip,
-        take
+        where: { ...query.where, business: { id: businessId } },
+        skip: query.skip,
+        take: query.take,
+        select: query.select,
+        include: query.include
     });
     return products;
 };
@@ -104,23 +106,24 @@ const createBusiness = async (userId, data) => {
     return business;
 };
 
-const createProduct = async (businessId, categoryId, data) => {
-    const { productImages, ...rest } = data;
-    const result = await prisma.product.create({
+const createProduct = async (businessId, data, query) => {
+    const { productImages, category_id, ...rest } = data;
+    const createdProduct = await prisma.product.create({
         data: {
             ...rest,
             business: {
                 connect: { id: businessId }
             },
             category: {
-                connect: { id: categoryId }
+                connect: { id: category_id }
             }
-        }
+        },
+        select: { id: true }
     });
     const images = [];
     images.push(
         productImages?.map((imageUrl) => ({
-            product_id: result.id,
+            product_id: createdProduct.id,
             url: imageUrl
         }))
     );
@@ -128,6 +131,13 @@ const createProduct = async (businessId, categoryId, data) => {
     await prisma.productImage.createMany({
         data: processedImages
     });
+
+    const result = await prisma.product.findUnique({
+        where: { id: createdProduct.id },
+        select: query.select,
+        include: query.include
+    });
+
     return result;
 };
 

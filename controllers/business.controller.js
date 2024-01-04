@@ -1,5 +1,6 @@
 import prisma from '../config/prisma.js';
 import businessService from '../services/business.service.js';
+import { parseQuery } from '../helpers/http.helper.js';
 
 const countBusinesses = async (req, res, next) => {
     if (!req.body.payload) {
@@ -62,12 +63,11 @@ const getAllProducts = async (req, res, next) => {
     if (!req.body.payload) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
-    const { page = '1', perPage = '100' } = req.query;
-    const skip = (parseInt(page, 10) - 1) * parseInt(perPage, 10);
-    const take = parseInt(perPage, 10);
+    const { businessId } = req.params;
+    const query = parseQuery(req.query);
     try {
-        const products = await businessService.getAllProducts(req.params.business_id, skip, take);
-        return res.status(200).json({ message: 'Success', page, perPage, data: products });
+        const products = await businessService.getAllProducts(businessId, query);
+        return res.status(200).json({ message: 'Success', data: products });
     } catch (error) {
         next(error);
     }
@@ -109,16 +109,17 @@ const createBusiness = async (req, res, next) => {
 };
 
 const createProduct = async (req, res, next) => {
+    const { businessId } = req.params;
+    const query = parseQuery(req.query);
     try {
         const data = JSON.parse(req.body.data);
-        const { category_id, ...rest } = data;
         const files = req.files;
         const serverUrl = `${req.protocol}://${req.get('host')}`;
         for (const key in files) {
-            rest[key] = files[key].map((file) => `${serverUrl}/${file.path}`);
+            data[key] = files[key].map((file) => `${serverUrl}/${file.path}`);
         }
-        const result = await businessService.createProduct(req.params.business_id, category_id, rest);
-        return res.status(201).json({ message: 'Success', data: result });
+        const result = await businessService.createProduct(businessId, data, query);
+        return res.status(201).json({ success: true, data: result });
     } catch (error) {
         next(error);
     }

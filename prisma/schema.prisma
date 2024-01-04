@@ -40,15 +40,12 @@ enum VoucherTarget {
 
 enum VoucherStatus {
   AVAILABLE
-  SOLD_OUT
-  EXPIRED
-  DELETED
+  UNAVAILABLE
 }
 
 enum ProductStatus {
   AVAILABLE
-  SOLD_OUT
-  DELETED
+  UNAVAILABLE
 }
 
 model User {

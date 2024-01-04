@@ -29,7 +29,7 @@ router.delete('/:id', isAuth, businessController.deleteBusinessById);
 router.get('/:business_id/products/count', isAuth, businessController.countProducts);
 router.get('/:business_id/products', isAuth, businessController.getAllProducts);
 router.post(
-    '/:business_id/products',
+    '/:businessId/products',
     isAuth,
     upload.fields([{ name: 'productImages', maxCount: 4 }]),
     businessController.createProduct
