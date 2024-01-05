@@ -7,5 +7,6 @@ const router = express.Router();
 
 router.get('/:user_id/:address_id', isAuth, newsfeedController.getNewsfeed);
 router.get('/:user_id/:address_id/suggestion', isAuth, newsfeedController.getBusinessSuggestion);
+router.get('/search', isAuth, newsfeedController.search);
 
 export default router;

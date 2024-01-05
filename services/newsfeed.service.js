@@ -118,7 +118,80 @@ const getBusinessSuggestion = async (user_id, address_id, radius) => {
     return businessSuggestion;
 };
 
+const search = async (keyword) => {
+    const businesses = await prisma.business.findMany({
+        where: {
+            OR: [
+                { name: { contains: keyword } },
+                { description: { contains: keyword } },
+                {
+                    category: {
+                        name: { contains: keyword }
+                    }
+                },
+                {
+                    products: {
+                        some: {
+                            name: { contains: keyword }
+                        }
+                    }
+                },
+                {
+                    products: {
+                        some: {
+                            description: { contains: keyword }
+                        }
+                    }
+                },
+                {
+                    productCategories: {
+                        some: {
+                            name: { contains: keyword }
+                        }
+                    }
+                },
+                {
+                    campaigns: {
+                        some: {
+                            name: { contains: keyword }
+                        }
+                    }
+                },
+                {
+                    campaigns: {
+                        some: {
+                            description: { contains: keyword }
+                        }
+                    }
+                }
+            ]
+        }
+    });
+
+    const campaigns = await prisma.campaign.findMany({
+        where: {
+            OR: [
+                { name: { contains: keyword } },
+                { description: { contains: keyword } },
+                {
+                    vouchers: {
+                        some: {
+                            description: { contains: keyword }
+                        }
+                    }
+                }
+            ]
+        },
+        include: {
+            business: true
+        }
+    });
+
+    return { businesses, campaigns };
+};
+
 export default {
     getNewsfeed,
-    getBusinessSuggestion
+    getBusinessSuggestion,
+    search
 };

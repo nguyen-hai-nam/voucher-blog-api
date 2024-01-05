@@ -26,7 +26,18 @@ const getBusinessSuggestion = async (req, res, next) => {
     }
 };
 
+const search = async (req, res, next) => {
+    const { keyword } = req.query;
+    try {
+        const result = await newsfeedService.search(keyword);
+        return res.status(200).json({ message: 'Success', data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     getNewsfeed,
-    getBusinessSuggestion
+    getBusinessSuggestion,
+    search
 };
