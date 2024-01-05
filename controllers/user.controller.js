@@ -192,6 +192,16 @@ const unsavePost = async (req, res, next) => {
     }
 };
 
+const getDistance = async (req, res, next) => {
+    const { userAddressId, businessId } = req.params;
+    try {
+        const distance = await userService.getDistance(userAddressId, businessId);
+        return res.status(200).json({ message: 'Success', data: distance });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     countUsers,
     getAllUsers,
@@ -208,5 +218,6 @@ export default {
     lovePost,
     unlovePost,
     savePost,
-    unsavePost
+    unsavePost,
+    getDistance
 };

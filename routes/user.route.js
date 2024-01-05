@@ -27,4 +27,6 @@ router.post('/:id/posts/unlove/:postId', isAuth, userController.unlovePost);
 router.post('/:id/posts/save/:postId', isAuth, userController.savePost);
 router.post('/:id/posts/unsave/:postId', isAuth, userController.unsavePost);
 
+router.get('/distance/:userAddressId/:businessId', isAuth, userController.getDistance);
+
 export default router;

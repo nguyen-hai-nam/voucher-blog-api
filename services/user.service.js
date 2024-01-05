@@ -171,6 +171,26 @@ const unsavePost = async (userId, postId) => {
     });
 };
 
+export const getDistance = async (userAddressId, businessId) => {
+    console.log(userAddressId, businessId);
+    const res = await prisma.$queryRawUnsafe(
+        `
+            SELECT
+                ST_Distance_Sphere(
+                        point(business_lng, business_lat),
+                        point(user_address_lng, user_address_lat)
+                ) as distance
+            FROM 
+                (SELECT lng business_lng, lat business_lat FROM Business WHERE id = ?) as b,
+                (SELECT lng user_address_lng, lat user_address_lat FROM UserAddress WHERE id = ?) as ua
+        `,
+        businessId,
+        userAddressId
+    );
+    console.log(res[0].distance);
+    return res[0].distance;
+};
+
 export default {
     countUsers,
     getAllUsers,
@@ -189,5 +209,6 @@ export default {
     lovePost,
     unlovePost,
     savePost,
-    unsavePost
+    unsavePost,
+    getDistance
 };
