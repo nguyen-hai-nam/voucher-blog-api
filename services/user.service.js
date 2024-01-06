@@ -103,18 +103,11 @@ const getUsedVouchers = async (userId) => {
     return usedVouchers;
 };
 
-const getLovedPosts = async (userId) => {
-    const savedPosts = await prisma.post.findMany({
-        where: { loves: { some: { user_id: userId } } }
-    });
-    return savedPosts;
-};
-
-const lovePost = async (userId, postId) => {
-    await prisma.post.update({
-        where: { id: postId },
+const loveCampaign = async (userId, campaignId) => {
+    await prisma.campaign.update({
+        where: { id: campaignId },
         data: {
-            love_count: { increment: 1 },
+            loves_count: { increment: 1 },
             loves: {
                 create: {
                     user: { connect: { id: userId } }
@@ -124,32 +117,25 @@ const lovePost = async (userId, postId) => {
     });
 };
 
-const unlovePost = async (userId, postId) => {
-    await prisma.post.update({
-        where: { id: postId },
+const unloveCampaign = async (userId, campaignId) => {
+    await prisma.campaign.update({
+        where: { id: campaignId },
         data: {
-            love_count: { decrement: 1 },
+            loves_count: { decrement: 1 },
             loves: {
                 delete: {
-                    post_id_user_id: { user_id: userId, post_id: postId }
+                    campaign_id_user_id: { user_id: userId, campaign_id: campaignId }
                 }
             }
         }
     });
 };
 
-const getSavedPosts = async (userId) => {
-    const savedPosts = await prisma.post.findMany({
-        where: { saves: { some: { user_id: userId } } }
-    });
-    return savedPosts;
-};
-
-const savePost = async (userId, postId) => {
-    await prisma.post.update({
-        where: { id: postId },
+const saveCampaign = async (userId, campaignId) => {
+    await prisma.campaign.update({
+        where: { id: campaignId },
         data: {
-            save_count: { increment: 1 },
+            saves_count: { increment: 1 },
             saves: {
                 create: {
                     user: { connect: { id: userId } }
@@ -159,14 +145,14 @@ const savePost = async (userId, postId) => {
     });
 };
 
-const unsavePost = async (userId, postId) => {
-    await prisma.post.update({
-        where: { id: postId },
+const unsaveCampaign = async (userId, campaignId) => {
+    await prisma.campaign.update({
+        where: { id: campaignId },
         data: {
-            save_count: { decrement: 1 },
+            saves_count: { decrement: 1 },
             saves: {
                 delete: {
-                    post_id_user_id: { user_id: userId, post_id: postId }
+                    campaign_id_user_id: { user_id: userId, campaign_id: campaignId }
                 }
             }
         }
@@ -250,12 +236,10 @@ export default {
     collectVoucher,
     discardVoucher,
     getUsedVouchers,
-    getLovedPosts,
-    getSavedPosts,
-    lovePost,
-    unlovePost,
-    savePost,
-    unsavePost,
+    loveCampaign,
+    unloveCampaign,
+    saveCampaign,
+    unsaveCampaign,
     getDistance,
     followBusiness,
     unfollowBusiness

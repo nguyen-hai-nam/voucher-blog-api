@@ -303,8 +303,8 @@ model Campaign {
   description String
   start_date DateTime @default(now())
   end_date DateTime
-  love_count Int @default(0)
-  save_count Int @default(0)
+  loves_count Int @default(0)
+  saves_count Int @default(0)
   status CampaignStatus @default(ACTIVE)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
