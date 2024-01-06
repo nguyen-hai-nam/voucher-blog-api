@@ -2,7 +2,7 @@ import userService from '../services/user.service.js';
 import { parseQuery } from '../helpers/http.helper.js';
 
 const countUsers = async (req, res, next) => {
-    if (!req.body.payload || !req.body.payload.is_admin) {
+    if (!req.user || !req.user.is_admin) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
@@ -41,10 +41,10 @@ const getUserById = async (req, res, next) => {
 
 const updateUserById = async (req, res, next) => {
     const { id } = req.params;
-    const updateData = req.body.data;
+    const updateData = req.body;
     if (!updateData) {
         return res.status(400).json({ message: 'Bad request' });
-    } else if (id !== req.body.payload.id && !req.body.payload.is_admin) {
+    } else if (id !== req.user.id && !req.user.is_admin) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
@@ -57,7 +57,7 @@ const updateUserById = async (req, res, next) => {
 
 const deleteUserById = async (req, res, next) => {
     const { id } = req.params;
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {

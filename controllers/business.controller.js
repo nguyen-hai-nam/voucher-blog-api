@@ -3,7 +3,7 @@ import businessService from '../services/business.service.js';
 import { parseQuery } from '../helpers/http.helper.js';
 
 const countBusinesses = async (req, res, next) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
@@ -24,7 +24,7 @@ const countProducts = async (req, res, next) => {
 };
 
 const countCampaigns = async (req, res, next) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
@@ -45,7 +45,7 @@ const getCategories = async (req, res, next) => {
 };
 
 const getAllBusinesses = async (req, res) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { page = '1', perPage = '100' } = req.query;
@@ -60,7 +60,7 @@ const getAllBusinesses = async (req, res) => {
 };
 
 const getAllProducts = async (req, res, next) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { businessId } = req.params;
@@ -74,7 +74,7 @@ const getAllProducts = async (req, res, next) => {
 };
 
 const getAllCampaigns = async (req, res, next) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { page = '1', perPage = '100' } = req.query;
@@ -163,7 +163,7 @@ const createCampaign = async (req, res, next) => {
 };
 
 const getBusinessById = async (req, res, next) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { id } = req.params;
@@ -196,7 +196,7 @@ const getCampaignById = async (req, res, next) => {
 };
 
 const updateBusinessById = async (req, res, next) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { id } = req.params;
@@ -229,7 +229,7 @@ const updateCampaignById = async (req, res, next) => {
 };
 
 const deleteBusinessById = async (req, res, next) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { id } = req.params;
@@ -262,7 +262,7 @@ const deleteCampaignById = async (req, res, next) => {
 };
 
 const followBusinessById = async (req, res) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { id } = req.params;
@@ -272,7 +272,7 @@ const followBusinessById = async (req, res) => {
             data: {
                 followers: {
                     create: {
-                        user_id: req.body.payload.id
+                        user_id: req.user.id
                     }
                 },
                 follow_count: {
@@ -287,7 +287,7 @@ const followBusinessById = async (req, res) => {
 };
 
 const unfollowBusinessById = async (req, res) => {
-    if (!req.body.payload) {
+    if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     const { id } = req.params;
@@ -299,7 +299,7 @@ const unfollowBusinessById = async (req, res) => {
                     delete: {
                         business_id_user_id: {
                             business_id: id,
-                            user_id: req.body.payload.id
+                            user_id: req.user.id
                         }
                     }
                 },
