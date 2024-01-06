@@ -14,9 +14,11 @@ const getAllUsers = async (skip, take, query) => {
     return users;
 };
 
-const getUserById = async (id) => {
+const getUserById = async (id, query = {}) => {
     const user = await prisma.user.findUniqueOrThrow({
-        where: { id }
+        where: { id },
+        select: query.select,
+        include: query.include
     });
     return user;
 };

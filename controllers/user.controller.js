@@ -1,4 +1,5 @@
 import userService from '../services/user.service.js';
+import { parseQuery } from '../helpers/http.helper.js';
 
 const countUsers = async (req, res, next) => {
     if (!req.body.payload || !req.body.payload.is_admin) {
@@ -26,11 +27,12 @@ const getAllUsers = async (req, res, next) => {
 
 const getUserById = async (req, res, next) => {
     const { id } = req.params;
-    if (id !== req.body.payload.id && !req.body.payload.is_admin) {
+    const query = parseQuery(req.query);
+    if (id !== req.user.id && !req.user.is_admin) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
-        const user = await userService.getUserById(id);
+        const user = await userService.getUserById(id, query);
         return res.status(200).json({ message: 'Success', data: user });
     } catch (error) {
         next(error);

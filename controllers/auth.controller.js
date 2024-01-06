@@ -1,9 +1,12 @@
 import authService from '../services/auth.service.js';
 import userService from '../services/user.service.js';
+import { parseQuery } from '../helpers/http.helper.js';
 
 const getCurrentUser = async (req, res, next) => {
+    const userId = req.user.id;
+    const query = parseQuery(req.query);
     try {
-        const user = await userService.getUserById(req.body.payload.id);
+        const user = await userService.getUserById(userId, query);
         return res.status(200).json({
             message: 'Success',
             data: user
