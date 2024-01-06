@@ -48,6 +48,12 @@ enum ProductStatus {
   UNAVAILABLE
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
 model User {
   id String @id @default(uuid())
   is_admin Boolean @default(false)
@@ -55,6 +61,8 @@ model User {
   email String @unique
   phone_number String? @unique
   name String?
+  gender Gender?
+  birthday DateTime?
   avatar_image_url String?
   national_id_front_image_url String?
   national_id_back_image_url String?
@@ -63,12 +71,11 @@ model User {
   updated_at DateTime @default(now())
 
   addresses UserAddress[]
-  business_managers BusinessManager[]
-  business_customers BusinessCustomer[]
-  business_followers BusinessFollower[]
-  business_ratings UserRateBusiness[]
+  managinBusinesses UserManageBusiness[]
+  followingBusinesses UserFollowBusiness[]
+  ratedBusinesses UserRateBusiness[]
   collectedVouchers UserCollectVoucher[]
-  usedVouchers UserUseVoucher[]
+  redeemedVouchers UserRedeemVoucher[]
   comments UserCommentCampaign[]
   lovedCampaigns UserLoveCampaign[]
   savedCampaigns UserSaveCampaign[]
@@ -118,10 +125,9 @@ model Business {
 
   category Category? @relation(fields: [category_id], references: [id])
   productCategories ProductCategory[]
-  managers BusinessManager[]
-  customers BusinessCustomer[]
+  managers UserManageBusiness[]
   products Product[]
-  followers BusinessFollower[]
+  followers UserFollowBusiness[]
   ratings UserRateBusiness[]
   campaigns Campaign[]
   images BusinessImage[]
@@ -144,7 +150,7 @@ model BusinessImage {
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
 }
 
-model BusinessManager {
+model UserManageBusiness {
   user_id String
   business_id String
   created_at DateTime @default(now())
@@ -155,20 +161,7 @@ model BusinessManager {
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
 }
 
-model BusinessCustomer {
-  business_id String
-  user_id String
-  take_voucher_count Int
-  use_voucher_count Int
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  @@id([business_id, user_id])
-  user User @relation(fields: [user_id], references: [id])
-  business Business @relation(fields: [business_id], references: [id])
-}
-
-model BusinessFollower {
+model UserFollowBusiness {
   business_id String
   user_id String
   created_at DateTime @default(now())
@@ -259,13 +252,11 @@ model Voucher {
   condition_beginning_hour String?
   condition_ending_hour String?
   condition_target VoucherTarget @default(ALL)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
 
   appliedProducts VoucherApplyProduct[]
   campaign Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
-  collectedBy UserCollectVoucher[]
-  usedBy UserUseVoucher[]
+  collectors UserCollectVoucher[]
+  redeemers UserRedeemVoucher[]
 }
 
 model VoucherApplyProduct {
@@ -288,7 +279,7 @@ model UserCollectVoucher {
   user User @relation(fields: [user_id], references: [id])
 }
 
-model UserUseVoucher {
+model UserRedeemVoucher {
   id String @id @default(uuid())
   voucher_id String
   user_id String
