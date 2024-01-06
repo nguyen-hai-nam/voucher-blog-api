@@ -70,8 +70,8 @@ model User {
   collectedVouchers UserCollectVoucher[]
   usedVouchers UserUseVoucher[]
   comments UserCommentCampaign[]
-  lovedCampaign UserLoveCampaign[]
-  savedCampaign UserSaveCampaign[]
+  lovedCampaigns UserLoveCampaign[]
+  savedCampaigns UserSaveCampaign[]
 }
 
 model UserAddress {
