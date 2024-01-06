@@ -193,6 +193,50 @@ export const getDistance = async (userAddressId, businessId) => {
     return res[0].distance;
 };
 
+const followBusiness = async (userId, businessId) => {
+    await prisma.$transaction([
+        prisma.user.update({
+            where: { id: userId },
+            data: {
+                following_businesses_count: { increment: 1 },
+                followingBusinesses: {
+                    create: {
+                        business: { connect: { id: businessId } }
+                    }
+                }
+            }
+        }),
+        prisma.business.update({
+            where: { id: businessId },
+            data: {
+                followers_count: { increment: 1 }
+            }
+        })
+    ]);
+};
+
+const unfollowBusiness = async (userId, businessId) => {
+    await prisma.$transaction([
+        prisma.user.update({
+            where: { id: userId },
+            data: {
+                following_businesses_count: { decrement: 1 },
+                followingBusinesses: {
+                    delete: {
+                        business_id_user_id: { user_id: userId, business_id: businessId }
+                    }
+                }
+            }
+        }),
+        prisma.business.update({
+            where: { id: businessId },
+            data: {
+                followers_count: { decrement: 1 }
+            }
+        })
+    ]);
+};
+
 export default {
     countUsers,
     getAllUsers,
@@ -212,5 +256,7 @@ export default {
     unlovePost,
     savePost,
     unsavePost,
-    getDistance
+    getDistance,
+    followBusiness,
+    unfollowBusiness
 };

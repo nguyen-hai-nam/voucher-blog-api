@@ -204,6 +204,28 @@ const getDistance = async (req, res, next) => {
     }
 };
 
+const followBusiness = async (req, res, next) => {
+    const userId = req.user.id;
+    const { businessId } = req.params;
+    try {
+        await userService.followBusiness(userId, businessId);
+        return res.status(200).json({ message: 'Success' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const unfollowBusiness = async (req, res, next) => {
+    const userId = req.user.id;
+    const { businessId } = req.params;
+    try {
+        await userService.unfollowBusiness(userId, businessId);
+        return res.status(200).json({ message: 'Success' });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     countUsers,
     getAllUsers,
@@ -221,5 +243,7 @@ export default {
     unlovePost,
     savePost,
     unsavePost,
-    getDistance
+    getDistance,
+    followBusiness,
+    unfollowBusiness
 };

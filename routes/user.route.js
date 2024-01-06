@@ -28,5 +28,7 @@ router.post('/:id/posts/save/:postId', isAuth, userController.savePost);
 router.post('/:id/posts/unsave/:postId', isAuth, userController.unsavePost);
 
 router.get('/distance/:userAddressId/:businessId', isAuth, userController.getDistance);
+router.post('/follow/:businessId', isAuth, userController.followBusiness);
+router.post('/unfollow/:businessId', isAuth, userController.unfollowBusiness);
 
 export default router;
