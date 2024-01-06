@@ -21,11 +21,10 @@ router.get('/:id/following-businesses', isAuth, userController.getFollowingBusin
 router.get('/:id/vouchers', isAuth, userController.getVouchers);
 router.post('/:id/vouchers/collect/:voucherId', isAuth, userController.collectVoucher);
 router.post('/:id/vouchers/discard/:voucherId', isAuth, userController.discardVoucher);
-router.get('/:id/posts', isAuth, userController.getPosts);
-router.post('/:id/posts/love/:postId', isAuth, userController.lovePost);
-router.post('/:id/posts/unlove/:postId', isAuth, userController.unlovePost);
-router.post('/:id/posts/save/:postId', isAuth, userController.savePost);
-router.post('/:id/posts/unsave/:postId', isAuth, userController.unsavePost);
+router.post('/:id/posts/love/:postId', isAuth, userController.loveCampagin);
+router.post('/:id/posts/unlove/:postId', isAuth, userController.unloveCampaign);
+router.post('/:id/posts/save/:postId', isAuth, userController.saveCampaign);
+router.post('/:id/posts/unsave/:postId', isAuth, userController.unsaveCampaign);
 
 router.get('/distance/:userAddressId/:businessId', isAuth, userController.getDistance);
 router.post('/follow/:businessId', isAuth, userController.followBusiness);

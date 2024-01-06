@@ -134,60 +134,40 @@ const discardVoucher = async (req, res, next) => {
     }
 };
 
-const getPosts = async (req, res, next) => {
-    const { id } = req.params;
+const loveCampagin = async (req, res, next) => {
+    const { id, campaignId } = req.params;
     try {
-        switch (req.query.type) {
-            case 'loved': {
-                const lovedPosts = await userService.getLovedPosts(id);
-                return res.status(200).json({ message: 'Success', data: lovedPosts });
-            }
-            case 'saved': {
-                const savedPosts = await userService.getSavedPosts(id);
-                return res.status(200).json({ message: 'Success', data: savedPosts });
-            }
-            default:
-                return res.status(400).json({ message: 'Invalid type' });
-        }
-    } catch (error) {
-        next(error);
-    }
-};
-
-const lovePost = async (req, res, next) => {
-    const { id, postId } = req.params;
-    try {
-        await userService.lovePost(id, postId);
+        await userService.loveCampagin(id, campaignId);
         return res.status(200).json({ message: 'Success' });
     } catch (error) {
         next(error);
     }
 };
 
-const unlovePost = async (req, res, next) => {
-    const { id, postId } = req.params;
+const unloveCampaign = async (req, res, next) => {
+    const { id, campaignId } = req.params;
     try {
-        await userService.unlovePost(id, postId);
+        await userService.unloveCampaign(id, campaignId);
         return res.status(200).json({ message: 'Success' });
     } catch (error) {
         next(error);
     }
 };
 
-const savePost = async (req, res, next) => {
-    const { id, postId } = req.params;
+const saveCampaign = async (req, res, next) => {
+    const { id, campaignId } = req.params;
     try {
-        await userService.savePost(id, postId);
+        await userService.saveCampaign(id, campaignId);
         return res.status(200).json({ message: 'Success' });
     } catch (error) {
         next(error);
     }
 };
 
-const unsavePost = async (req, res, next) => {
-    const { id, postId } = req.params;
+const unsaveCampaign = async (req, res, next) => {
+    const { id, campaignId } = req.params;
     try {
-        await userService.unsavePost(id, postId);
+        await userService.unsaveCampaign(id, campaignId);
         return res.status(200).json({ message: 'Success' });
     } catch (error) {
         next(error);
@@ -238,11 +218,10 @@ export default {
     getVouchers,
     collectVoucher,
     discardVoucher,
-    getPosts,
-    lovePost,
-    unlovePost,
-    savePost,
-    unsavePost,
+    loveCampagin,
+    unloveCampaign,
+    saveCampaign,
+    unsaveCampaign,
     getDistance,
     followBusiness,
     unfollowBusiness
