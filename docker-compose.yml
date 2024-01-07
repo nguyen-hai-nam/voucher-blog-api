@@ -3,13 +3,12 @@ services:
   db:
     image: mysql:8.1
     restart: always
-    environment:
-      MYSQL_DATABASE: test
-      MYSQL_ROOT_PASSWORD: voucher-blog-secret
+    env_file:
+      - .env
     ports:
-    - "3306:3306"
+      - "3306:3306"
     volumes:
-      - /var/lib/mysql
+      - /home/mysql-data:/var/lib/mysql
     mem_limit: 512m
     networks:
       - app-network
@@ -22,6 +21,8 @@ services:
       - db
     networks:
       - app-network
+    env_file:
+      - .env
     command:
       - sh
       - -c
@@ -29,22 +30,6 @@ services:
         npx prisma generate
         until nc -z db 3306; do sleep 1; done
         npm start
-  studio:
-    build: .
-    restart: always
-    ports:
-      - "5555:5555"
-    depends_on:
-      - db
-    networks:
-      - app-network
-    command:
-      - sh
-      - -c
-      - |
-        until nc -z db 3306; do sleep 1; done
-        npx prisma db push --skip-generate
-        npx prisma studio
   
 networks:
   app-network:

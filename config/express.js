@@ -9,7 +9,7 @@ import errorHandler from '../middlewares/errorHandler.middleware.js';
 const app = express();
 
 app.use(cors());
-app.use(morgan('dev'));
+app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({ extended: true, limit: '100kb' }));
 app.use(bodyParser.json({ limit: '5mb' }));
 
