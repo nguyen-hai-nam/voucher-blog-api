@@ -1,6 +1,12 @@
 import multer from 'multer';
-import path from 'path';
+import fs from 'fs';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import crypto from 'crypto';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const uploadDir = path.join(__dirname, 'uploads');
 
 const hashFileName = (file) => {
     const payload = `${path.basename(file.originalname, path.extname(file.originalname))}${Date.now()}`;
@@ -10,7 +16,11 @@ const hashFileName = (file) => {
 export const upload = multer({
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
-            cb(null, 'uploads');
+            if (!fs.existsSync(uploadDir)) {
+                // If not, create directory
+                fs.mkdirSync(uploadDir, { recursive: true });
+            }
+            cb(null, uploadDir);
         },
         filename: function (req, file, cb) {
             cb(null, hashFileName(file));
