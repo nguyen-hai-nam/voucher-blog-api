@@ -30,7 +30,7 @@ export const isAdmin = (req, res, next) => {
     let payload;
     try {
         payload = decodeToken(token);
-        if (!payload || !payload.is_admin) {
+        if (!payload?.is_admin) {
             return res.status(401).json({ message: 'Unauthorized', error: 'Unauthorized' });
         }
     } catch (error) {

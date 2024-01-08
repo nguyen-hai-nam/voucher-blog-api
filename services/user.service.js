@@ -2,19 +2,23 @@ import prisma from '../config/prisma.js';
 
 const countUsers = async (query) => {
     const count = await prisma.user.count({
-        where: { ...query }
+        where: { ...query.where }
     });
     return count;
 };
 
-const getAllUsers = async (skip, take, query) => {
+const getAllUsers = async (query) => {
     const users = await prisma.user.findMany({
-        where: { ...query }
+        where: { ...query.where },
+        skip: query.skip,
+        take: query.take,
+        select: query.select,
+        include: query.include
     });
     return users;
 };
 
-const getUserById = async (id, query = {}) => {
+const getUserById = async (id, query) => {
     const user = await prisma.user.findUniqueOrThrow({
         where: { id },
         select: query.select,
@@ -38,34 +42,6 @@ const deleteUserById = async (id) => {
         select: { id: true }
     });
     return deletedUserId;
-};
-
-const getAddresses = async (userId) => {
-    const addresses = await prisma.userAddress.findMany({
-        where: { user_id: userId }
-    });
-    return addresses;
-};
-
-const getManagingBusinesses = async (userId) => {
-    const managingBusinesses = await prisma.business.findMany({
-        where: { managers: { some: { user_id: userId } } }
-    });
-    return managingBusinesses;
-};
-
-const getFollowingBusinesses = async (userId) => {
-    const managingBusinesses = await prisma.business.findMany({
-        where: { followers: { some: { user_id: userId } } }
-    });
-    return managingBusinesses;
-};
-
-const getCollectedVouchers = async (userId) => {
-    const collectedVouchers = await prisma.voucher.findMany({
-        where: { collectedBy: { some: { user_id: userId } } }
-    });
-    return collectedVouchers;
 };
 
 const collectVoucher = async (userId, voucherId) => {
@@ -94,13 +70,6 @@ const discardVoucher = async (userId, voucherId) => {
             }
         }
     });
-};
-
-const getUsedVouchers = async (userId) => {
-    const usedVouchers = await prisma.voucher.findMany({
-        where: { usedBy: { some: { user_id: userId } } }
-    });
-    return usedVouchers;
 };
 
 const loveCampaign = async (userId, campaignId) => {
@@ -160,7 +129,6 @@ const unsaveCampaign = async (userId, campaignId) => {
 };
 
 export const getDistance = async (userAddressId, businessId) => {
-    console.log(userAddressId, businessId);
     const res = await prisma.$queryRawUnsafe(
         `
             SELECT
@@ -175,7 +143,6 @@ export const getDistance = async (userAddressId, businessId) => {
         businessId,
         userAddressId
     );
-    console.log(res[0].distance);
     return res[0].distance;
 };
 
@@ -229,13 +196,8 @@ export default {
     getUserById,
     updateUserById,
     deleteUserById,
-    getAddresses,
-    getManagingBusinesses,
-    getFollowingBusinesses,
-    getCollectedVouchers,
     collectVoucher,
     discardVoucher,
-    getUsedVouchers,
     loveCampaign,
     unloveCampaign,
     saveCampaign,
