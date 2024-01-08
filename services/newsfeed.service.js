@@ -15,7 +15,7 @@ const getNewsfeed = async (user_id, address_id, radius) => {
 			ST_Distance_Sphere(point(?, ?), point(b.lat, b.lng)) AS distance,
 			EXISTS(
 				SELECT 1
-				FROM BusinessFollower bf
+				FROM UserFollowBusiness bf
 				WHERE bf.business_id = b.id AND bf.user_id = ?
 			) AS is_followed
 		FROM
@@ -100,7 +100,7 @@ const getBusinessSuggestion = async (user_id, address_id, radius) => {
             ST_Distance_Sphere(point(?, ?), point(b.lat, b.lng)) <= ?
             AND NOT EXISTS (
                 SELECT 1
-                FROM BusinessFollower bf
+                FROM UserFollowBusiness bf
                 WHERE bf.business_id = b.id
                 AND bf.user_id = ?
             )
