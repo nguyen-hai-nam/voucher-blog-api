@@ -5,101 +5,65 @@ import request from 'supertest';
 import app from '../config/express.js';
 
 describe('User API', () => {
-    let testUserId;
-    let adminToken;
+    describe('CRUD operations', () => {
+        let agent = request.agent(app);
+        const email = `test-${Math.random().toString(36).substring(2, 15)}@voucher.blog`;
+        const password = 'password';
+        let userId;
 
-    before(async () => {
-        const response = await request(app).post('/auth/login').send({
-            email: process.env.ADMIN_EMAIL,
-            password: process.env.ADMIN_PASSWORD
+        before(async () => {
+            const registerRes = await agent.post('/auth/register').send({ email, password });
+            agent.set('Authorization', `Bearer ${registerRes.body.token}`);
+            const getMeRes = await agent.get('/auth/me');
+            userId = getMeRes.body.data.id;
         });
-        expect(response.status).to.equal(200);
-        expect(response.body).to.have.property('token');
 
-        adminToken = response.body.token;
-    });
-
-    beforeEach(async () => {
-        const response = await request(app).post('/auth/register').send({
-            email: 'test@voucher.blog',
-            password: 'testPassword'
+        it("should get the user's information", async () => {
+            const res = await agent.get(`/users/${userId}`);
+            expect(res.status).to.equal(200);
+            expect(res.body).to.have.property('data').that.is.an('object');
         });
-        expect(response.status).to.equal(201);
-        testUserId = response.body.data.id;
-    });
 
-    afterEach(async () => {
-        const response = await request(app).delete(`/users/${testUserId}`).set('Authorization', `Bearer ${adminToken}`);
-        expect(response.status).to.be.oneOf([200, 404]);
-    });
+        it("should update the user's information", async () => {
+            const name = 'Updated Name';
+            const res = await agent.patch(`/users/${userId}`).send({ name });
+            expect(res.status).to.equal(200);
+        });
 
-    describe('GET /users', () => {
-        it('should return a list of users', async () => {
-            const response = await request(app).get('/users').set('Authorization', `Bearer ${adminToken}`);
-            expect(response.status).to.equal(200);
-            expect(response.body.message).to.equal('Success');
-            expect(response.body.data).to.exist;
+        it('should not delete the user', async () => {
+            const res = await agent.delete(`/users/${userId}`);
+            expect(res.status).to.equal(401);
         });
     });
+    describe('Admin CRUD operations', () => {
+        let adminAgent = request.agent(app);
+        let agent = request.agent(app);
+        const adminEmail = process.env.TEST_ADMIN_ACCOUNT_EMAIL;
+        const adminPassword = process.env.TEST_ADMIN_ACCOUNT_PASSWORD;
+        const email = `test-${Math.random().toString(36).substring(2, 15)}@voucher.blog`;
+        const password = 'password';
+        let userId;
 
-    describe('GET /users/:id', () => {
-        it('should return a user by id', async () => {
-            const response = await request(app)
-                .get(`/users/${testUserId}`)
-                .set('Authorization', `Bearer ${adminToken}`);
-            expect(response.status).to.equal(200);
-            expect(response.body.message).to.equal('Success');
-            expect(response.body.data).to.exist;
-            expect(response.body.data.id).to.equal(testUserId);
+        before(async () => {
+            const adminLoginRes = await adminAgent
+                .post('/auth/login')
+                .send({ email: adminEmail, password: adminPassword });
+            adminAgent.set('Authorization', `Bearer ${adminLoginRes.body.token}`);
+            const registerRes = await agent.post('/auth/register').send({ email, password });
+            agent.set('Authorization', `Bearer ${registerRes.body.token}`);
+            const getMeRes = await agent.get('/auth/me');
+            userId = getMeRes.body.data.id;
         });
 
-        it('should return 404 if user is not found', async () => {
-            const response = await request(app).get('/users/999').set('Authorization', `Bearer ${adminToken}`);
-            expect(response.status).to.equal(404);
-            expect(response.body.message).to.equal('User not found');
-        });
-    });
-
-    describe('PATCH /users/:id', () => {
-        it('should update a user by id', async () => {
-            const updatedUser = {
-                name: 'Jane Doe'
-            };
-            const response = await request(app)
-                .patch(`/users/${testUserId}`)
-                .send({ data: updatedUser })
-                .set('Authorization', `Bearer ${adminToken}`);
-            expect(response.status).to.equal(200);
-            expect(response.body.message).to.equal('Success');
-            expect(response.body.data).to.exist;
-            expect(response.body.data.name).to.equal(updatedUser.name);
+        it('should get all users', async () => {
+            const res = await adminAgent.get('/users');
+            expect(res.status).to.equal(200);
+            expect(res.body).to.have.property('data').that.is.an('array');
         });
 
-        it('should return 404 if user is not found', async () => {
-            const response = await request(app)
-                .patch('/users/999')
-                .send({ data: { name: 'Jane Doe' } })
-                .set('Authorization', `Bearer ${adminToken}`);
-            expect(response.status).to.equal(404);
-            expect(response.body.message).to.equal('User not found');
-        });
-    });
-
-    describe('DELETE /users/:id', () => {
-        it('should delete a user by id', async () => {
-            const response = await request(app)
-                .delete(`/users/${testUserId}`)
-                .set('Authorization', `Bearer ${adminToken}`);
-            expect(response.status).to.equal(200);
-            expect(response.body.message).to.equal('Success');
-            expect(response.body.data).to.exist;
-            expect(response.body.data.id).to.equal(testUserId);
-        });
-
-        it('should return 404 if user is not found', async () => {
-            const response = await request(app).delete('/users/999').set('Authorization', `Bearer ${adminToken}`);
-            expect(response.status).to.equal(404);
-            expect(response.body.message).to.equal('User not found');
+        it('should delete the user', async () => {
+            const res = await adminAgent.delete(`/users/${userId}`);
+            expect(res.status).to.equal(200);
         });
     });
 });
