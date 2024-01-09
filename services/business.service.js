@@ -22,11 +22,13 @@ const countCampaigns = async (business_id, query) => {
     return count;
 };
 
-const getAllBusinesses = async (skip, take, query) => {
+const getAllBusinesses = async (query) => {
     const businesses = await prisma.business.findMany({
-        where: { ...query },
-        skip,
-        take
+        where: { ...query.where },
+        skip: query.skip,
+        take: query.take,
+        select: query.select,
+        include: query.include
     });
     return businesses;
 };
@@ -176,9 +178,11 @@ const createCampaign = async (business_id, data) => {
     return result;
 };
 
-const getBusinessById = async (id) => {
+const getBusinessById = async (id, query) => {
     const business = await prisma.business.findUniqueOrThrow({
-        where: { id }
+        where: { id },
+        select: query.select,
+        include: query.include
     });
     return business;
 };
@@ -210,7 +214,7 @@ const updateBusinessById = async (id, updateData) => {
     return updatedBusinessId;
 };
 
-const updateProductById = async (business_id, id, updateData) => {
+const updateProductById = async (business_id, id, updateData, query) => {
     const result = await prisma.product.update({
         where: {
             id,
@@ -219,7 +223,8 @@ const updateProductById = async (business_id, id, updateData) => {
             }
         },
         data: updateData,
-        select: { id: true }
+        select: query.select,
+        include: query.include
     });
     return result;
 };

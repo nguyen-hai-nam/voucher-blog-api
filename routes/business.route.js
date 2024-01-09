@@ -26,17 +26,17 @@ router.get('/:id', isAuth, businessController.getBusinessById);
 router.patch('/:id', isAuth, businessController.updateBusinessById);
 router.delete('/:id', isAuth, businessController.deleteBusinessById);
 
-router.get('/:business_id/products/count', isAuth, businessController.countProducts);
-router.get('/:business_id/products', isAuth, businessController.getAllProducts);
+router.get('/:businessId/products/count', isAuth, businessController.countProducts);
+router.get('/:businessId/products', isAuth, businessController.getAllProducts);
 router.post(
     '/:businessId/products',
     isAuth,
     upload.fields([{ name: 'productImages', maxCount: 4 }]),
     businessController.createProduct
 );
-router.get('/:business_id/products/:id', isAuth, businessController.getProductById);
-router.patch('/:business_id/products/:id', isAuth, businessController.updateProductById);
-router.delete('/:business_id/products/:id', isAuth, businessController.deleteProductById);
+router.get('/:businessId/products/:id', isAuth, businessController.getProductById);
+router.patch('/:businessId/products/:id', isAuth, businessController.updateProductById);
+router.delete('/:businessId/products/:id', isAuth, businessController.deleteProductById);
 
 router.get('/:businessId/productCategories/count', isAuth, businessController.countProductCategories);
 router.get('/:businessId/productCategories', isAuth, businessController.getProductCategories);
@@ -45,12 +45,12 @@ router.get('/:businessId/productCategories/:id', isAuth, businessController.getP
 router.patch('/:businessId/productCategories/:id', isAuth, businessController.updateProductCategory);
 router.delete('/:businessId/productCategories/:id', isAuth, businessController.deleteProductCategory);
 
-router.get('/:business_id/campaigns/count', isAuth, businessController.countCampaigns);
-router.get('/:business_id/campaigns', isAuth, businessController.getAllCampaigns);
-router.post('/:business_id/campaigns', isAuth, upload.any(), businessController.createCampaign);
-router.get('/:business_id/campaigns/:id', isAuth, businessController.getCampaignById);
-router.patch('/:business_id/campaigns/:id', isAuth, businessController.updateCampaignById);
-router.delete('/:business_id/campaigns/:id', isAuth, businessController.deleteCampaignById);
+router.get('/:businessId/campaigns/count', isAuth, businessController.countCampaigns);
+router.get('/:businessId/campaigns', isAuth, businessController.getAllCampaigns);
+router.post('/:businessId/campaigns', isAuth, upload.any(), businessController.createCampaign);
+router.get('/:businessId/campaigns/:id', isAuth, businessController.getCampaignById);
+router.patch('/:businessId/campaigns/:id', isAuth, businessController.updateCampaignById);
+router.delete('/:businessId/campaigns/:id', isAuth, businessController.deleteCampaignById);
 
 // TODO: move to user route
 router.post('/:id/follow', isAuth, businessController.followBusinessById);
