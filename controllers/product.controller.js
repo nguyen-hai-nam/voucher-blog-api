@@ -1,30 +1,36 @@
 import prisma from '../config/prisma.js';
+import { parseQuery } from '../helpers/http.helper.js';
 
-const countProducts = async (req, res) => {
+const countProducts = async (req, res, next) => {
+    const query = parseQuery(req.query);
     try {
-        const count = await prisma.product.count();
-        return res.status(200).json({ message: 'Success', data: count });
+        const count = await prisma.product.count({
+            where: query.where
+        });
+        return res.status(200).json({ success: true, data: count });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
-const getAllProducts = async (req, res) => {
-    const { page = 1, perPage = 10 } = req.query;
-    const skip = (page - 1) * perPage;
-    const take = perPage;
+const getAllProducts = async (req, res, next) => {
+    const query = parseQuery(req.query);
     try {
         const products = await prisma.product.findMany({
-            skip,
-            take
+            where: query.where,
+            skip: query.skip,
+            take: query.take,
+            select: query.select,
+            include: query.include
         });
-        return res.status(200).json({ message: 'Success', page, perPage, data: products });
+        return res.status(200).json({ success: true, data: products });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
-const createProduct = async (req, res) => {
+const createProduct = async (req, res, next) => {
+    const query = parseQuery(req.query);
     try {
         const { business_id, ...productData } = req.body.data;
         const product = await prisma.product.create({
@@ -33,51 +39,62 @@ const createProduct = async (req, res) => {
                 business: {
                     connect: { id: business_id }
                 }
-            }
+            },
+            select: query.select,
+            include: query.include
         });
-        return res.status(201).json({ message: 'Success', data: product });
+        return res.status(201).json({ success: true, data: product });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
-const getProductById = async (req, res) => {
+const getProductById = async (req, res, next) => {
     const { id } = req.params;
+    const query = parseQuery(req.query);
     try {
         const product = await prisma.product.findUnique({
-            where: { id }
+            where: { id },
+            select: query.select,
+            include: query.include
         });
         if (!product) {
             return res.status(404).json({ message: 'Not found', error: 'Not found' });
         }
-        return res.status(200).json({ message: 'Success', data: product });
+        return res.status(200).json({ success: true, data: product });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
-const updateProductById = async (req, res) => {
+const updateProductById = async (req, res, next) => {
     const { id } = req.params;
+    const query = parseQuery(req.query);
     try {
         const product = await prisma.product.update({
             where: { id },
-            data: req.body.data
+            data: req.body,
+            select: query.select,
+            include: query.include
         });
-        return res.status(200).json({ message: 'Success', data: product });
+        return res.status(200).json({ success: true, data: product });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
-const deleteProductById = async (req, res) => {
+const deleteProductById = async (req, res, next) => {
     const { id } = req.params;
+    const query = parseQuery(req.query);
     try {
         const product = await prisma.product.delete({
-            where: { id }
+            where: { id },
+            select: query.select,
+            include: query.include
         });
-        return res.status(200).json({ message: 'Success', data: product });
+        return res.status(200).json({ success: true, data: product });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
