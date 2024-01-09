@@ -72,7 +72,7 @@ model User {
   updated_at DateTime @default(now())
 
   addresses UserAddress[]
-  managinBusinesses UserManageBusiness[]
+  managingBusinesses UserManageBusiness[]
   followingBusinesses UserFollowBusiness[]
   ratedBusinesses UserRateBusiness[]
   collectedVouchers UserCollectVoucher[]
@@ -318,32 +318,32 @@ model Campaign {
 
 model UserCommentCampaign {
   id String @id @default(uuid())
-  post_id String
+  campaign_id String
   user_id String
   content String
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  campaign Campaign @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  campaign Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
   user User @relation(fields: [user_id], references: [id])
 }
 
 model UserLoveCampaign {
   user_id String
-  post_id String
+  campaign_id String
   created_at DateTime @default(now())
 
-  @@id([post_id, user_id])
+  @@id([campaign_id, user_id])
   user User @relation(fields: [user_id], references: [id])
-  campaign Campaign @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  campaign Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
 }
 
 model UserSaveCampaign {
   user_id String
-  post_id String
+  campaign_id String
   created_at DateTime @default(now())
 
-  @@id([post_id, user_id])
+  @@id([campaign_id, user_id])
   user User @relation(fields: [user_id], references: [id])
-  campaign Campaign @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  campaign Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
 }
