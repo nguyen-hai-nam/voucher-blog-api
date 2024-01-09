@@ -30,6 +30,16 @@ services:
         npx prisma generate
         until nc -z db 3306; do sleep 1; done
         npm start
+  nginx:
+    image: nginx:1.25-bookworm
+    volumes:
+      - ./dist/voucher-blog-business:/usr/share/nginx/html
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - app-network
   
 networks:
   app-network:
