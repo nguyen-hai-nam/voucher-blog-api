@@ -1,12 +1,9 @@
 import multer from 'multer';
 import fs from 'fs';
-import path, { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path from 'path';
 import crypto from 'crypto';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const uploadDir = path.join(__dirname, 'uploads');
+import { uploadDir } from '../constants/path.constant.js';
 
 const hashFileName = (file) => {
     const payload = `${path.basename(file.originalname, path.extname(file.originalname))}${Date.now()}`;
