@@ -49,7 +49,7 @@ const collectVoucher = async (userId, voucherId) => {
         where: { id: voucherId },
         data: {
             collected_count: { increment: 1 },
-            collectedBy: {
+            collectors: {
                 create: {
                     user: { connect: { id: userId } }
                 }
@@ -63,7 +63,7 @@ const discardVoucher = async (userId, voucherId) => {
         where: { id: voucherId },
         data: {
             collected_count: { decrement: 1 },
-            collectedBy: {
+            collectors: {
                 delete: {
                     voucher_id_user_id: { user_id: userId, voucher_id: voucherId }
                 }

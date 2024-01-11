@@ -109,6 +109,7 @@ const createProduct = async (req, res, next) => {
 };
 
 const createCampaign = async (req, res, next) => {
+    const { businessId } = req.params;
     try {
         const data = JSON.parse(req.body.data);
         data.vouchers.sort((a, b) => a.index - b.index);
@@ -119,7 +120,7 @@ const createCampaign = async (req, res, next) => {
                 .json({ message: 'Index properties of vouchers are not an ascending series starting from 0' });
         }
         const products = await prisma.product.findMany({
-            where: { businessId: req.params.businessId },
+            where: { business_id: businessId },
             select: {
                 id: true
             }
@@ -138,7 +139,7 @@ const createCampaign = async (req, res, next) => {
             const index = parseInt(file.fieldname.split('_')[1]);
             data.vouchers[index].media_url = `${serverUrl}/${file.path}`;
         }
-        const result = await businessService.createCampaign(req.params.businessId, data);
+        const result = await businessService.createCampaign(businessId, data);
         return res.status(201).json({ success: true, data: result });
     } catch (error) {
         next(error);

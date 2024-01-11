@@ -38,8 +38,6 @@ const getNewsfeed = async (user_id, address_id, radius) => {
         return res;
     }, {});
 
-    console.log(metaDataMap);
-
     const campaigns = await prisma.campaign.findMany({
         orderBy: { created_at: 'desc' },
         where: {

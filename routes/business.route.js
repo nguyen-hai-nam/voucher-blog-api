@@ -52,8 +52,4 @@ router.get('/:businessId/campaigns/:id', isAuth, businessController.getCampaignB
 router.patch('/:businessId/campaigns/:id', isAuth, businessController.updateCampaignById);
 router.delete('/:businessId/campaigns/:id', isAuth, businessController.deleteCampaignById);
 
-// TODO: move to user route
-router.post('/:id/follow', isAuth, businessController.followBusinessById);
-router.post('/:id/unfollow', isAuth, businessController.unfollowBusinessById);
-
 export default router;

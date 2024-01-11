@@ -90,7 +90,7 @@ const loveCampagin = async (req, res, next) => {
     const userId = req.user.id;
     const { campaignId } = req.params;
     try {
-        await userService.loveCampagin(userId, campaignId);
+        await userService.loveCampaign(userId, campaignId);
         return res.status(200).json({ success: true });
     } catch (error) {
         next(error);
