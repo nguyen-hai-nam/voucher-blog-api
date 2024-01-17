@@ -1,6 +1,6 @@
 import express from 'express';
 
-import userAddressController from '../controllers/user_address.controller.js';
+import userAddressController from '../controllers/user-address.controller.js';
 import userController from '../controllers/user.controller.js';
 import { isAuth, isAdmin } from '../middlewares/auth.middleware.js';
 

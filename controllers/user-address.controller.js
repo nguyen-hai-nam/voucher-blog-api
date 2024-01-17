@@ -1,6 +1,6 @@
 import prisma from '../config/prisma.js';
 
-const getAllUserAddresses = async (req, res) => {
+const getAllUserAddresses = async (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -10,16 +10,16 @@ const getAllUserAddresses = async (req, res) => {
         });
         return res.status(200).json({ message: 'Success', data: [...userAddresses] });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
-const createUserAddress = async (req, res) => {
+const createUserAddress = async (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
-        const { name, lat, lng, type } = req.body.data;
+        const { name, lat, lng, type } = req.body;
         const newUserAddress = await prisma.userAddress.create({
             data: {
                 user_id: req.user.id,
@@ -29,17 +29,17 @@ const createUserAddress = async (req, res) => {
                 lng: lng
             }
         });
-        return res.status(200).json({ message: 'Success', data: { newUserAddress } });
+        return res.status(200).json({ message: 'Success', data: newUserAddress });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
-const updateUserAddressById = async (req, res) => {
+const updateUserAddressById = async (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
-    const { name, lat, lng, type } = req.body.data;
+    const { name, lat, lng, type } = req.body;
     const { id } = req.params;
     try {
         const existingUserAddress = await prisma.userAddress.findUnique({
@@ -62,11 +62,11 @@ const updateUserAddressById = async (req, res) => {
         });
         return res.status(200).json({ message: 'Success', data: { newUserAddress } });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
-const deleteUserAddressById = async (req, res) => {
+const deleteUserAddressById = async (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -77,7 +77,7 @@ const deleteUserAddressById = async (req, res) => {
         });
         return res.status(200).json({ message: 'Success', data: { newUserAddress } });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
