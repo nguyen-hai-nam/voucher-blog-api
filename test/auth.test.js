@@ -6,7 +6,7 @@ import app from '../config/express.js';
 
 describe('Auth API', () => {
     describe('Basic flow', () => {
-        const phone_number = (Math.floor(Math.random() * 9000000000) + 1000000000).toString();
+        const phone_number = '0' + Math.floor(Math.random() * 1000000000).toString();
         const email = `test-${Math.random().toString(36).substring(2, 15)}@voucher.blog`;
         const password = 'password';
         const newPassword = 'newpassword';

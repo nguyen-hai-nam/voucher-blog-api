@@ -6,7 +6,7 @@ import { saltRounds } from '../constants/auth.constant.js';
 import { isEmail, isVietnamPhoneNumber } from '../helpers/validators/index.js';
 import { generateAccessToken } from '../helpers/auth/jwt.js';
 
-const registerWithEmail = async (email, password) => {
+const registerWithEmail = async (email, password, userData) => {
     if (!isEmail(email)) {
         throw createHttpError(400, 'Invalid email');
     }
@@ -17,20 +17,22 @@ const registerWithEmail = async (email, password) => {
         throw createHttpError(400, 'Email already exists');
     }
     const hashedPassword = await hashPassword(password, saltRounds);
-    const newUser = await prisma.user.create({
-        data: {
-            is_admin: false,
-            email,
-            password: hashedPassword
-        }
-    });
-    if (!newUser) {
+    try {
+        const newUser = await prisma.user.create({
+            data: {
+                is_admin: false,
+                email,
+                password: hashedPassword,
+                ...userData
+            }
+        });
+        return generateAccessToken(newUser);
+    } catch (error) {
         throw createHttpError(500, 'Fail to register');
     }
-    return generateAccessToken(newUser);
 };
 
-const registerWithPhoneNumber = async (phoneNumber, password) => {
+const registerWithPhoneNumber = async (phoneNumber, password, userData) => {
     if (!isVietnamPhoneNumber(phoneNumber)) {
         throw createHttpError(400, 'Invalid phone number');
     }
@@ -41,14 +43,19 @@ const registerWithPhoneNumber = async (phoneNumber, password) => {
         throw createHttpError(400, 'Phone number already exists');
     }
     const hashedPassword = await hashPassword(password, saltRounds);
-    const newUser = await prisma.user.create({
-        data: {
-            is_admin: false,
-            phone_number: phoneNumber,
-            password: hashedPassword
-        }
-    });
-    return generateAccessToken(newUser);
+    try {
+        const newUser = await prisma.user.create({
+            data: {
+                is_admin: false,
+                phone_number: phoneNumber,
+                password: hashedPassword,
+                ...userData
+            }
+        });
+        return generateAccessToken(newUser);
+    } catch (error) {
+        throw createHttpError(500, 'Fail to register');
+    }
 };
 
 const loginWithEmail = async (email, password) => {

@@ -17,16 +17,16 @@ const getCurrentUser = async (req, res, next) => {
 };
 
 const register = async (req, res, next) => {
-    const { email, phoneNumber, password } = req.body;
-    if (!((email || phoneNumber) && password)) {
+    const { email, phone_number, password, ...rest } = req.body;
+    if (!((email || phone_number) && password)) {
         return res.status(400).json({ message: 'Missing credentials' });
     }
     try {
         let token;
         if (email) {
-            token = await authService.registerWithEmail(email, password);
-        } else if (phoneNumber) {
-            token = await authService.registerWithPhoneNumber(phoneNumber, password);
+            token = await authService.registerWithEmail(email, password, rest);
+        } else if (phone_number) {
+            token = await authService.registerWithPhoneNumber(phone_number, password, rest);
         }
         return res.status(201).json({
             message: 'Success',
@@ -38,16 +38,16 @@ const register = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
-    const { email, phoneNumber, password } = req.body;
-    if (!((email || phoneNumber) && password)) {
+    const { email, phone_number, password } = req.body;
+    if (!((email || phone_number) && password)) {
         return res.status(400).json({ message: 'Missing credentials' });
     }
     try {
         let token;
         if (email) {
             token = await authService.loginWithEmail(email, password);
-        } else if (phoneNumber) {
-            token = await authService.loginWithPhoneNumber(phoneNumber, password);
+        } else if (phone_number) {
+            token = await authService.loginWithPhoneNumber(phone_number, password);
         }
         return res.status(200).json({
             message: 'Success',

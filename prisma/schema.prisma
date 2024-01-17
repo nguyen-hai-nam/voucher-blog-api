@@ -58,7 +58,7 @@ model User {
   id String @id @default(uuid())
   is_admin Boolean @default(false)
   password String
-  email String @unique
+  email String? @unique
   phone_number String? @unique
   name String?
   gender Gender?
