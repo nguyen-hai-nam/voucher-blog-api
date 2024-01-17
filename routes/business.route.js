@@ -38,13 +38,6 @@ router.get('/:businessId/products/:id', isAuth, businessController.getProductByI
 router.patch('/:businessId/products/:id', isAuth, businessController.updateProductById);
 router.delete('/:businessId/products/:id', isAuth, businessController.deleteProductById);
 
-router.get('/:businessId/productCategories/count', isAuth, businessController.countProductCategories);
-router.get('/:businessId/productCategories', isAuth, businessController.getProductCategories);
-router.post('/:businessId/productCategories', isAuth, businessController.createProductCategory);
-router.get('/:businessId/productCategories/:id', isAuth, businessController.getProductCategory);
-router.patch('/:businessId/productCategories/:id', isAuth, businessController.updateProductCategory);
-router.delete('/:businessId/productCategories/:id', isAuth, businessController.deleteProductCategory);
-
 router.get('/:businessId/campaigns/count', isAuth, businessController.countCampaigns);
 router.get('/:businessId/campaigns', isAuth, businessController.getAllCampaigns);
 router.post('/:businessId/campaigns', isAuth, upload.any(), businessController.createCampaign);

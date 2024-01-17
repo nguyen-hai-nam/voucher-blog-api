@@ -1,9 +1,20 @@
 import prisma from '../config/prisma.js';
-import { productCategoryCreateSchema, productCategoryUpdateSchema } from '../schemas/productCategory.schema.js';
+
+const _checkBusinessManager = async (businessId, userId) => {
+    const result = await prisma.userManageBusiness.findUniqueOrThrow({
+        where: {
+            business_id_user_id: {
+                business_id: businessId,
+                user_id: userId
+            }
+        }
+    });
+    return result;
+};
 
 const countBusinesses = async (query) => {
     const count = await prisma.business.count({
-        where: { ...query }
+        where: query.where
     });
     return count;
 };
@@ -24,7 +35,7 @@ const countCampaigns = async (business_id, query) => {
 
 const getAllBusinesses = async (query) => {
     const businesses = await prisma.business.findMany({
-        where: { ...query.where },
+        where: query.where,
         skip: query.skip,
         take: query.take,
         select: query.select,
@@ -179,12 +190,17 @@ const createCampaign = async (business_id, data) => {
 };
 
 const getBusinessById = async (id, query) => {
-    const business = await prisma.business.findUniqueOrThrow({
-        where: { id },
-        select: query.select,
-        include: query.include
-    });
-    return business;
+    try {
+        const business = await prisma.business.findUniqueOrThrow({
+            where: { id },
+            select: query.select,
+            include: query.include
+        });
+        return business;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
 };
 
 const getProductById = async (business_id, id) => {
@@ -205,11 +221,13 @@ const getCampaignById = async (business_id, id) => {
     return business;
 };
 
-const updateBusinessById = async (id, updateData) => {
+const updateBusinessById = async (id, updateData, userId, query) => {
+    _checkBusinessManager(id, userId);
     const updatedBusinessId = await prisma.business.update({
         where: { id },
         data: updateData,
-        select: { id: true }
+        select: query.select,
+        include: query.include
     });
     return updatedBusinessId;
 };
@@ -273,62 +291,6 @@ const deleteCampaignById = async (business_id, id) => {
     return result;
 };
 
-const countProductCategories = async (businessId, where) => {
-    const count = await prisma.productCategory.count({
-        where: { where, business: { id: businessId } }
-    });
-    return count;
-};
-
-const getProductCategories = async (businessId, skip, take, where, select, include) => {
-    const productCategories = await prisma.productCategory.findMany({
-        where: { where, business: { id: businessId } },
-        skip,
-        take,
-        select,
-        include
-    });
-    return productCategories;
-};
-
-const createProductCategory = async (businessId, data) => {
-    const validatedData = await productCategoryCreateSchema.validateAsync(data);
-    const result = await prisma.productCategory.create({
-        data: {
-            ...validatedData,
-            business: {
-                connect: { id: businessId }
-            }
-        }
-    });
-    return result;
-};
-
-const getProductCategory = async (businessId, id, select, include) => {
-    const result = await prisma.productCategory.findUniqueOrThrow({
-        where: { id, business: { id: businessId } },
-        select,
-        include
-    });
-    return result;
-};
-
-const updateProductCategory = async (businessId, id, data) => {
-    const validatedData = await productCategoryUpdateSchema.validateAsync(data);
-    const result = await prisma.productCategory.update({
-        where: { id, business: { id: businessId } },
-        validatedData
-    });
-    return result;
-};
-
-const deleteProductCategory = async (businessId, id) => {
-    const result = await prisma.productCategory.delete({
-        where: { id, business: { id: businessId } }
-    });
-    return result;
-};
-
 export default {
     countBusinesses,
     countProducts,
@@ -348,12 +310,5 @@ export default {
     updateCampaignById,
     deleteBusinessById,
     deleteProductById,
-    deleteCampaignById,
-
-    countProductCategories,
-    getProductCategories,
-    createProductCategory,
-    getProductCategory,
-    updateProductCategory,
-    deleteProductCategory
+    deleteCampaignById
 };

@@ -4,8 +4,9 @@ import { parseQuery } from '../helpers/http.helper.js';
 import { staticPath } from '../constants/path.constant.js';
 
 const countBusinesses = async (req, res, next) => {
+    const query = parseQuery(req.query);
     try {
-        const result = await businessService.countBusinesses();
+        const result = await businessService.countBusinesses(query);
         return res.status(200).json({ success: true, data: { count: result } });
     } catch (error) {
         next(error);
@@ -39,13 +40,13 @@ const getCategories = async (req, res, next) => {
     }
 };
 
-const getAllBusinesses = async (req, res) => {
+const getAllBusinesses = async (req, res, next) => {
     const query = parseQuery(req.query);
     try {
         const businesses = await businessService.getAllBusinesses(query);
         return res.status(200).json({ success: true, data: businesses });
     } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
+        next(error);
     }
 };
 
@@ -179,9 +180,11 @@ const getCampaignById = async (req, res, next) => {
 };
 
 const updateBusinessById = async (req, res, next) => {
+    const userId = req.user.id;
     const { id } = req.params;
+    const query = parseQuery(req.query);
     try {
-        const business = await businessService.updateBusinessById(id, req.body.data);
+        const business = await businessService.updateBusinessById(id, req.body, userId, query);
         return res.status(200).json({ success: true, data: business });
     } catch (error) {
         next(error);
@@ -238,115 +241,6 @@ const deleteCampaignById = async (req, res, next) => {
     }
 };
 
-const followBusinessById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const business = await prisma.business.update({
-            where: { id },
-            data: {
-                followers: {
-                    create: {
-                        user_id: req.user.id
-                    }
-                },
-                follow_count: {
-                    increment: 1
-                }
-            }
-        });
-        return res.status(200).json({ success: true, data: business });
-    } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
-    }
-};
-
-const unfollowBusinessById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const business = await prisma.business.update({
-            where: { id },
-            data: {
-                followers: {
-                    delete: {
-                        businessId_user_id: {
-                            businessId: id,
-                            user_id: req.user.id
-                        }
-                    }
-                },
-                follow_count: {
-                    increment: -1
-                }
-            }
-        });
-        return res.status(200).json({ success: true, data: business });
-    } catch (error) {
-        return res.status(500).json({ message: 'Error', error });
-    }
-};
-
-const countProductCategories = async (req, res, next) => {
-    const { businessId } = req.params;
-    try {
-        const result = await businessService.countProductCategories(businessId);
-        return res.status(200).json({ success: true, data: { count: result } });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const getProductCategories = async (req, res, next) => {
-    const { businessId } = req.params;
-    try {
-        const result = await businessService.getProductCategories(businessId);
-        return res.status(200).json({ success: true, data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const createProductCategory = async (req, res, next) => {
-    const { businessId } = req.params;
-    const data = req.body;
-    try {
-        const result = await businessService.createProductCategory(businessId, data);
-        return res.status(201).json({ success: true, data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const getProductCategory = async (req, res, next) => {
-    const { businessId, id } = req.params;
-    try {
-        const result = await businessService.getProductCategory(businessId, id);
-        return res.status(200).json({ success: true, data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const updateProductCategory = async (req, res, next) => {
-    const { businessId, id } = req.params;
-    const data = req.body;
-    try {
-        const result = await businessService.updateProductCategory(businessId, id, data);
-        return res.status(200).json({ success: true, data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const deleteProductCategory = async (req, res, next) => {
-    const { businessId, id } = req.params;
-    try {
-        const result = await businessService.deleteProductCategory(businessId, id);
-        return res.status(200).json({ success: true, data: result });
-    } catch (error) {
-        next(error);
-    }
-};
-
 export default {
     countBusinesses,
     countProducts,
@@ -366,14 +260,5 @@ export default {
     updateCampaignById,
     deleteBusinessById,
     deleteProductById,
-    deleteCampaignById,
-    followBusinessById,
-    unfollowBusinessById,
-
-    countProductCategories,
-    getProductCategories,
-    createProductCategory,
-    getProductCategory,
-    updateProductCategory,
-    deleteProductCategory
+    deleteCampaignById
 };
