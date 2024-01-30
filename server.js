@@ -1,4 +1,4 @@
-import app from './config/express.js';
+import app from '#root/config/express.js';
 
 const PORT = process.env.PORT || 3000;
 
