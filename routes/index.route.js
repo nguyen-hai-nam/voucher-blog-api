@@ -7,6 +7,7 @@ import productCategoryRouter from './product-category.route.js';
 import voucherRouter from './voucher.route.js';
 import postRouter from './campaign.route.js';
 import newsfeedRouter from './newsfeed.route.js';
+import userModuleRouter from '../modules/user/routes/index.js';
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.use('/productCategories', productCategoryRouter);
 router.use('/vouchers', voucherRouter);
 router.use('/campaigns', postRouter);
 router.use('/newsfeed', newsfeedRouter);
+router.use('/user', userModuleRouter);
 router.use((req, res) => {
     res.status(404).json({ message: 'Page Not Found' });
 });
