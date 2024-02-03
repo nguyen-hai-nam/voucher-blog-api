@@ -13,10 +13,16 @@ export const parseQuery = (query) => {
 
 export const rawQueryParser = (rawQuery) => {
     try {
-        const parsedQuery = _.mapValues(rawQuery, (key) => {
-            const keys = JSON.parse(key);
-            const values = _.fill(Array(keys.length), true);
-            return _.zipObject(keys, values);
+        const parsedQuery = _.mapValues(rawQuery, (value, key) => {
+            const jsonValue = JSON.parse(value);
+            let parsedValue;
+            if (key === 'select') {
+                const values = _.fill(Array(jsonValue.length), true);
+                parsedValue =  _.zipObject(jsonValue, values);
+            } else if (key === 'where') {
+                parsedValue = jsonValue;
+            }
+            return parsedValue;
         });
         return (parsedQuery);
     } catch (e) {
