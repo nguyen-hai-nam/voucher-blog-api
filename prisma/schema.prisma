@@ -75,8 +75,7 @@ model User {
   managingBusinesses UserManageBusiness[]
   followingBusinesses UserFollowBusiness[]
   ratedBusinesses UserRateBusiness[]
-  collectedRewards UserCollectReward[]
-  redeemedRewards UserRedeemReward[]
+  collectedRewards CollectedReward[]
   collectedVouchers UserCollectVoucher[]
   redeemedVouchers UserRedeemVoucher[]
   comments UserCommentCampaign[]
@@ -213,29 +212,24 @@ model Reward {
   updated_at DateTime @default(now())
 
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
-  collectors UserCollectReward[]
-  redeemers UserRedeemReward[]
+  collectors CollectedReward[]
 }
 
-model UserCollectReward {
+enum UserRewardStatus {
+  COLLECTED
+  REDEEMED
+  EXPIRED
+}
+
+model CollectedReward {
   id String @id @default(uuid())
   user_id String
   reward_id String
+  status UserRewardStatus @default(COLLECTED)
   created_at DateTime @default(now())
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  collector User @relation(fields: [user_id], references: [id], onDelete: Cascade)
   reward Reward @relation(fields: [reward_id], references: [id], onDelete: Cascade)
-}
-
-model UserRedeemReward {
-  id String @id @default(uuid())
-  reward_id String
-  user_id String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id])
-  reward Reward @relation(fields: [reward_id], references: [id])
 }
 
 model Product {
