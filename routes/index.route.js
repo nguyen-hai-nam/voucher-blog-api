@@ -8,6 +8,7 @@ import voucherRouter from './voucher.route.js';
 import postRouter from './campaign.route.js';
 import newsfeedRouter from './newsfeed.route.js';
 import userModuleRouter from '../modules/user/routes/index.js';
+import businessModuleRouter from '../modules/business/routes/index.js';
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.use('/vouchers', voucherRouter);
 router.use('/campaigns', postRouter);
 router.use('/newsfeed', newsfeedRouter);
 router.use('/user', userModuleRouter);
+router.use('/business', businessModuleRouter);
 router.use((req, res) => {
     res.status(404).json({ message: 'Page Not Found' });
 });

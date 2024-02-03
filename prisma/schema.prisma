@@ -75,11 +75,15 @@ model User {
   managingBusinesses UserManageBusiness[]
   followingBusinesses UserFollowBusiness[]
   ratedBusinesses UserRateBusiness[]
+  collectedRewards UserCollectReward[]
+  redeemedRewards UserRedeemReward[]
   collectedVouchers UserCollectVoucher[]
   redeemedVouchers UserRedeemVoucher[]
   comments UserCommentCampaign[]
   lovedCampaigns UserLoveCampaign[]
   savedCampaigns UserSaveCampaign[]
+  receivedTicks BusinessTickUser[] @relation("receivedTicks")
+  representedTicks BusinessTickUser[] @relation("representedTicks")
 }
 
 model UserAddress {
@@ -126,7 +130,9 @@ model Business {
 
   category Category? @relation(fields: [category_id], references: [id])
   productCategories ProductCategory[]
+  ticks BusinessTickUser[]
   managers UserManageBusiness[]
+  rewards Reward[]
   products Product[]
   followers UserFollowBusiness[]
   ratings UserRateBusiness[]
@@ -149,6 +155,18 @@ model BusinessImage {
   created_at DateTime @default(now())
 
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
+}
+
+model BusinessTickUser {
+  id String @id @default(uuid())
+  business_id String?
+  representor_id String?
+  target_id String?
+  created_at DateTime @default(now())
+
+  business Business? @relation(fields: [business_id], references: [id], onDelete: SetNull)
+  target User? @relation(fields: [target_id], references: [id], onDelete: SetNull, name: "receivedTicks")
+  representor User? @relation(fields: [representor_id], references: [id], onDelete: SetNull, name: "representedTicks")
 }
 
 model UserManageBusiness {
@@ -183,6 +201,41 @@ model UserRateBusiness {
   @@id([business_id, user_id])
   user User @relation(fields: [user_id], references: [id])
   business Business @relation(fields: [business_id], references: [id])
+}
+
+model Reward {
+  id String @id @default(uuid())
+  business_id String
+  name String
+  description String?
+  tick_price Int
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
+  collectors UserCollectReward[]
+  redeemers UserRedeemReward[]
+}
+
+model UserCollectReward {
+  id String @id @default(uuid())
+  user_id String
+  reward_id String
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  reward Reward @relation(fields: [reward_id], references: [id], onDelete: Cascade)
+}
+
+model UserRedeemReward {
+  id String @id @default(uuid())
+  reward_id String
+  user_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+  reward Reward @relation(fields: [reward_id], references: [id])
 }
 
 model Product {
