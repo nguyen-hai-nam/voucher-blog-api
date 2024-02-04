@@ -16,15 +16,45 @@ const collectReward = async (req, res, next) => {
         }
         const { id } = req.user;
         const { rewardId } = req.params;
-        const result = await prisma.collectedReward.create({
+        const reward = await prisma.reward.findUnique({
+            where: {
+                id: rewardId
+            }
+        });
+        const customerInfo = await prisma.customerInfo.findUnique({
+            where: {
+                business_id_user_id: {
+                    business_id: reward.business_id,
+                    user_id: id
+                }
+            }
+        });
+        if (!customerInfo || customerInfo.ticks_left < reward.tick_price || !reward) {
+            throw createHttpError(400);
+        }
+        const queryBatch = [];
+        queryBatch.push(prisma.customerInfo.update({
+            where: {
+                business_id_user_id: {
+                    business_id: reward.business_id,
+                    user_id: id
+                }
+            },
+            data: {
+                ticks_left: {
+                    decrement: reward.tick_price
+                }
+            }
+        }));
+        queryBatch.push(prisma.collectedReward.create({
             data: {
                 user_id: id,
                 reward_id: rewardId,
             },
             select: parsedQuery.select || undefined,
-        });
-        console.log("here", result);
-        const { value, error } = schemas.collectRewardResponse.validate(result);
+        }));
+        const result = await prisma.$transaction(queryBatch);
+        const { value, error } = schemas.collectRewardResponse.validate(result[1]);
         if (error) {
             throw createHttpError(500);
         }

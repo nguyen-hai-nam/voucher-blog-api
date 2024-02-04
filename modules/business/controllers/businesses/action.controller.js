@@ -5,7 +5,32 @@ const tickCustomer = async (req, res, next) => {
     try {
         const { business_id, user_id: representor_id } = req.business;
         const { userId } = req.params;
-        await prisma.businessTickUser.create({
+        const queryBatch = [];
+        const isCustomer = await prisma.customerInfo.findUnique({
+            where: {
+                business_id_user_id: {
+                    business_id,
+                    user_id: userId,
+                },
+            },
+        });
+        if (!isCustomer) {
+            queryBatch.push(prisma.customerInfo.create({
+                data: {
+                    business: {
+                        connect: {
+                            id: business_id,
+                        },
+                    },
+                    customer: {
+                        connect: {
+                            id: userId,
+                        },
+                    },
+                },
+            }));
+        }
+        queryBatch.push(prisma.businessTickUser.create({
             data: {
                 business: {
                     connect: {
@@ -14,8 +39,8 @@ const tickCustomer = async (req, res, next) => {
                 },
                 target: {
                     connect: {
-                        id: userId,
-                    }
+                        id: userId
+                    },
                 },
                 representor: {
                     connect: {
@@ -23,7 +48,24 @@ const tickCustomer = async (req, res, next) => {
                     },
                 },
             },
-        });
+        }));
+        queryBatch.push(prisma.customerInfo.update({
+            where: {
+                business_id_user_id: {
+                    business_id,
+                    user_id: userId,
+                },
+            },
+            data: {
+                ticks_total: {
+                    increment: 1,
+                },
+                ticks_left: {
+                    increment: 1,
+                }
+            },
+        }));
+        await prisma.$transaction(queryBatch);
         res.json({ success: true });
     } catch (e) {
         next(e);
