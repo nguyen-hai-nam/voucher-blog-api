@@ -56,6 +56,25 @@ const getTickHistory = async (req, res, next) => {
     }
 }
 
+const getCustomerInfos = async (req, res, next) => {
+   try {
+        const { id } = req.user;
+        const result = await prisma.customerInfo.findMany({
+            where: {
+                user_id: id
+            },
+            select: {
+                business_id: true,
+                ticks_total: true,
+                ticks_left: true,
+            }
+        });
+        res.json(result);
+   } catch (e) {
+        next(e);
+   }
+}
+
 const collectReward = async (req, res, next) => {
     try {
         const { value: rawQuery, error: rawQueryError } = schemas.collectRewardQueryRaw.validate(req.query);
@@ -164,6 +183,7 @@ const redeemReward = async (req, res, next) => {
 
 export default {
     getTickHistory,
+    getCustomerInfos,
     collectReward,
     redeemReward,
 };
