@@ -4,6 +4,58 @@ import prisma from '../../../../config/prisma.js';
 import { rawQueryParser } from '../../../../helpers/http.helper.js';
 import schemas from './schemas.js';
 
+const getTickHistory = async (req, res, next) => {
+    try {
+        const { value: rawQuery, error: rawQueryError } = schemas.getTickHistoryQueryRaw.validate(req.query);
+        if (rawQueryError) {
+            throw createHttpError(400);
+        }
+        const { value: parsedQuery, error: parsedQueryError } = schemas.getTickHistoryQueryParsed.validate(rawQueryParser(rawQuery));
+        if (parsedQueryError) {
+            throw createHttpError(400);
+        }
+        const { id } = req.user;
+        const result = await prisma.user.findUnique({
+            where: {
+                id
+            },
+            select: {
+                receivedTicks: {
+                    where: {
+                        created_at: {
+                            gte: parsedQuery.fromDate,
+                            lte: parsedQuery.toDate,
+                        }
+                    },
+                    select: {
+                        business_id: true,
+                        created_at: true,
+                    }
+                },
+                collectedRewards: {
+                    where: {
+                        created_at: {
+                            gte: parsedQuery.fromDate,
+                            lte: parsedQuery.toDate,
+                        }
+                    },
+                    select: {
+                        id: true,
+                        created_at: true,
+                    }
+                }
+            }
+        });
+        const { value, error } = schemas.getTickHistoryResponse.validate(result);
+        if (error) {
+            throw createHttpError(500);
+        }
+        res.json(value);
+    } catch (e) {
+        next(e);
+    }
+}
+
 const collectReward = async (req, res, next) => {
     try {
         const { value: rawQuery, error: rawQueryError } = schemas.collectRewardQueryRaw.validate(req.query);
@@ -109,7 +161,9 @@ const redeemReward = async (req, res, next) => {
     }
 }
 
+
 export default {
+    getTickHistory,
     collectReward,
     redeemReward,
 };

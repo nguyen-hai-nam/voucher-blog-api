@@ -11,6 +11,7 @@ const router = express.Router();
 router.get('/me', isUser, userCrudController.getCurrentUser);
 router.put('/me', isUser, userCrudController.updateCurrentUser);
 
+router.get('/me/getTickHistory', isUser, userActionController.getTickHistory);
 router.post('/me/collectReward/:rewardId', isUser, userActionController.collectReward);
 router.put('/me/redeemReward/:collectedRewardId', isUser, userActionController.redeemReward);
 
