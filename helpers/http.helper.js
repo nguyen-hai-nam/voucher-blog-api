@@ -14,13 +14,14 @@ export const parseQuery = (query) => {
 export const rawQueryParser = (rawQuery) => {
     try {
         const parsedQuery = _.mapValues(rawQuery, (value, key) => {
-            const jsonValue = JSON.parse(value);
             let parsedValue;
             if (key === 'select') {
-                const values = _.fill(Array(jsonValue.length), true);
-                parsedValue =  _.zipObject(jsonValue, values);
+                const values = _.fill(Array(JSON.parse(value).length), true);
+                parsedValue =  _.zipObject(JSON.parse(value), values);
             } else if (key === 'where') {
-                parsedValue = jsonValue;
+                parsedValue = JSON.parse(value);
+            } else if (key === 'fromDate' || key === 'toDate') {
+                parsedValue = new Date(value);
             }
             return parsedValue;
         });
