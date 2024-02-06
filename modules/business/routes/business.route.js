@@ -1,8 +1,10 @@
 import express from 'express';
 
 import { isBusiness } from '../middlewares/business-auth.middleware.js';
+import { upload } from '../../../config/multer.js';
 import businessActionController from '../controllers/businesses/action.controller.js';
 import productCategoryCrudController from '../controllers/businesses/productCategories/crud.controller.js';
+import productCrudController from '../controllers/businesses/products/crud.controller.js';
 
 const router = express.Router();
 
@@ -167,14 +169,11 @@ router.put('/me/productCategories/:productCategoryId', isBusiness, productCatego
  *         content:
  *           application/json:
  *             schema:
- *               type: 'object'
+ *               type: object
  *               properties:
- *                 id:
- *                   type: 'string'
- *                   description: 'The unique identifier for a product category'
- *                 name:
- *                   type: 'string'
- *                   description: 'The name of the product category'
+ *                 success:
+ *                   type: boolean
+ *                   description: 'True if the product was deleted successfully'
  *       400:
  *         description: Bad request
  *       401:
@@ -183,5 +182,148 @@ router.put('/me/productCategories/:productCategoryId', isBusiness, productCatego
  *         description: Not found
  */
 router.delete('/me/productCategories/:productCategoryId', isBusiness, productCategoryCrudController.deleteProductCategory);
+/**
+ * @openapi
+ * /businesses/me/products:
+ *   get:
+ *     summary: Get all products for the current business
+ *     tags: [Business - Product]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: An array of products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ */
+router.get('/me/products', isBusiness, productCrudController.getProducts);
+
+/**
+ * @openapi
+ * /businesses/me/products:
+ *   post:
+ *     summary: Create a new product for the current business
+ *     tags: [Business - Product]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductCreate'
+ *     responses:
+ *       200:
+ *         description: The created product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ */
+router.post('/me/products', isBusiness, upload('productImages').array('images'), productCrudController.createProduct);
+/**
+ * @openapi
+ * /businesses/me/products/{productId}:
+ *   get:
+ *     summary: Get a specific product for the current business
+ *     tags: [Business - Product]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the product
+ *     responses:
+ *       200:
+ *         description: The requested product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Product not found
+ */
+router.get('/me/products/:productId', isBusiness, productCrudController.getProduct);
+/**
+ * @openapi
+ * /businesses/me/products/{productId}:
+ *   put:
+ *     summary: Update a specific product for the current business
+ *     tags: [Business - Product]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the product
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductUpdate'
+ *     responses:
+ *       200:
+ *         description: The updated product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Product not found
+ */
+router.put('/me/products/:productId', isBusiness, productCrudController.updateProduct);
+/**
+ * @openapi
+ * /businesses/me/products/{productId}:
+ *   delete:
+ *     summary: Delete a specific product for the current business
+ *     tags: [Business - Product]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the product
+ *     responses:
+ *       200:
+ *         description: The deleted product
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Product not found
+ */
+router.delete('/me/products/:productId', isBusiness, productCrudController.deleteProduct);
 
 export default router;
