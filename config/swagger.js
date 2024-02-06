@@ -34,7 +34,7 @@ const options = {
             },
             servers: [
                 {
-                    url: 'http://localhost:3000/user',
+                    url: 'http://localhost:3000/business',
                 },
             ],
             components: {
@@ -58,7 +58,7 @@ const options = {
             },
             servers: [
                 {
-                    url: 'http://localhost:3000/user',
+                    url: 'http://localhost:3000/admin',
                 },
             ],
             components: {
