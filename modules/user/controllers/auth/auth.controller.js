@@ -20,8 +20,8 @@ const _generateUserAccessToken = async (payload) => {
 }
 
 const _generateBusinessAccessTokenPayload = Joi.object({
+    id: Joi.string().required(),
     user_id: Joi.string().required(),
-    business_id: Joi.string().required(),
 }).required();
 
 const _generateBusinessAccessToken = async (payload) => {
@@ -44,8 +44,8 @@ const loginBusiness = async (req, res, next) => {
             throw createHttpError(401);
         }
         const businessAccessToken = await _generateBusinessAccessToken({
+            id: result.business_id,
             user_id: result.user_id,
-            business_id: result.business_id
         });
         res.json({ businessAccessToken });
     } catch (e) {
