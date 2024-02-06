@@ -26,14 +26,7 @@ router.post('/me/tick/:userId', isBusiness, businessActionController.tickCustome
  *             schema:
  *               type: array
  *               items:
- *                 type: 'object'
- *                 properties:
- *                   id:
- *                     type: 'string'
- *                     description: 'The unique identifier for a product category'
- *                   name:
- *                     type: 'string'
- *                     description: 'The name of the product category'
+ *                 $ref: '#/components/schemas/ProductCategory'
  *       401:
  *         description: Unauthorized
  */
@@ -58,14 +51,7 @@ router.get('/me/productCategories', isBusiness, productCategoryCrudController.ge
  *         content:
  *           application/json:
  *             schema:
- *               type: 'object'
- *               properties:
- *                 id:
- *                   type: 'string'
- *                   description: 'The unique identifier for a product category'
- *                 name:
- *                   type: 'string'
- *                   description: 'The name of the product category'
+ *               $ref: '#/components/schemas/ProductCategory'
  *       400:
  *         description: Bad request
  *       401:
@@ -92,14 +78,7 @@ router.post('/me/productCategories', isBusiness, productCategoryCrudController.c
  *         content:
  *           application/json:
  *             schema:
- *               type: 'object'
- *               properties:
- *                 id:
- *                   type: 'string'
- *                   description: 'The unique identifier for a product category'
- *                 name:
- *                   type: 'string'
- *                   description: 'The name of the product category'
+ *               $ref: '#/components/schemas/ProductCategory'
  *       401:
  *         description: Unauthorized
  *       404:
@@ -132,14 +111,7 @@ router.get('/me/productCategories/:productCategoryId', isBusiness, productCatego
  *         content:
  *           application/json:
  *             schema:
- *               type: 'object'
- *               properties:
- *                 id:
- *                   type: 'string'
- *                   description: 'The unique identifier for a product category'
- *                 name:
- *                   type: 'string'
- *                   description: 'The name of the product category'
+ *               $ref: '#/components/schemas/ProductCategory'
  *       400:
  *         description: Bad request
  *       401:
@@ -169,11 +141,7 @@ router.put('/me/productCategories/:productCategoryId', isBusiness, productCatego
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   description: 'True if the product was deleted successfully'
+ *               $ref: '#/components/schemas/ProductCategory'
  *       400:
  *         description: Bad request
  *       401:

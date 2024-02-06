@@ -58,6 +58,22 @@ const options = {
                             },
                         },
                     },
+                    ProductCategoryCreate: {
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                            },
+                        },
+                    },
+                    ProductCategoryUpdate: {
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                            },
+                        },
+                    },
                     Product: {
                         type: 'object',
                         properties: {
