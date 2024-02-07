@@ -5,6 +5,7 @@ import { upload } from '../../../config/multer.js';
 import businessActionController from '../controllers/businesses/action.controller.js';
 import productCategoryCrudController from '../controllers/businesses/productCategories/crud.controller.js';
 import productCrudController from '../controllers/businesses/products/crud.controller.js';
+import voucherCrudController from '../controllers/businesses/vouchers/crud.controller.js';
 
 const router = express.Router();
 
@@ -293,5 +294,142 @@ router.put('/me/products/:productId', isBusiness, productCrudController.updatePr
  *         description: Product not found
  */
 router.delete('/me/products/:productId', isBusiness, productCrudController.deleteProduct);
-
+/**
+ * @openapi
+ * /businesses/me/vouchers:
+ *   get:
+ *     summary: Get all vouchers for the current business
+ *     tags: [Business - Voucher]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: An array of vouchers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Voucher'
+ *       401:
+ *         description: Unauthorized
+ */
+router.get('/me/vouchers', isBusiness, voucherCrudController.getVouchers);
+/**
+ * @openapi
+ * /businesses/me/vouchers:
+ *   post:
+ *     summary: Create a new voucher for the current business
+ *     tags: [Business - Voucher]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: '#/components/schemas/VoucherCreate'
+ *     responses:
+ *       200:
+ *         description: The created voucher
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Voucher'
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ */
+router.post('/me/vouchers', isBusiness, upload('voucherMedia').single('media'), voucherCrudController.createVoucher);
+/**
+ * @openapi
+ * /businesses/me/vouchers/{voucherId}:
+ *   get:
+ *     summary: Get a specific voucher for the current business
+ *     tags: [Business - Voucher]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: voucherId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the voucher
+ *     responses:
+ *       200:
+ *         description: The requested voucher
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Voucher'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Voucher not found
+ */
+router.get('/me/vouchers/:voucherId', isBusiness, voucherCrudController.getVoucher);
+/**
+ * @openapi
+ * /businesses/me/vouchers/{voucherId}:
+ *   put:
+ *     summary: Update a specific voucher for the current business
+ *     tags: [Business - Voucher]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: voucherId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the voucher
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/VoucherUpdate'
+ *     responses:
+ *       200:
+ *         description: The updated voucher
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Voucher'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Voucher not found
+ */
+router.put('/me/vouchers/:voucherId', isBusiness, voucherCrudController.updateVoucher);
+/**
+ * @openapi
+ * /businesses/me/vouchers/{voucherId}:
+ *   delete:
+ *     summary: Delete a specific voucher for the current business
+ *     tags: [Business - Voucher]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: voucherId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the voucher
+ *     responses:
+ *       200:
+ *         description: The deleted voucher
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Voucher'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Voucher not found
+ */
+router.delete('/me/vouchers/:voucherId', isBusiness, voucherCrudController.deleteVoucher);
 export default router;

@@ -163,6 +163,175 @@ const options = {
                             },
                         },
                     },
+                    Voucher: {
+                        type: 'object',
+                        properties: {
+                            id: {
+                                type: 'string',
+                                format: 'uuid',
+                            },
+                            campaign_id: {
+                                type: 'string',
+                                format: 'uuid',
+                            },
+                            index: {
+                                type: 'number',
+                            },
+                            type: {
+                                type: 'string',
+                                enum: ['DISCOUNT', 'FIXED_PRICE'],
+                            },
+                            media_url: {
+                                type: 'string',
+                            },
+                            description: {
+                                type: 'string',
+                            },
+                            discount_type: {
+                                type: 'string',
+                                enum: ['PERCENT', 'VALUE'],
+                            },
+                            percent: {
+                                type: 'number',
+                            },
+                            max_value: {
+                                type: 'number',
+                            },
+                            value: {
+                                type: 'number',
+                            },
+                            fixed_price: {
+                                type: 'number',
+                            },
+                            usage: {
+                                type: 'number',
+                            },
+                            status: {
+                                type: 'string',
+                                enum: ['ACTIVE', 'INACTIVE'],
+                            },
+                            collected_count: {
+                                type: 'number',
+                            },
+                            max_use: {
+                                type: 'number',
+                            },
+                            condition_min_bill_value: {
+                                type: 'number',
+                            },
+                            condition_beginning_hour: {
+                                type: 'number',
+                            },
+                            condition_ending_hour: {
+                                type: 'number',
+                            },
+                            condition_target: {
+                                type: 'string',
+                                enum: ['ALL', 'NEW_CUSTOMER'],
+                            },
+                        },
+                    },
+                    VoucherCreate: {
+                        type: 'object',
+                        required: ['media'],
+                        properties: {
+                            index: {
+                                type: 'number',
+                            },
+                            type: {
+                                type: 'string',
+                                enum: ['DISCOUNT', 'GIFT'],
+                            },
+                            media: {
+                                type: 'string',
+                                format: 'binary',
+                                description: 'Image or video file',
+                            },
+                            description: {
+                                type: 'string',
+                            },
+                            discount_type: {
+                                type: 'string',
+                                enum: ['PERCENT', 'VALUE', 'FIXED_PRICE'],
+                            },
+                            percent: {
+                                type: 'number',
+                            },
+                            max_value: {
+                                type: 'number',
+                            },
+                            value: {
+                                type: 'number',
+                            },
+                            fixed_price: {
+                                type: 'number',
+                            },
+                            usage: {
+                                type: 'number',
+                            },
+                            status: {
+                                type: 'string',
+                                enum: ['AVAILABLE', 'UNAVAILABLE'],
+                            },
+                            max_use: {
+                                type: 'number',
+                            },
+                            condition_min_bill_value: {
+                                type: 'number',
+                            },
+                            condition_beginning_hour: {
+                                type: 'number',
+                            },
+                            condition_ending_hour: {
+                                type: 'number',
+                            },
+                            condition_target: {
+                                type: 'string',
+                                enum: ['ALL', 'SILVER', 'GOLD', 'DIAMOND'],
+                            },
+                        },
+                    },
+                    VoucherUpdate: {
+                        type: 'object',
+                        properties: {
+                            index: {
+                                type: 'number',
+                            },
+                            type: {
+                                type: 'string',
+                                enum: ['DISCOUNT', 'GIFT'],
+                            },
+                            media_url: {
+                                type: 'string',
+                            },
+                            description: {
+                                type: 'string',
+                            },
+                            discount_type: {
+                                type: 'string',
+                                enum: ['PERCENT', 'VALUE', 'FIXED_PRICE'],
+                            },
+                            percent: {
+                                type: 'number',
+                            },
+                            max_value: {
+                                type: 'number',
+                            },
+                            value: {
+                                type: 'number',
+                            },
+                            fixed_price: {
+                                type: 'number',
+                            },
+                            usage: {
+                                type: 'number',
+                            },
+                            status: {
+                                type: 'string',
+                                enum: ['AVAILABLE', 'UNAVAILABLE'],
+                            },
+                        },
+                    },
                 }
             },
         },
