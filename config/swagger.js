@@ -332,6 +332,104 @@ const options = {
                             },
                         },
                     },
+                    Campaign: {
+                        type: 'object',
+                        properties: {
+                            id: {
+                                type: 'string',
+                            },
+                            name: {
+                                type: 'string',
+                            },
+                            description: {
+                                type: 'string',
+                            },
+                            start_date: {
+                                type: 'string',
+                                format: 'date-time',
+                            },
+                            end_date: {
+                                type: 'string',
+                                format: 'date-time',
+                            },
+                            status: {
+                                type: 'string',
+                                enum: ['ACTIVE', 'EXPIRED'],
+                            },
+                            _count: {
+                                type: 'object',
+                                properties: {
+                                    vouchers: {
+                                        type: 'integer',
+                                    },
+                                    comments: {
+                                        type: 'integer',
+                                    },
+                                    loves: {
+                                        type: 'integer',
+                                    },
+                                    saves: {
+                                        type: 'integer',
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    CampaignCreate: {
+                        type: 'object',
+                        required: ['name', 'description', 'start_date', 'end_date', 'status'],
+                        properties: {
+                            name: {
+                                type: 'string',
+                            },
+                            description: {
+                                type: 'string',
+                            },
+                            start_date: {
+                                type: 'string',
+                                format: 'date-time',
+                            },
+                            end_date: {
+                                type: 'string',
+                                format: 'date-time',
+                            },
+                            status: {
+                                type: 'string',
+                                enum: ['ACTIVE', 'EXPIRED'],
+                                default: 'ACTIVE',
+                            },
+                            voucherIds: {
+                                type: 'array',
+                                items: {
+                                    type: 'string',
+                                },
+                                minItems: 1,
+                            },
+                        },
+                    },
+                    CampaignUpdate: {
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                            },
+                            description: {
+                                type: 'string',
+                            },
+                            start_date: {
+                                type: 'string',
+                                format: 'date-time',
+                            },
+                            end_date: {
+                                type: 'string',
+                                format: 'date-time',
+                            },
+                            status: {
+                                type: 'string',
+                                enum: ['ACTIVE', 'EXPIRED'],
+                            },
+                        },
+                    },
                 }
             },
         },

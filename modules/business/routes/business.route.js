@@ -6,6 +6,7 @@ import businessActionController from '../controllers/businesses/action.controlle
 import productCategoryCrudController from '../controllers/businesses/productCategories/crud.controller.js';
 import productCrudController from '../controllers/businesses/products/crud.controller.js';
 import voucherCrudController from '../controllers/businesses/vouchers/crud.controller.js';
+import campaignCrudController from '../controllers/businesses/campaigns/crud.controller.js';
 
 const router = express.Router();
 
@@ -432,4 +433,124 @@ router.put('/me/vouchers/:voucherId', isBusiness, voucherCrudController.updateVo
  *         description: Voucher not found
  */
 router.delete('/me/vouchers/:voucherId', isBusiness, voucherCrudController.deleteVoucher);
+/**
+ * @swagger
+ * /businesses/me/campaigns:
+ *   get:
+ *     summary: Get a list of campaigns for the current business
+ *     tags: [Business - Campaign]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The list of the campaigns
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Campaign'
+ */
+router.get('/me/campaigns', isBusiness, campaignCrudController.getCampaigns);
+/**
+ * @swagger
+ * /businesses/me/campaigns:
+ *   post:
+ *     summary: Create a new campaign for the current business
+ *     tags: [Business - Campaign]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CampaignCreate'
+ *     responses:
+ *       200:
+ *         description: The created campaign
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Campaign'
+ */
+router.post('/me/campaigns', isBusiness, campaignCrudController.createCampaign);
+/**
+ * @swagger
+ * /businesses/me/campaigns/{campaignId}:
+ *   get:
+ *     summary: Get a specific campaign for the current business
+ *     tags: [Business - Campaign]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: campaignId
+ *         required: true
+ *         description: The ID of the campaign
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The campaign data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Campaign'
+ */
+router.get('/me/campaigns/:campaignId', isBusiness, campaignCrudController.getCampaign);
+/**
+ * @swagger
+ * /businesses/me/campaigns/{campaignId}:
+ *   put:
+ *     summary: Update a specific campaign for the current business
+ *     tags: [Business - Campaign]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: campaignId
+ *         required: true
+ *         description: The ID of the campaign
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Campaign'
+ *     responses:
+ *       200:
+ *         description: The updated campaign
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Campaign'
+ */
+router.put('/me/campaigns/:campaignId', isBusiness, campaignCrudController.updateCampaign);
+/**
+ * @swagger
+ * /businesses/me/campaigns/{campaignId}:
+ *   delete:
+ *     summary: Delete a specific campaign for the current business
+ *     tags: [Business - Campaign]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: campaignId
+ *         required: true
+ *         description: The ID of the campaign
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The deleted campaign
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Campaign'
+ */
+router.delete('/me/campaigns/:campaignId', isBusiness, campaignCrudController.deleteCampaign);
 export default router;
