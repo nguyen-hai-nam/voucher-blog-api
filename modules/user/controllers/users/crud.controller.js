@@ -58,6 +58,42 @@ const getCurrentUser = async (req, res, next) => {
     }
 }
 
+const getManagingBusinesses = async (req, res, next) => {
+    try {
+        const { id } = req.user;
+        const result = await prisma.business.findMany({
+            where: {
+                managers: {
+                    some: {
+                        user_id: id
+                    }
+                }
+            }
+        });
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
+const getFollowingBusinesses = async (req, res, next) => {
+    try {
+        const { id } = req.user;
+        const result = await prisma.business.findMany({
+            where: {
+                followers: {
+                    some: {
+                        user_id: id
+                    }
+                }
+            }
+        });
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
+}
+
 const _updateCurrentUserQueryRaw = Joi.object({
     select: Joi.string().optional(),
 }).unknown(false).required();
@@ -127,5 +163,7 @@ const updateCurrentUser = async (req, res, next) => {
 
 export default {
     getCurrentUser,
+    getManagingBusinesses,
+    getFollowingBusinesses,
     updateCurrentUser
 };

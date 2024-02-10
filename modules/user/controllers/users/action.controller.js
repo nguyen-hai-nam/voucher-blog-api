@@ -41,6 +41,12 @@ const getTickHistory = async (req, res, next) => {
                     },
                     select: {
                         id: true,
+                        reward: {
+                            select: {
+                                name: true,
+                                tick_price: true,
+                            }
+                        },
                         created_at: true,
                     }
                 }

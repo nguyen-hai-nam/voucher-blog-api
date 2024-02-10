@@ -46,6 +46,139 @@ const options = {
                     },
                 },
                 schemas:{
+                    Business: {
+                        type: 'object',
+                        properties: {
+                            id: {
+                                type: 'string',
+                                format: 'uuid',
+                            },
+                            category_id: {
+                                type: 'string',
+                                format: 'uuid',
+                                nullable: true,
+                            },
+                            name: {
+                                type: 'string',
+                            },
+                            description: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            tax_code: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            avatar_image_url: {
+                                type: 'string',
+                            },
+                            email: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            phone_number: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            website: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            address_name: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            lng: {
+                                type: 'number',
+                            },
+                            lat: {
+                                type: 'number',
+                            },
+                            open_hour: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            close_hour: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            lowest_price: {
+                                type: 'number',
+                                nullable: true,
+                            },
+                            highest_price: {
+                                type: 'number',
+                                nullable: true,
+                            },
+                            rating: {
+                                type: 'number',
+                            },
+                        },
+                    },
+                    BusinessUpdate: {
+                        type: 'object',
+                        properties: {
+                            category_id: {
+                                type: 'string',
+                                format: 'uuid',
+                                nullable: true,
+                            },
+                            name: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            description: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            tax_code: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            avatar_image_url: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            email: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            phone_number: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            website: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            address_name: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            lng: {
+                                type: 'number',
+                            },
+                            lat: {
+                                type: 'number',
+                            },
+                            open_hour: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            close_hour: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            lowest_price: {
+                                type: 'number',
+                                nullable: true,
+                            },
+                            highest_price: {
+                                type: 'number',
+                                nullable: true,
+                            },
+                        },
+                    },
                     ProductCategory: {
                         type: 'object',
                         properties: {

@@ -9,6 +9,8 @@ import collectedRewardController from '../controllers/users/collectedRewards/cru
 const router = express.Router();
 
 router.get('/me', isUser, userCrudController.getCurrentUser);
+router.get('/me/managingBusinesses', isUser, userCrudController.getManagingBusinesses);
+router.get('/me/followingBusinesses', isUser, userCrudController.getFollowingBusinesses);
 router.put('/me', isUser, userCrudController.updateCurrentUser);
 
 router.get('/me/getTickHistory', isUser, userActionController.getTickHistory);

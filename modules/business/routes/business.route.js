@@ -2,6 +2,7 @@ import express from 'express';
 
 import { isBusiness } from '../middlewares/business-auth.middleware.js';
 import { upload } from '../../../config/multer.js';
+import businessCrudController from '../controllers/businesses/crud.controller.js';
 import businessActionController from '../controllers/businesses/action.controller.js';
 import productCategoryCrudController from '../controllers/businesses/productCategories/crud.controller.js';
 import productCrudController from '../controllers/businesses/products/crud.controller.js';
@@ -9,6 +10,54 @@ import voucherCrudController from '../controllers/businesses/vouchers/crud.contr
 import campaignCrudController from '../controllers/businesses/campaigns/crud.controller.js';
 
 const router = express.Router();
+
+
+/**
+ * @swagger
+ * /businesses/me:
+ *   get:
+ *     summary: Retrieve the current business
+ *     tags: [Business]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The current business details
+ *         content:
+ *           application/json:
+ *             schema:
+*                $ref: '#/components/schemas/Business'
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ * 
+ */
+router.get('/me', isBusiness, businessCrudController.getCurrentBusiness);
+/**
+ * @swagger
+*   put:
+*     summary: Update the current business
+*     tags: [Business]
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             $ref: '#/components/schemas/BusinessUpdate'
+*     responses:
+*       200:
+*         description: The business was updated
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/components/schemas/Business'
+*       400:
+*         description: Bad request
+*       500:
+*         description: Internal server error
+*/
+router.put('/me/:id', isBusiness, businessCrudController.updateCurrentBusiness);
 
 router.post('/me/tick/:userId', isBusiness, businessActionController.tickCustomer);
 
