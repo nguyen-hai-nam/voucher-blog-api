@@ -273,7 +273,7 @@ const options = {
                                 type: 'array',
                                 items: {
                                     type: 'string',
-                                    format: 'uuid',
+                                    format: 'binary',
                                 },
                             },
                         },

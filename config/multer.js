@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
-import { uploadDir } from '../constants/path.constant.js';
+import { uploadDirectory } from '../constants/path.constant.js';
 
 const hashFileName = (file) => {
     const payload = `${path.basename(file.originalname, path.extname(file.originalname))}${Date.now()}`;
@@ -13,7 +13,7 @@ const hashFileName = (file) => {
 export const upload = (subPath = '') => multer({
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
-            const dir = path.join(uploadDir, subPath);
+            const dir = path.join(uploadDirectory, subPath);
             if (!fs.existsSync(dir)) {
                 // If not, create directory
                 fs.mkdirSync(dir, { recursive: true });

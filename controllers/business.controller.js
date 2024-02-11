@@ -1,7 +1,7 @@
 import prisma from '../config/prisma.js';
 import businessService from '../services/business.service.js';
 import { parseQuery } from '../helpers/http.helper.js';
-import { staticPath } from '../constants/path.constant.js';
+import { uploadDirectory } from '../constants/path.constant.js';
 
 const countBusinesses = async (req, res, next) => {
     const query = parseQuery(req.query);
@@ -81,9 +81,9 @@ const createBusiness = async (req, res, next) => {
         const serverUrl = `${req.protocol}://${req.get('host')}`;
         for (const key in files) {
             if (key === 'avatarImage') {
-                data.avatar_image_url = `${serverUrl}/${staticPath}/${files[key][0].filename}`;
+                data.avatar_image_url = `${serverUrl}/${uploadDirectory}/${files[key][0].filename}`;
             } else {
-                data[key] = files[key].map((file) => `${serverUrl}/${staticPath}/${file.filename}`);
+                data[key] = files[key].map((file) => `${serverUrl}/${uploadDirectory}/${file.filename}`);
             }
         }
         const business = await businessService.createBusiness(userId, data);
@@ -101,7 +101,7 @@ const createProduct = async (req, res, next) => {
         const files = req.files;
         const serverUrl = `${req.protocol}://${req.get('host')}`;
         for (const key in files) {
-            data[key] = files[key].map((file) => `${serverUrl}/${staticPath}/${file.filename}`);
+            data[key] = files[key].map((file) => `${serverUrl}/${uploadDirectory}/${file.filename}`);
         }
         const result = await businessService.createProduct(businessId, data, query);
         return res.status(201).json({ success: true, data: result });
@@ -139,7 +139,7 @@ const createCampaign = async (req, res, next) => {
         const serverUrl = `${req.protocol}://${req.get('host')}`;
         for (const file of files) {
             const index = parseInt(file.fieldname.split('_')[1]);
-            data.vouchers[index].media_url = `${serverUrl}/${staticPath}/${file.filename}`;
+            data.vouchers[index].media_url = `${serverUrl}/${uploadDirectory}/${file.filename}`;
         }
         const result = await businessService.createCampaign(businessId, data);
         return res.status(201).json({ success: true, data: result });
