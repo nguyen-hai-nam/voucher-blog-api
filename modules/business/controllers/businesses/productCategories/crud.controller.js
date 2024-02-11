@@ -36,9 +36,9 @@ const createProductCategory = async (req, res, next) => {
 const getProductCategory = async (req, res, next) => {
     try {
         const businessId = req.business.id;
-        const { id } = req.params;
+        const { productCategoryId } = req.params;
         const productCategory = await prisma.productCategory.findUnique({
-            where: { id, business_id: businessId},
+            where: { id: productCategoryId, business_id: businessId},
             select: { id: true, name: true },
         });
         res.json(productCategory);
@@ -54,9 +54,9 @@ const updateProductCategory = async (req, res, next) => {
             throw createHttpError(400);
         }
         const businessId = req.business.id;
-        const { id } = req.params;
+        const { productCategoryId } = req.params;
         const result = await prisma.productCategory.update({
-            where: { id, business_id: businessId},
+            where: { id: productCategoryId, business_id: businessId},
             data: body,
             select: { id: true, name: true },
         });
@@ -69,9 +69,9 @@ const updateProductCategory = async (req, res, next) => {
 const deleteProductCategory = async (req, res, next) => {
     try {
         const businessId = req.business.id;
-        const { id } = req.params;
+        const { productCategoryId } = req.params;
         const result = await prisma.productCategory.delete({
-            where: { id, business_id: businessId},
+            where: { id: productCategoryId, business_id: businessId},
             select: { id: true, name: true },
         });
         res.json(result);

@@ -40,7 +40,7 @@ const createProduct = async (req, res, next) => {
         if (!req.files || req.files.length === 0) {
             throw createHttpError(400);
         }
-        const images = req.files.map(file => ({ url: file.path }));
+        const images = req.files.map(file => ({ url: `${req.protocol}://${req.get('host')}/${file.path}` }));
         const businessId = req.business.id;
         const { category_id, ...rest } = body;
         const result = await prisma.product.create({
@@ -83,9 +83,9 @@ const createProduct = async (req, res, next) => {
 const getProduct = async (req, res, next) => {
     try {
         const businessId = req.business.id;
-        const { id } = req.params;
+        const { productId } = req.params;
         const result = await prisma.product.findUnique({
-            where: { id, business_id: businessId },
+            where: { id: productId, business_id: businessId },
             select: {
                 id: true,
                 category_id: true,
@@ -114,16 +114,10 @@ const updateProduct = async (req, res, next) => {
             throw createHttpError(400);
         }
         const businessId = req.business.id;
-        const { id } = req.params;
-        const { category_id, ...rest } = body;
+        const { productId } = req.params;
         const result = await prisma.product.update({
-            where: { id, business_id: businessId },
-            data: {
-                category: {
-                    connect: { id: category_id }
-                },
-                ...rest
-            },
+            where: { id: productId, business_id: businessId },
+            data: body,
             select: {
                 id: true,
                 category_id: true,
@@ -148,9 +142,9 @@ const updateProduct = async (req, res, next) => {
 const deleteProduct = async (req, res, next) => {
     try {
         const businessId = req.business.id;
-        const { id } = req.params;
+        const { productId } = req.params;
         const result = await prisma.product.delete({
-            where: { id, business_id: businessId },
+            where: { id: productId, business_id: businessId },
             select: {
                 id: true,
                 category_id: true,
