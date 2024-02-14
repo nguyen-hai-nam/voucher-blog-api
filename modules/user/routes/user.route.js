@@ -13,7 +13,7 @@ router.get('/me/managingBusinesses', isUser, userCrudController.getManagingBusin
 router.get('/me/followingBusinesses', isUser, userCrudController.getFollowingBusinesses);
 router.put('/me', isUser, userCrudController.updateCurrentUser);
 
-router.get('/me/getTickHistory', isUser, userActionController.getTickHistory);
+router.get('/me/getTickHistory/:businessId', isUser, userActionController.getTickHistory);
 router.get('/me/getCustomerInfos', isUser, userActionController.getCustomerInfos);
 router.post('/me/collectReward/:rewardId', isUser, userActionController.collectReward);
 router.put('/me/redeemReward/:collectedRewardId', isUser, userActionController.redeemReward);

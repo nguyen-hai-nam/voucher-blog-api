@@ -12,14 +12,17 @@ const getTickHistoryQueryParsed = Joi.object({
 
 const getTickHistoryResponse = Joi.object({
     receivedTicks: Joi.array().items({
-        business_id: Joi.string().required(),
         created_at: Joi.date().required(),
-    }),
+    }).required(),
     collectedRewards: Joi.array().items({
-        id: Joi.string().required(),
-        created_at: Joi.date().required(),
-    }),
-}).required();
+        id: Joi.string().guid().required(),
+        reward: Joi.object({
+            name: Joi.string().required(),
+            tick_price: Joi.number().required(),
+        }).required(),
+        created_at: Joi.date().iso().required(),
+    }).required(),
+});
 
 const collectRewardQueryRaw = Joi.object({
     select: Joi.string().optional(),

@@ -15,6 +15,7 @@ const getTickHistory = async (req, res, next) => {
             throw createHttpError(400);
         }
         const { id } = req.user;
+        const { businessId } = req.params;
         const result = await prisma.user.findUnique({
             where: {
                 id
@@ -22,18 +23,21 @@ const getTickHistory = async (req, res, next) => {
             select: {
                 receivedTicks: {
                     where: {
+                        business: {
+                            id: businessId
+                        },
                         created_at: {
                             gte: parsedQuery.fromDate,
                             lte: parsedQuery.toDate,
                         }
                     },
                     select: {
-                        business_id: true,
                         created_at: true,
                     }
                 },
                 collectedRewards: {
                     where: {
+                        
                         created_at: {
                             gte: parsedQuery.fromDate,
                             lte: parsedQuery.toDate,
@@ -54,10 +58,12 @@ const getTickHistory = async (req, res, next) => {
         });
         const { value, error } = schemas.getTickHistoryResponse.validate(result);
         if (error) {
+            console.log(error)
             throw createHttpError(500);
         }
         res.json(value);
     } catch (e) {
+        console.log(e)
         next(e);
     }
 }
