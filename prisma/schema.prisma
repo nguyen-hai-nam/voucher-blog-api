@@ -301,11 +301,11 @@ model Voucher {
   id String @id @default(uuid())
   business_id String
   campaign_id String?
-  index Int
+  index Int?
   type VoucherType
   media_url String
   description String
-  discount_type String?
+  discount_type DiscountType?
   percent Int?
   max_value Int?
   value Int?

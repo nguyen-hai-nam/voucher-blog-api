@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 const createVoucherBody = Joi.object({
-    index: Joi.number().required(),
+    index: Joi.number().optional(),
     type: Joi.string().valid('DISCOUNT', 'GIFT').required(),
     description: Joi.string().required(),
     discount_type: Joi.string().valid('PERCENT', 'VALUE', 'FIXED_PRICE').when('type', {

@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import createHttpError from 'http-errors';
 
 export const parseQuery = (query) => {
     const { skip, take, where, select, include } = query;
@@ -29,4 +30,33 @@ export const rawQueryParser = (rawQuery) => {
     } catch (e) {
         throw createHttpError(400);
     }   
+}
+
+export const selectParser = (select, whitelist) => {
+    try {
+        if (!select) {
+            const defaultSelectObject = _.zipObject(whitelist, _.fill(Array(whitelist.length), true));
+            return defaultSelectObject;
+        }
+        const selectArray = _.split(select, ',');
+        const filteredSelectArray = _.intersection(selectArray, whitelist);
+        const selectObject = _.zipObject(filteredSelectArray, _.fill(Array(filteredSelectArray.length), true));
+        return selectObject;
+    } catch (e) {
+        throw createHttpError(400);
+    }
+};
+
+export const includeParser = (include, whitelist) => {
+    try {
+        if (!include) {
+            return {};
+        }
+        const includeArray = _.split(include, ',');
+        const filteredIncludeArray = _.intersection(includeArray, whitelist);
+        const includeObject = _.zipObject(filteredIncludeArray, _.fill(Array(filteredIncludeArray.length), true));
+        return includeObject;
+    } catch (e) {
+        throw createHttpError(400);
+    }
 }
