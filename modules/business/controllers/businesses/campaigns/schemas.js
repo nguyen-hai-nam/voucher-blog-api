@@ -6,7 +6,7 @@ const createCampaignBody = Joi.object({
     start_date: Joi.date().required(),
     end_date: Joi.date().required(),
     status: Joi.string().valid('ACTIVE', 'EXPIRED').default('ACTIVE'),
-    voucherIds: Joi.array().items(Joi.number()).min(1).required(),
+    voucher_ids: Joi.array().items(Joi.string()).min(1).required(),
 }).required();
 
 const updateCampaignBody = Joi.object({

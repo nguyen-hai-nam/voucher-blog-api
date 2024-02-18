@@ -38,14 +38,25 @@ const createCampaign = async (req, res, next) => {
             throw createHttpError(400);
         }
         const businessId = req.business.id;
-        const { voucherIds, ...rest } = body;
+        const { voucher_ids, ...rest } = body;
+        const vouchers = await prisma.voucher.findMany({
+            where: {
+                id: {
+                    in: voucher_ids
+                },
+                campaign_id: null
+            }
+        });
+        if (vouchers.length !== voucher_ids.length) {
+            throw createHttpError(400, 'Some vouchers have been already included in a campaign');
+        }
         const result = await prisma.campaign.create({
             data: {
                 business: {
                     connect: { id: businessId }
                 },
                 vouchers: {
-                    connect: voucherIds.map(id => ({ id }))
+                    connect: voucher_ids.map(id => ({ id })),
                 },
                 ...rest
             },
@@ -77,9 +88,9 @@ const createCampaign = async (req, res, next) => {
 const getCampaign = async (req, res, next) => {
     try {
         const businessId = req.business.id;
-        const { id } = req.params;
+        const { campaignId } = req.params;
         const result = await prisma.campaign.findUnique({
-            where: { id, business_id: businessId },
+            where: { id: campaignId, business_id: businessId },
             select: {
                 id: true,
                 name: true,
@@ -110,9 +121,9 @@ const updateCampaign = async (req, res, next) => {
             throw createHttpError(400);
         }
         const businessId = req.business.id;
-        const { id } = req.params;
+        const { campaignId } = req.params;
         const result = await prisma.campaign.update({
-            where: { id, business_id: businessId },
+            where: { id: campaignId, business_id: businessId },
             data: body,
             select: {
                 id: true,
@@ -140,9 +151,9 @@ const updateCampaign = async (req, res, next) => {
 const deleteCampaign = async (req, res, next) => {
     try {
         const businessId = req.business.id;
-        const { id } = req.params;
+        const { campaignId } = req.params;
         const result = await prisma.campaign.delete({
-            where: { id, business_id: businessId },
+            where: { id: campaignId, business_id: businessId },
             select: {
                 id: true,
                 name: true,
