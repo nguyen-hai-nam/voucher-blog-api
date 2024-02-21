@@ -224,6 +224,7 @@ model Reward {
   business_id String
   name String
   description String?
+  image_url String?
   tick_price Int
   created_at DateTime @default(now())
   updated_at DateTime @default(now())

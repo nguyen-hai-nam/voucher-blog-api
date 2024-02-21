@@ -8,6 +8,7 @@ import productCategoryCrudController from '../controllers/businesses/productCate
 import productCrudController from '../controllers/businesses/products/crud.controller.js';
 import voucherCrudController from '../controllers/businesses/vouchers/crud.controller.js';
 import campaignCrudController from '../controllers/businesses/campaigns/crud.controller.js';
+import rewardCrudController from '../controllers/businesses/rewards/crud.controller.js';
 
 const router = express.Router();
 
@@ -602,4 +603,128 @@ router.put('/me/campaigns/:campaignId', isBusiness, campaignCrudController.updat
  *               $ref: '#/components/schemas/Campaign'
  */
 router.delete('/me/campaigns/:campaignId', isBusiness, campaignCrudController.deleteCampaign);
+/**
+ * @swagger
+ * /businesses/me/rewards:
+ *   get:
+ *     summary: Get a list of rewards for the current business
+ *     tags: [Business - Reward]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: The list of the rewards
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Reward'
+ */
+router.get('/me/rewards', isBusiness, rewardCrudController.getRewards);
+/**
+ * @swagger
+ * /businesses/me/rewards:
+ *   post:
+ *     summary: Create a new reward for the current business
+ *     tags: [Business - Reward]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RewardCreate'
+ *     responses:
+ *       200:
+ *         description: The created reward
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Reward'
+ */
+router.post('/me/rewards', isBusiness, upload('rewardImages').single('image'), rewardCrudController.createReward);
+
+/**
+ * @swagger
+ * /businesses/me/rewards/{rewardId}:
+ *   get:
+ *     summary: Get a specific reward for the current business
+ *     tags: [Business - Reward]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: rewardId
+ *         required: true
+ *         description: The ID of the reward
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The reward data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Reward'
+ */
+router.get('/me/rewards/:rewardId', isBusiness, rewardCrudController.getReward);
+
+/**
+ * @swagger
+ * /businesses/me/rewards/{rewardId}:
+ *   put:
+ *     summary: Update a specific reward for the current business
+ *     tags: [Business - Reward]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: rewardId
+ *         required: true
+ *         description: The ID of the reward
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Reward'
+ *     responses:
+ *       200:
+ *         description: The updated reward
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Reward'
+ */
+router.put('/me/rewards/:rewardId', isBusiness, rewardCrudController.updateReward);
+
+/**
+ * @swagger
+ * /businesses/me/rewards/{rewardId}:
+ *   delete:
+ *     summary: Delete a specific reward for the current business
+ *     tags: [Business - Reward]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: rewardId
+ *         required: true
+ *         description: The ID of the reward
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The deleted reward
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Reward'
+ */
+router.delete('/me/rewards/:rewardId', isBusiness, rewardCrudController.deleteReward);
+
 export default router;

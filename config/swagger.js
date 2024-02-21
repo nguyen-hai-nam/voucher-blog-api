@@ -563,6 +563,59 @@ const options = {
                             },
                         },
                     },
+                    Reward: {
+                        type: 'object',
+                        properties: {
+                            id: {
+                                type: 'string',
+                                format: 'uuid',
+                            },
+                            name: {
+                                type: 'string',
+                            },
+                            description: {
+                                type: 'string',
+                            },
+                            image_url: {
+                                type: 'string',
+                            },
+                            tick_price: {
+                                type: 'number',
+                            },
+                        },
+                    },
+                    RewardCreate: {
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                            },
+                            description: {
+                                type: 'string',
+                            },
+                            image: {
+                                type: 'string',
+                                format: 'binary',
+                            },
+                            tick_price: {
+                                type: 'number',
+                            },
+                        },
+                    },
+                    RewardUpdate: {
+                        type: 'object',
+                        properties: {
+                            name: {
+                                type: 'string',
+                            },
+                            description: {
+                                type: 'string',
+                            },
+                            tick_price: {
+                                type: 'number',
+                            },
+                        },
+                    },
                 }
             },
         },
