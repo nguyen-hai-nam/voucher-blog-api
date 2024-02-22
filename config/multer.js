@@ -10,14 +10,15 @@ const hashFileName = (file) => {
     return `${crypto.createHash('md5').update(payload).digest('hex')}${path.extname(file.originalname)}`;
 };
 
-export const upload = multer({
+export const upload = (subPath = '') => multer({
     storage: multer.diskStorage({
         destination: (req, file, cb) => {
-            if (!fs.existsSync(uploadDir)) {
+            const dir = path.join(uploadDirectory, subPath);
+            if (!fs.existsSync(dir)) {
                 // If not, create directory
-                fs.mkdirSync(uploadDirectory, { recursive: true });
+                fs.mkdirSync(dir, { recursive: true });
             }
-            cb(null, uploadDirectory);
+            cb(null, dir);
         },
         filename: function (req, file, cb) {
             cb(null, hashFileName(file));

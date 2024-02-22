@@ -137,6 +137,7 @@ model Business {
   followers UserFollowBusiness[]
   ratings UserRateBusiness[]
   campaigns Campaign[]
+  vouchers Voucher[]
   images BusinessImage[]
   customerInfos CustomerInfo[]
 }
@@ -223,6 +224,7 @@ model Reward {
   business_id String
   name String
   description String?
+  image_url String?
   tick_price Int
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
@@ -298,12 +300,13 @@ enum DiscountType {
 
 model Voucher {
   id String @id @default(uuid())
-  campaign_id String
-  index Int
+  business_id String
+  campaign_id String?
+  index Int?
   type VoucherType
   media_url String
   description String
-  discount_type String?
+  discount_type DiscountType?
   percent Int?
   max_value Int?
   value Int?
@@ -317,8 +320,9 @@ model Voucher {
   condition_ending_hour String?
   condition_target VoucherTarget @default(ALL)
 
+  business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
   appliedProducts VoucherApplyProduct[]
-  campaign Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+  campaign Campaign? @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
   collectors UserCollectVoucher[]
   redeemers UserRedeemVoucher[]
 }
