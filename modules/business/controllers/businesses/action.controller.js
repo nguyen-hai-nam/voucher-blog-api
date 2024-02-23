@@ -1,15 +1,14 @@
 import prisma from "../../../../config/prisma.js";
 
 const tickCustomer = async (req, res, next) => {
-    
     try {
-        const { business_id, user_id: representor_id } = req.business;
+        const { id: businessId, user_id: representorId } = req.business;
         const { userId } = req.params;
         const queryBatch = [];
         const isCustomer = await prisma.customerInfo.findUnique({
             where: {
                 business_id_user_id: {
-                    business_id,
+                    business_id: businessId,
                     user_id: userId,
                 },
             },
@@ -19,7 +18,7 @@ const tickCustomer = async (req, res, next) => {
                 data: {
                     business: {
                         connect: {
-                            id: business_id,
+                            id: businessId,
                         },
                     },
                     customer: {
@@ -34,7 +33,7 @@ const tickCustomer = async (req, res, next) => {
             data: {
                 business: {
                     connect: {
-                        id: business_id,
+                        id: businessId,
                     },
                 },
                 target: {
@@ -44,7 +43,7 @@ const tickCustomer = async (req, res, next) => {
                 },
                 representor: {
                     connect: {
-                        id: representor_id,
+                        id: representorId,
                     },
                 },
             },
@@ -52,7 +51,7 @@ const tickCustomer = async (req, res, next) => {
         queryBatch.push(prisma.customerInfo.update({
             where: {
                 business_id_user_id: {
-                    business_id,
+                    business_id: businessId,
                     user_id: userId,
                 },
             },
@@ -68,6 +67,7 @@ const tickCustomer = async (req, res, next) => {
         await prisma.$transaction(queryBatch);
         res.json({ success: true });
     } catch (e) {
+        console.log(e);
         next(e);
     }
 }
