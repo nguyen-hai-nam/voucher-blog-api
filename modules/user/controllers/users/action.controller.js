@@ -89,14 +89,6 @@ const getCustomerInfos = async (req, res, next) => {
 
 const collectReward = async (req, res, next) => {
     try {
-        const { value: rawQuery, error: rawQueryError } = schemas.collectRewardQueryRaw.validate(req.query);
-        if (rawQueryError) {
-            throw createHttpError(400);
-        }
-        const { value: parsedQuery, error: parsedQueryError } = schemas.collectRewardQueryParsed.validate(rawQueryParser(rawQuery));
-        if (parsedQueryError) {
-            throw createHttpError(400);
-        }
         const { id } = req.user;
         const { rewardId } = req.params;
         const reward = await prisma.reward.findUnique({
@@ -134,16 +126,13 @@ const collectReward = async (req, res, next) => {
                 user_id: id,
                 reward_id: rewardId,
             },
-            select: parsedQuery.select || undefined,
+            include : {
+                reward: true
+            }
         }));
         const result = await prisma.$transaction(queryBatch);
-        const { value, error } = schemas.collectRewardResponse.validate(result[1]);
-        if (error) {
-            throw createHttpError(500);
-        }
-        res.json(value);
+        res.json(result[1]);
     } catch (e) {
-        console.log(e)
         next(e);
     }
 }
