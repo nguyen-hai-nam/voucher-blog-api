@@ -16,6 +16,7 @@ const getCollectedRewards = async (req, res, next) => {
                         id: true,
                         name: true,
                         description: true,
+                        image_url: true,
                         tick_price: true,
                         business: {
                             select: {
@@ -60,6 +61,7 @@ const getCollectedReward = async (req, res, next) => {
                         id: true,
                         name: true,
                         description: true,
+                        image_url: true,
                         tick_price: true,
                         business: {
                             select: {
