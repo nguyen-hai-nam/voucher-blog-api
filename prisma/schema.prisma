@@ -76,8 +76,7 @@ model User {
   followingBusinesses UserFollowBusiness[]
   ratedBusinesses UserRateBusiness[]
   collectedRewards CollectedReward[]
-  collectedVouchers UserCollectVoucher[]
-  redeemedVouchers UserRedeemVoucher[]
+  collectedVouchers CollectedVoucher[]
   comments UserCommentCampaign[]
   lovedCampaigns UserLoveCampaign[]
   savedCampaigns UserSaveCampaign[]
@@ -250,6 +249,24 @@ model CollectedReward {
   reward Reward @relation(fields: [reward_id], references: [id], onDelete: Cascade)
 }
 
+enum CollectedVoucherStatus {
+  COLLECTED
+  REDEEMED
+  EXPIRED
+}
+
+model CollectedVoucher {
+  id String @id @default(uuid())
+  user_id String
+  voucher_id String
+  status CollectedVoucherStatus @default(COLLECTED)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  collector User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  voucher Voucher @relation(fields: [voucher_id], references: [id], onDelete: Cascade)
+}
+
 model Product {
   id String @id @default(uuid())
   business_id String
@@ -323,8 +340,7 @@ model Voucher {
   business Business @relation(fields: [business_id], references: [id], onDelete: Cascade)
   appliedProducts VoucherApplyProduct[]
   campaign Campaign? @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
-  collectors UserCollectVoucher[]
-  redeemers UserRedeemVoucher[]
+  collectors CollectedVoucher[]
 }
 
 model VoucherApplyProduct {
@@ -334,28 +350,6 @@ model VoucherApplyProduct {
   @@id([voucher_id, product_id])
   voucher Voucher @relation(fields: [voucher_id], references: [id], onDelete: Cascade)
   product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-}
-
-model UserCollectVoucher {
-  voucher_id String
-  user_id String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  @@id([voucher_id, user_id])
-  voucher Voucher @relation(fields: [voucher_id], references: [id])
-  user User @relation(fields: [user_id], references: [id])
-}
-
-model UserRedeemVoucher {
-  id String @id @default(uuid())
-  voucher_id String
-  user_id String
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  voucher Voucher @relation(fields: [voucher_id], references: [id])
-  user User @relation(fields: [user_id], references: [id])
 }
 
 enum CampaignStatus {
