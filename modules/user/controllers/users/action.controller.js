@@ -197,6 +197,19 @@ const collectVoucher = async (req, res, next) => {
             throw createHttpError(400);
         }
 
+        const checkVoucherCollected = await prisma.collectedVoucher.findMany({
+            where: {
+                user_id: user.id,
+                voucher_id: voucher.id,
+                status: "COLLECTED"
+            }
+        })
+
+        if (checkVoucherCollected.length > 0) {
+            // If there are collected vouchers that match the criteria, raise a 400 status
+            return res.status(400).json({ message: "Voucher has already been collected." });
+        }
+
         const collectedVoucher = await prisma.collectedVoucher.create({
             data: {
                 user_id: user.id,
