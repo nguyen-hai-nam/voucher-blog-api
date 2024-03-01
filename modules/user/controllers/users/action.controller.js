@@ -193,19 +193,11 @@ const collectVoucher = async (req, res, next) => {
             }
         });
 
-        // Find if voucher is collected by user then throw error
-        let collectedVoucher = await prisma.collectedVoucher.findFirstOrThrow({
-            where: {
-                user_id: user.id,
-                voucher_id: voucherId
-            }
-        })
-
-        if (!user || !voucher || collectVoucher) {
+        if (!user || !voucher) {
             throw createHttpError(400);
         }
 
-        collectedVoucher = await prisma.collectedVoucher.create({
+        const collectedVoucher = await prisma.collectedVoucher.create({
             data: {
                 user_id: user.id,
                 voucher_id: voucherId,
