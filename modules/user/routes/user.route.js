@@ -18,7 +18,7 @@ router.get('/me/getCustomerInfos', isUser, userActionController.getCustomerInfos
 router.post('/me/collectReward/:rewardId', isUser, userActionController.collectReward);
 router.put('/me/redeemReward/:collectedRewardId', isUser, userActionController.redeemReward);
 router.post('/me/collectVoucher/:voucherId', isUser, userActionController.collectVoucher);
-router.put('/me/redeemVoucher/:voucherId', isUser, userActionController.redeemVoucher);
+router.put('/me/redeemVoucher/:collectedVoucherId', isUser, userActionController.redeemVoucher);
 
 router.get('/me/userAddresses', isUser, userAddressCrudController.getUserAddresses);
 router.post('/me/userAddresses', isUser, userAddressCrudController.createUserAddress);

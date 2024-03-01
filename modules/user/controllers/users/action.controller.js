@@ -217,8 +217,6 @@ const collectVoucher = async (req, res, next) => {
             }
         });
 
-        console.log(collectVoucher);
-
         res.json(collectedVoucher);
     } catch (e) {
         next(e);
@@ -228,47 +226,37 @@ const collectVoucher = async (req, res, next) => {
 // put("/me/redeemVoucher/:voucherId")
 const redeemVoucher = async (req, res, next) => {
     try {
-        const { value: rawQuery, error: rawQueryError } = schemas.redeemRewardQueryRaw.validate(req.query);
-        if (rawQueryError) {
-            throw createHttpError(400);
-        }
-        const { value: parsedQuery, error: parsedQueryError } = schemas.redeemRewardQueryParsed.validate(rawQueryParser(rawQuery));
-        if (parsedQueryError) {
-            throw createHttpError(400);
-        }
-
-        const { userId } = req.user;
+        const { id: userId } = req.user;
         const { collectedVoucherId } = req.params;
-        const voucher = await prisma.collectedVoucher.findUnique({
+        const collectedVoucher = await prisma.collectedVoucher.findUnique({
             where: {
                 id: collectedVoucherId,
-                user_id: userId
+                user_id: userId,
+                status: "COLLECTED"
             },
             select: {
-                status: true
+                status: true,
             }
         });
 
-        if (currentReward && currentReward.status === "REDEEMED") {
-            throw createHttpError(400, "Reward was already redeemed");
+        if (!collectedVoucher) {
+            throw createHttpError(400, "This voucher is unavailable");
         }
 
-        const result = await prisma.collectedReward.update({
+        const result = await prisma.collectedVoucher.update({
             where: {
-                id: collectedRewardId,
-                user_id: id
+                id: collectedVoucherId
             },
             data: {
                 status: "REDEEMED"
-            },
-            select: parsedQuery.select || { id: true },
+            }
         });
 
-        const { value, error } = schemas.redeemRewardResponse.validate(result);
-        if (error) {
-            throw createHttpError(500);
-        }
-        res.json(value);
+        // const { value, error } = schemas.redeemRewardResponse.validate(result);
+        // if (error) {
+        //     throw createHttpError(500);
+        // }
+        res.json(result);
     } catch (e) {
         next(e);
     }
