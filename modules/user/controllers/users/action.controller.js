@@ -225,9 +225,50 @@ const collectVoucher = async (req, res, next) => {
 
 // put("/me/redeemVoucher/:voucherId")
 const redeemVoucher = async (req, res, next) => {
+
+    const parseTime = (timeString) => {
+        if (!timeString) {
+            throw createHttpError(500, "Invalid time condition format")
+        }
+        const parsedTime = new Date();
+        parsedTime.setHours(parseInt(timeString.split(":")[0]));
+        parsedTime.setMinutes(parseInt(timeString.split(":")[1]));
+        return parsedTime;
+    }
+
+    const checkEffectiveTimeCondition = async (voucher) => {
+        const currentTime = new Date();
+        const beginConditionTime = parseTime(voucher.condition_beginning_hour || "00:00");
+        const endConditionTime = parseTime(voucher.condition_ending_hour || "23:59");
+
+        if (currentTime < beginConditionTime || currentTime > endConditionTime) {
+            throw createHttpError(400, "This voucher is not in effective time");
+        }
+    }
+
+    const checkMaxUseCondition = async (collectedVoucher) => {
+        const redeemedCount = await prisma.collectedVoucher.count({
+            where: {
+                voucher_id: collectedVoucher.voucher.id,
+                status: "REDEEMED"
+            }
+        });
+        if (redeemedCount >= collectedVoucher.voucher.max_use) {
+            throw createHttpError(400, "This voucher reached the maximum used")
+        }
+    }
+
+    const checkMinBillValueCondition = async (minBillValueCondition) => {
+        const { bill } = req.body;
+        if ((bill?.value || 0) < minBillValueCondition) {
+            throw createHttpError(400, "This voucher is unavailble for this bill");
+        }
+    }
+
     try {
         const { id: userId } = req.user;
         const { collectedVoucherId } = req.params;
+
         const collectedVoucher = await prisma.collectedVoucher.findUnique({
             where: {
                 id: collectedVoucherId,
@@ -236,12 +277,19 @@ const redeemVoucher = async (req, res, next) => {
             },
             select: {
                 status: true,
+                voucher: true
             }
         });
 
         if (!collectedVoucher) {
             throw createHttpError(400, "This voucher is unavailable");
         }
+
+        // Check for voucher's conditions
+        await checkEffectiveTimeCondition(collectedVoucher.voucher);
+        await checkMaxUseCondition(collectedVoucher);
+        await checkMinBillValueCondition(collectedVoucher.voucher.condition_min_bill_value);
+
 
         const result = await prisma.collectedVoucher.update({
             where: {
@@ -252,10 +300,6 @@ const redeemVoucher = async (req, res, next) => {
             }
         });
 
-        // const { value, error } = schemas.redeemRewardResponse.validate(result);
-        // if (error) {
-        //     throw createHttpError(500);
-        // }
         res.json(result);
     } catch (e) {
         next(e);
