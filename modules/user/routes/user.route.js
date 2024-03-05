@@ -5,6 +5,7 @@ import userCrudController from '../controllers/users/crud.controller.js';
 import userActionController from '../controllers/users/action.controller.js';
 import userAddressCrudController from '../controllers/users/user-addresses/crud.controller.js';
 import collectedRewardController from '../controllers/users/collectedRewards/crud.controller.js';
+import collectedVoucherController from '../controllers/users/collectedVouchers/crud.controller.js';
 
 const router = express.Router();
 
@@ -29,6 +30,9 @@ router.delete('/me/userAddresses/:userAddressId', isUser, userAddressCrudControl
 router.get('/me/collectedRewards', isUser, collectedRewardController.getCollectedRewards);
 router.get('/me/collectedRewards/:collectedRewardId', isUser, collectedRewardController.getCollectedReward);
 router.delete('/me/collectedRewards/:collectedRewardId', isUser, collectedRewardController.deleteCollectedReward);
+router.get('/me/collectedVouchers', isUser, collectedVoucherController.getCollectedVouchers);
+router.get('/me/collectedVouchers/:collectedVoucherId', isUser, collectedVoucherController.getCollectedVoucher);
+router.delete('/me/collectedVouchers/:collectedVoucherId', isUser, collectedVoucherController.deleteCollectedVoucher);
 
 
 export default router;
