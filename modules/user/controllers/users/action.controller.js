@@ -181,10 +181,101 @@ const redeemReward = async (req, res, next) => {
     }
 }
 
+const collectVoucher = async (req, res, next) => {
+    try {
+        const user = req.user;
+        const { voucherId } = req.params;
+
+        const voucher = await prisma.voucher.findUnique({
+            where: {
+                id: voucherId
+            }
+        });
+
+        if (!user || !voucher) {
+            throw createHttpError(400);
+        }
+
+        const checkVoucherCollected = await prisma.collectedVoucher.findMany({
+            where: {
+                user_id: user.id,
+                voucher_id: voucher.id,
+                status: "COLLECTED"
+            }
+        })
+
+        if (checkVoucherCollected.length > 0) {
+            return res.status(400).json({ message: "Voucher has already been collected." });
+        }
+
+        const collectedVoucher = await prisma.collectedVoucher.create({
+            data: {
+                user_id: user.id,
+                voucher_id: voucherId,
+            }
+        });
+
+        res.json(collectedVoucher);
+    } catch (e) {
+        next(e);
+    }
+}
+
+const redeemVoucher = async (req, res, next) => {
+    try {
+        const { id: userId } = req.user;
+        const { collectedVoucherId } = req.params;
+        const collectedVoucher = await prisma.collectedVoucher.findUnique({
+            where: {
+                id: collectedVoucherId,
+                user_id: userId,
+                status: "COLLECTED"
+            },
+            select: {
+                voucher: true
+            }
+        });
+
+        if (!collectedVoucher) {
+            throw createHttpError(400, "This voucher is unavailable");
+        }
+
+        const { voucher } = collectedVoucher;
+        const useCount = await prisma.collectedVoucher.count({
+            where: {
+                voucher_id: voucher.id,
+                status: "REDEEMED"
+            }
+        });
+
+        if (useCount >= voucher.max_use_count) {
+            throw createHttpError(400, "This voucher has been fully redeemed");
+        }
+
+        if(!checkTimeCondition(voucher) || !checkMinBillValueCondition(voucher, body.billValue)) {
+            throw createHttpError(400, "Conditions are not met");
+        }
+
+        const result = await prisma.collectedVoucher.update({
+            where: {
+                id: collectedVoucherId
+            },
+            data: {
+                status: "REDEEMED"
+            }
+        });
+
+        res.json(result);
+    } catch (e) {
+        next(e);
+    }
+}
 
 export default {
     getTickHistory,
     getCustomerInfos,
     collectReward,
     redeemReward,
+    collectVoucher,
+    redeemVoucher
 };
