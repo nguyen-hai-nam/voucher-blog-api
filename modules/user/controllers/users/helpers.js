@@ -26,3 +26,8 @@ const checkMinBillValueCondition = (voucher, billValue) => {
     }
     return true;
 }
+
+export {
+    checkTimeCondition,
+    checkMinBillValueCondition
+}
