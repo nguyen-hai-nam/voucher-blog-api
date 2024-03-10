@@ -253,7 +253,7 @@ const redeemVoucher = async (req, res, next) => {
             throw createHttpError(400, "This voucher has been fully redeemed");
         }
 
-        if(!checkTimeCondition(voucher) || !checkMinBillValueCondition(voucher, body.billValue)) {
+        if(!checkTimeCondition(voucher) || !checkMinBillValueCondition(voucher, req.body.billValue)) {
             throw createHttpError(400, "Conditions are not met");
         }
 
@@ -268,6 +268,7 @@ const redeemVoucher = async (req, res, next) => {
 
         res.json(result);
     } catch (e) {
+        console.log(e);
         next(e);
     }
 }

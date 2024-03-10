@@ -9,19 +9,21 @@ const parseVoucherTime = (timeString) => {
 }
 
 const checkTimeCondition = (voucher) => {
-    const currentTime = new Date();
-    const beginConditionTime = parseTime(voucher.condition_beginning_hour || "00:00");
-    const endConditionTime = parseTime(voucher.condition_ending_hour || "23:59");
-
-    if (currentTime < beginConditionTime || currentTime > endConditionTime) {
-        return false;
+    console.log(voucher)
+    if (voucher.condition_beginning_hour && voucher.condition_ending_hour) {
+        const currentTime = new Date();
+        const beginConditionTime = parseVoucherTime(voucher.condition_beginning_hour || "00:00");
+        const endConditionTime = parseVoucherTime(voucher.condition_ending_hour || "23:59");
+        console.log(currentTime, beginConditionTime, endConditionTime)
+        if (currentTime < beginConditionTime || currentTime > endConditionTime) {
+            return false;
+        }
     }
-
     return true;
 }
 
 const checkMinBillValueCondition = (voucher, billValue) => {
-    if (voucher.condition_min_bill_value > billValue) {
+    if (billValue && voucher.condition_min_bill_value > billValue) {
         return false;
     }
     return true;
