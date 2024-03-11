@@ -6,6 +6,9 @@ import authController from '../controllers/auth/auth.controller.js';
 
 const router = express.Router();
 
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+router.post('/change-password', isUser, authController.changePassword);
 router.post('/loginBusiness/:businessId', isUser, authController.loginBusiness);
 
 export default router;
