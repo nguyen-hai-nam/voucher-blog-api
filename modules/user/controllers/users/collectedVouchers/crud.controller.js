@@ -9,7 +9,12 @@ const getCollectedVouchers = async (req, res, next) => {
         const result = await prisma.collectedVoucher.findMany({
             where: { user_id: id },
             include: {
-                voucher: true
+                voucher: {
+                    include: {
+                        campaign: true,
+                        business: true
+                    }
+                }
             }
         });
         res.json(result);
@@ -33,28 +38,13 @@ const getCollectedVoucher = async (req, res, next) => {
         }
         const result = await prisma.collectedVoucher.findFirst({
             where: { user_id: id },
-            select: {
-                id: true,
-                status: true,
-                reward: {
-                    select: {
-                        id: true,
-                        name: true,
-                        description: true,
-                        image_url: true,
-                        tick_price: true,
-                        business: {
-                            select: {
-                                name: true,
-                                avatar_image_url: true,
-                                address_name: true,
-                                lat: true,
-                                lng: true,
-                            }
-                        }
+            include: {
+                voucher: {
+                    include: {
+                        campaign: true,
+                        business: true
                     }
-                },
-                created_at: true,
+                }
             }
         });
         res.json(result);
