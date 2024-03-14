@@ -27,7 +27,7 @@ const getCollectedVoucher = async (req, res, next) => {
     try {
         const { id } = req.user;
         const { collectedVoucherId } = req.params;
-        const isOwner = await prisma.collectedVoucher.findFirst({
+        const isOwner = await prisma.collectedVoucher.findUnique({
             where: {
                 id: collectedVoucherId,
                 user_id: id
@@ -36,8 +36,10 @@ const getCollectedVoucher = async (req, res, next) => {
         if (!isOwner) {
             throw createHttpError(401);
         }
-        const result = await prisma.collectedVoucher.findFirst({
-            where: { user_id: id },
+        const result = await prisma.collectedVoucher.findUnique({
+            where: { 
+                id: collectedVoucherId,
+            },
             include: {
                 voucher: {
                     include: {
