@@ -10,5 +10,6 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.post('/change-password', isUser, authController.changePassword);
 router.post('/loginBusiness/:businessId', isUser, authController.loginBusiness);
+router.post('/register-business', isUser, authController.registerBusiness);
 
 export default router;

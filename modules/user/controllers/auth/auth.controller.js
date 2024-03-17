@@ -89,6 +89,41 @@ const changePassword = async (req, res, next) => {
     }
 };
 
+const registerBusiness = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const { name, description, category_id, open_hour, close_hour, lowest_price, highest_price, email, phone_number, website, lng, lat, address_name } = req.body;
+        await prisma.userManageBusiness.create({
+            data: {
+                business: {
+                    create: {
+                        name,
+                        description,
+                        category_id,
+                        avatar_image_url: `https://ui-avatars.com/api/?name=${name}`,
+                        open_hour,
+                        close_hour,
+                        lowest_price,
+                        highest_price,
+                        email,
+                        phone_number,
+                        website,
+                        lng,
+                        lat,
+                        address_name,
+                    }
+                },
+                user: {
+                    connect: { id: userId },
+                },
+            }
+        });
+        res.status(201).json({ success: true });
+    } catch (e) {
+        next(e);
+    }
+}
+
 const loginBusiness = async (req, res, next) => {
     try {
         const userId = req.user.id;
@@ -114,5 +149,6 @@ export default {
     register,
     login,
     changePassword,
+    registerBusiness,
     loginBusiness,
 };
