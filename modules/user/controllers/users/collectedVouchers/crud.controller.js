@@ -59,7 +59,7 @@ const deleteCollectedVoucher = async (req, res, next) => {
     try {
         const { id } = req.user;
         const { collectedVoucherId } = req.params;
-        const isOwner = await prisma.collectedVoucher.findFirst({
+        const isOwner = await prisma.collectedVoucher.findUnique({
             where: {
                 id: collectedVoucherId,
                 user_id: id
@@ -69,7 +69,10 @@ const deleteCollectedVoucher = async (req, res, next) => {
             throw createHttpError(401);
         }
         const result = await prisma.collectedVoucher.delete({
-            where: { user_id: id },
+            where: {
+                id: collectedVoucherId,
+                user_id: id 
+            },
             select: { id: true }
         });
         res.json(result);
