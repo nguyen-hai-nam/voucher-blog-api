@@ -12,6 +12,5 @@ export const calculateDistance = (point1, point2) => {
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = EARTH_RADIUS * c; // Distance between two points in kilometers
-    console.log(d);
     return d;
 }
