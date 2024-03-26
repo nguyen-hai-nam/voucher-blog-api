@@ -1,5 +1,5 @@
 import createHttpError from "http-errors";
-import searchService from '../services/search.service.js'
+import searchService from '../services/searchSugest.service.js'
 
 const suggestSearchResult = async (req, res, next) => {
     try {
@@ -12,7 +12,7 @@ const suggestSearchResult = async (req, res, next) => {
         }
 
         const searchingInfomations =
-            await searchService.getNearByBussinessesOrProductsWithToKeyword(
+            await searchService.getNearByBusinessHasNameOrProductRelateToKeyword(
                 currentPosition,
                 maxDistance,
                 keyword

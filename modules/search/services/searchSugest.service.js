@@ -60,7 +60,51 @@ const getNearByBussinessesOrProductsWithToKeyword = async (currentPosition, maxD
     }
 }
 
+const getNearByBusinessHasNameOrProductRelateToKeyword = async (
+    currentPosition,
+    maxDistance,
+    keyword
+) => {
+    try {
+        const businessesHasNameOrProductRelateToKeyword =
+            await prisma.business.findMany({
+                include: {
+                    products: true
+                },
+                where: {
+                    OR: [
+                        {
+                            name: {
+                                contains: keyword
+                            }
+                        },
+                        {
+                            products: {
+                                some: {
+                                    name: {
+                                        contains: keyword
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+
+            })
+
+        const nearByBusinessesHasNameOrProductRelateToKeyword =
+            businessesHasNameOrProductRelateToKeyword.filter(business => {
+                return maxDistance >= calculateDistance(currentPosition, business);
+            })
+
+        return nearByBusinessesHasNameOrProductRelateToKeyword;
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 export default {
-    getNearByBussinessesOrProductsWithToKeyword
+    getNearByBussinessesOrProductsWithToKeyword,
+    getNearByBusinessHasNameOrProductRelateToKeyword
 }
