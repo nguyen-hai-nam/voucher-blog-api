@@ -60,7 +60,92 @@ const getNearByBussinessesOrProductsWithToKeyword = async (currentPosition, maxD
     }
 }
 
+const search = async (keyword) => {
+    const businesses = await prisma.business.findMany({
+        where: {
+            OR: [
+                { name: { contains: keyword } },
+                { description: { contains: keyword } },
+                {
+                    category: {
+                        name: { contains: keyword }
+                    }
+                },
+                {
+                    products: {
+                        some: {
+                            name: { contains: keyword }
+                        }
+                    }
+                },
+                {
+                    products: {
+                        some: {
+                            description: { contains: keyword }
+                        }
+                    }
+                },
+                {
+                    productCategories: {
+                        some: {
+                            name: { contains: keyword }
+                        }
+                    }
+                },
+                {
+                    campaigns: {
+                        some: {
+                            name: { contains: keyword }
+                        }
+                    }
+                },
+                {
+                    campaigns: {
+                        some: {
+                            description: { contains: keyword }
+                        }
+                    }
+                }
+            ]
+        },
+        include: {
+            images: {
+                where: {
+                    type: {
+                        in: ['FRONT', 'INSIDE', 'MENU']
+                    }
+                }
+            },
+        }
+    });
+
+    const campaigns = await prisma.campaign.findMany({
+        where: {
+            OR: [
+                { name: { contains: keyword } },
+                { description: { contains: keyword } },
+                {
+                    vouchers: {
+                        some: {
+                            description: { contains: keyword }
+                        }
+                    }
+                }
+            ]
+        },
+        include: {
+            business: true,
+            vouchers: true,
+            saves: true,
+            loves: true,
+        }
+    });
+
+    return { businesses, campaigns };
+};
+
 
 export default {
-    getNearByBussinessesOrProductsWithToKeyword
+    getNearByBussinessesOrProductsWithToKeyword,
+    search
 }
