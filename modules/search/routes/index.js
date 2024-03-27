@@ -1,9 +1,12 @@
 import { Router } from "express";
-import searchControler from "../controllers/search.controller.js";
+
+import searchSuggestController from "../controllers/searchSuggest.controller.js";
+import searchResultController from "../controllers/searchResult.controller.js";
 
 const router = Router();
 
-router.get('/', searchControler.search);
-router.get('/suggest', searchControler.suggestSearchResult);
+router.get('/suggest', searchSuggestController.suggestSearchResult);
+router.get('/result', searchResultController.getSearchResult)
+
 
 export default router;
