@@ -145,10 +145,24 @@ const loginBusiness = async (req, res, next) => {
     }
 };
 
+const getCurrentUser = async (req, res, next) => {
+    const userId = req.user.id;
+    try {
+        const user = await prisma.user.findUnique({ where: { id: userId }});
+        return res.status(200).json({
+            success: true,
+            data: user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export default {
     register,
     login,
     changePassword,
     registerBusiness,
     loginBusiness,
+    getCurrentUser,
 };

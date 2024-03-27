@@ -6,6 +6,7 @@ import authController from '../controllers/auth/auth.controller.js';
 
 const router = express.Router();
 
+router.get('/me', isUser, authController.getCurrentUser);
 router.post('/register', authController.register);
 router.post('/login', authController.login);
 router.post('/change-password', isUser, authController.changePassword);
