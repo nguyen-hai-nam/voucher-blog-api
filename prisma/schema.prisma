@@ -364,6 +364,7 @@ model Campaign {
   description String
   start_date DateTime @default(now())
   end_date DateTime
+  display_time_slot String?
   loves_count Int @default(0)
   saves_count Int @default(0)
   status CampaignStatus @default(ACTIVE)
